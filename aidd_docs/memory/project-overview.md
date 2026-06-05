@@ -2,7 +2,7 @@
 
 Application Flutter de bien-être / santé mentale (public mineur), projet Erasmus+.
 **Aucun backend, aucun Firebase, zéro collecte, zéro identification** — RGPD par absence
-de traitement. Hors-ligne intégral. Licence GNU GPL, dépôt GitHub.
+de traitement. Hors-ligne intégral. Licence GNU GPLv3, dépôt GitHub `AlexandreMaillot/digiharmony`.
 
 ## Identité
 
