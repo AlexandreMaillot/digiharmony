@@ -9,11 +9,21 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+/// Delays de flottement par index de pastille (inspirés de la maquette).
+///
+/// Pill-0..6 : 0 ms, 600 ms, 1100 ms, 300 ms, 1800 ms, 900 ms, 1400 ms.
+/// Valeurs déterministes ; au-delà de 6 : modulo sur la liste.
+const List<int> _flotDelay = [0, 600, 1100, 300, 1800, 900, 1400];
+
+/// Durées légèrement différenciées (ms) pour casser le synchronisme visuel.
+const List<int> _flotDuration = [2000, 1800, 2200, 1900, 2100, 1700, 2300];
+
 /// Pastille circulaire représentant une émotion dans le picker.
 ///
-/// - Taille fixe ~62 px (zone tactile ≥ 48×48 garantie par InkResponse).
+/// - Taille fixe ~80 px (zone tactile ≥ 48×48 garantie par GestureDetector).
 /// - Couleur via [MoodColors.byKey] uniquement — jamais de hex en dur.
-/// - Animation de flottement au repos (désactivée si `disableAnimations`).
+/// - Animation de flottement au repos désynchronisée par [index]
+///   (désactivée si `disableAnimations`).
 /// - État sélectionné : anneau + halo coloré.
 /// - État désactivé (picker verrouillé post-saisie) : opacité réduite.
 class PastilleEmotion extends StatelessWidget {
@@ -21,6 +31,7 @@ class PastilleEmotion extends StatelessWidget {
     required this.emotion,
     required this.selectionne,
     required this.desactive,
+    required this.index,
     super.key,
   });
 
@@ -32,6 +43,10 @@ class PastilleEmotion extends StatelessWidget {
 
   /// Vrai si le picker est verrouillé (post-saisie réussie, DEC-SH-004).
   final bool desactive;
+
+  /// Position dans la grille (0-based) — détermine le delay et la durée du
+  /// flottement pour désynchroniser les pastilles les unes des autres.
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -48,12 +63,16 @@ class PastilleEmotion extends StatelessWidget {
     );
 
     if (!disableAnimations && !desactive) {
+      final i = index % _flotDelay.length;
       pastille = pastille
-          .animate(onPlay: (c) => c.repeat(reverse: true))
+          .animate(
+            onPlay: (c) => c.repeat(reverse: true),
+            delay: Duration(milliseconds: _flotDelay[i]),
+          )
           .moveY(
             begin: 0,
             end: -4,
-            duration: const Duration(milliseconds: 2000),
+            duration: Duration(milliseconds: _flotDuration[i]),
             curve: Curves.easeInOut,
           );
     }
@@ -136,8 +155,8 @@ class _PastilleBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 62,
-      height: 62,
+      width: 80,
+      height: 80,
       decoration: BoxDecoration(
         color: couleur != null
             ? couleur!.withValues(alpha: 0.18)
@@ -159,7 +178,7 @@ class _PastilleBody extends StatelessWidget {
       child: Center(
         child: Text(
           emotion.emoji,
-          style: const TextStyle(fontSize: 28),
+          style: const TextStyle(fontSize: 36),
           semanticsLabel: libelle,
         ),
       ),

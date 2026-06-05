@@ -30,12 +30,14 @@ class PickerEmotions extends StatelessWidget {
           spacing: AppSpacing.md,
           runSpacing: AppSpacing.md,
           alignment: WrapAlignment.center,
-          children: emotionsCanoniques.map((emotion) {
+          children: emotionsCanoniques.indexed.map(((int, EmotionCanonique) e) {
+            final (idx, emotion) = e;
             return PastilleEmotion(
               key: ValueKey(emotion.cle),
               emotion: emotion,
               selectionne: emotion.cle == codeSelectionne,
               desactive: desactive,
+              index: idx,
             );
           }).toList(),
         );

@@ -47,12 +47,15 @@ void main() {
   });
 
   group('SaisieHumeurView — rendu initial', () {
-    // SHV-1 : toolbar présente (chevron, menu).
-    testWidgets('SHV-1 : toolbar affiche chevron et menu', (tester) async {
-      await tester.pumpSaisie(bloc);
-      expect(find.byIcon(Icons.chevron_left), findsOneWidget);
-      expect(find.byIcon(Icons.menu), findsOneWidget);
-    });
+    // SHV-1 : toolbar présente (chevron) ; pas de burger menu.
+    testWidgets(
+      'SHV-1 : toolbar affiche chevron, pas de menu burger',
+      (tester) async {
+        await tester.pumpSaisie(bloc);
+        expect(find.byIcon(Icons.chevron_left), findsOneWidget);
+        expect(find.byIcon(Icons.menu), findsNothing);
+      },
+    );
 
     // SHV-2 : titre et sous-titre présents.
     testWidgets(

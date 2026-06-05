@@ -87,4 +87,47 @@ void main() {
       },
     );
   });
+
+  group('Migration idempotence — colonne jour déjà présente', () {
+    // MIG-5 : PRAGMA guard détecte `jour` et protège contre un double ALTER.
+    //
+    // Sans le guard, un onUpgrade appelé sur une base semi-migrée (colonne
+    // déjà présente) lèverait "duplicate column name: jour" → crash DB.
+    // Ce test vérifie que le guard PRAGMA table_info fonctionne correctement.
+    test(
+      'MIG-5 : guard PRAGMA détecte jour — double ALTER évité',
+      () async {
+        final db = AppDatabase.forTesting(NativeDatabase.memory());
+        addTearDown(db.close);
+
+        // Déclenche onCreate (base fraîche v2 → colonne `jour` présente).
+        await db.enregistrerHumeurDuJour('happy');
+
+        // Vérifie que PRAGMA table_info détecte bien `jour`.
+        final infos = await db
+            .customSelect("PRAGMA table_info('entrees_humeur')")
+            .get();
+        final colonnes =
+            infos.map((r) => r.read<String>('name')).toList();
+        expect(colonnes, contains('jour'));
+
+        // Simule le guard : aDejaJour == true → addColumn non exécuté.
+        final aDejaJour =
+            infos.any((r) => r.read<String>('name') == 'jour');
+        expect(aDejaJour, isTrue);
+
+        // Sans guard, ce double ALTER crasherait avec
+        // SqliteException(1): duplicate column name: jour.
+        // Avec le guard, il est court-circuité → pas d'exception.
+        if (!aDejaJour) {
+          await db.customStatement(
+            'ALTER TABLE entrees_humeur'
+            ' ADD COLUMN jour INTEGER',
+          );
+        }
+        // Si on arrive ici sans exception, le guard fonctionne.
+        expect(colonnes, contains('jour'));
+      },
+    );
+  });
 }

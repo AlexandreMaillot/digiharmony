@@ -79,8 +79,17 @@ class AppDatabase extends _$AppDatabase {
         },
         onUpgrade: (m, from, to) async {
           if (from < 2) {
-            // Ajoute la colonne `jour` (nullable transitoire pour le backfill).
-            await m.addColumn(entreesHumeur, entreesHumeur.jour);
+            // Ajoute `jour` seulement si absente (idempotence).
+            // Sur une base semi-migrée, SQLite lèverait
+            // "duplicate column name: jour" → crash DB.
+            final infos = await customSelect(
+              "PRAGMA table_info('entrees_humeur')",
+            ).get();
+            final aDejaJour =
+                infos.any((r) => r.read<String>('name') == 'jour');
+            if (!aDejaJour) {
+              await m.addColumn(entreesHumeur, entreesHumeur.jour);
+            }
             // Backfill : dérive `jour` depuis `cree_le`.
             // Drift sérialise DateTime en epoch unix (microsecondes UTC).
             // On recalcule le minuit local en secondes * 1000 (format Drift).

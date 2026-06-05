@@ -44,13 +44,9 @@ class _SaisieHumeurViewState extends State<SaisieHumeurView> {
             height: 32,
           ),
           centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.menu),
-              tooltip: l10n.reglagesTooltip,
-              onPressed: () {},
-            ),
-          ],
+          // Équilibre visuel : SizedBox de même largeur que le leading (48 px)
+          // pour que le logo reste centré sans bouton de droite superflu.
+          actions: const [SizedBox(width: 48)],
         ),
         body: SafeArea(
           child: Padding(
