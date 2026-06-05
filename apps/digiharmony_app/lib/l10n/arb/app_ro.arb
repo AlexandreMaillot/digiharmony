@@ -1,4 +1,6 @@
 {
     "@@locale": "ro",
-    "counterAppBarTitle": "Contor"
+    "placeholderComingSoon": "Coming soon",
+    "placeholderBienvenue": "Welcome",
+    "placeholderAccueil": "Home"
 }

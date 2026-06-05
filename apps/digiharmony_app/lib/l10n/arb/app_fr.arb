@@ -1,4 +1,6 @@
 {
     "@@locale": "fr",
-    "counterAppBarTitle": "Compteur"
+    "placeholderComingSoon": "Bientôt disponible",
+    "placeholderBienvenue": "Bienvenue",
+    "placeholderAccueil": "Accueil"
 }
