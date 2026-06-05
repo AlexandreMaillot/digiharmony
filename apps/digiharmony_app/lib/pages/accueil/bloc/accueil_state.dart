@@ -4,7 +4,7 @@ part of 'accueil_bloc.dart';
 ///
 /// L'emoji est mappé depuis [codeEmotion] ; le libellé est résolu via i18n.
 @immutable
-class HumeurDuJourVue {
+final class HumeurDuJourVue extends Equatable {
   const HumeurDuJourVue({
     required this.codeEmotion,
     required this.emoji,
@@ -21,35 +21,39 @@ class HumeurDuJourVue {
   final DateTime noteeLe;
 
   @override
-  bool operator ==(Object other) =>
-      other is HumeurDuJourVue &&
-      other.codeEmotion == codeEmotion &&
-      other.emoji == emoji &&
-      other.noteeLe == noteeLe;
-
-  @override
-  int get hashCode => Object.hash(codeEmotion, emoji, noteeLe);
+  List<Object?> get props => [codeEmotion, emoji, noteeLe];
 }
 
 /// Vue légère « conseil du jour ». Le texte est résolu via i18n d'après [cle].
 @immutable
-class ConseilDuJourVue {
+final class ConseilDuJourVue extends Equatable {
   const ConseilDuJourVue({required this.cle});
 
   /// Clé i18n du conseil (`tipDay01`..`tipDay07`).
   final String cle;
 
   @override
-  bool operator ==(Object other) =>
-      other is ConseilDuJourVue && other.cle == cle;
+  List<Object?> get props => [cle];
+}
 
-  @override
-  int get hashCode => cle.hashCode;
+/// Statut de l'écran Accueil.
+enum AccueilStatus { chargement, pret, erreur }
+
+/// Extension de getters utilitaires sur [AccueilStatus].
+extension AccueilStatusX on AccueilStatus {
+  /// `true` pendant le chargement initial.
+  bool get estEnChargement => this == AccueilStatus.chargement;
+
+  /// `true` quand les données sont disponibles.
+  bool get estSucces => this == AccueilStatus.pret;
+
+  /// `true` en cas d'erreur de lecture Drift.
+  bool get estEnErreur => this == AccueilStatus.erreur;
 }
 
 /// États de l'écran Accueil.
 @immutable
-sealed class AccueilState {
+sealed class AccueilState extends Equatable {
   const AccueilState();
 }
 
@@ -58,10 +62,7 @@ final class AccueilChargement extends AccueilState {
   const AccueilChargement();
 
   @override
-  bool operator ==(Object other) => other is AccueilChargement;
-
-  @override
-  int get hashCode => (AccueilChargement).hashCode;
+  List<Object?> get props => [];
 }
 
 /// Écran prêt : [humeurDuJour] `null` → état A, non-`null` → état B.
@@ -75,13 +76,7 @@ final class AccueilPret extends AccueilState {
   final ConseilDuJourVue conseil;
 
   @override
-  bool operator ==(Object other) =>
-      other is AccueilPret &&
-      other.humeurDuJour == humeurDuJour &&
-      other.conseil == conseil;
-
-  @override
-  int get hashCode => Object.hash(humeurDuJour, conseil);
+  List<Object?> get props => [conseil, humeurDuJour];
 }
 
 /// Erreur de lecture Drift : l'UI rend l'état A en repli (pas de crash).
@@ -89,8 +84,5 @@ final class AccueilErreur extends AccueilState {
   const AccueilErreur();
 
   @override
-  bool operator ==(Object other) => other is AccueilErreur;
-
-  @override
-  int get hashCode => (AccueilErreur).hashCode;
+  List<Object?> get props => [];
 }

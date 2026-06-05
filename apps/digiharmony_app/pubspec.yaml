@@ -11,7 +11,9 @@ environment:
 dependencies:
   app_usage: ^4.1.0
   bloc: ^9.2.0
+  bloc_concurrency: ^0.3.0
   drift: ^2.33.0
+  equatable: ^2.0.8
   flow_builder: ^0.1.0
   flutter:
     sdk: flutter

@@ -1,5 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:digiharmony_app/bienvenue/bienvenue_cubit.dart';
+import 'package:digiharmony_app/bienvenue/bloc/bienvenue_bloc.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/demarrage/bloc/demarrage_bloc.dart';
 import 'package:digiharmony_app/demarrage/view/demarrage_page.dart';
@@ -20,11 +20,14 @@ class _MockDemarrageBloc extends MockBloc<DemarrageEvent, DemarrageState>
 
 class _MockAppDatabase extends Mock implements AppDatabase {}
 
+class _MockBienvenueBloc extends MockBloc<BienvenueEvent, BienvenueState>
+    implements BienvenueBloc {}
+
 Widget _harnessView({
   DemarrageState state = const DemarrageEnCours(),
   // Par défaut reduced motion : pas de boucle d'animation → pas de Timer
   // pendant. La vue reçoit directement le bloc mocké (pas besoin de fournir
-  // AppDatabase / BienvenueCubit : warm-up + flag vivent dans le bloc).
+  // AppDatabase / BienvenueBloc : warm-up + flag vivent dans le bloc).
   bool disableAnimations = true,
   Locale locale = const Locale('en'),
 }) {
@@ -62,7 +65,7 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('SV-2 : titre littéral DIGIHARMONY présent', (tester) async {
+    testWidgets('SV-2 : titre DIGIHARMONY présent', (tester) async {
       await tester.pumpWidget(_harnessView());
       await tester.pump();
       expect(find.text('DIGIHARMONY'), findsOneWidget);
@@ -164,8 +167,8 @@ void main() {
     ) async {
       initMockHydratedStorage();
       final db = _MockAppDatabase();
-      // BienvenueCubit réel (storage mocké) : BlocProvider a besoin du stream.
-      final cubit = BienvenueCubit();
+      final bienvenueBloc = _MockBienvenueBloc();
+      when(() => bienvenueBloc.state).thenReturn(const BienvenueState());
       // Warm-up immédiat. Le délai minimal (2,5s) garde DemarrageView visible
       // tant qu'on ne pompe pas au-delà.
       when(() => db.conseilDuJour(any())).thenAnswer(
@@ -175,8 +178,8 @@ void main() {
       await tester.pumpWidget(
         RepositoryProvider<AppDatabase>.value(
           value: db,
-          child: BlocProvider<BienvenueCubit>.value(
-            value: cubit,
+          child: BlocProvider<BienvenueBloc>.value(
+            value: bienvenueBloc,
             child: const MaterialApp(
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
@@ -193,7 +196,7 @@ void main() {
       // Vide le timer du délai minimal (2,5s) ; warm-up reste pendant (10s)
       // mais sera annulé au démontage du widget.
       await tester.pump(const Duration(seconds: 3));
-      await cubit.close();
+      await bienvenueBloc.close();
     });
   });
 }

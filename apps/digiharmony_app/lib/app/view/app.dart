@@ -1,13 +1,13 @@
-import 'package:digiharmony_app/bienvenue/bienvenue_cubit.dart';
+import 'package:digiharmony_app/bienvenue/bloc/bienvenue_bloc.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
-import 'package:digiharmony_app/demarrage/view/demarrage_page.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
-import 'package:digiharmony_app/locale/locale_cubit.dart';
+import 'package:digiharmony_app/locale/locale_bloc.dart';
+import 'package:digiharmony_app/pages/demarrage/views/demarrage_page.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Racine de l'application : fournit les dépendances (base Drift + cubits
+/// Racine de l'application : fournit les dépendances (base Drift + blocs
 /// hydratés) au-dessus de `MaterialApp`, câble le thème foncé et la langue.
 class App extends StatelessWidget {
   /// Crée l'app avec la [database] Drift unique ouverte par `bootstrap`.
@@ -24,8 +24,8 @@ class App extends StatelessWidget {
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider<LocaleCubit>(create: (_) => LocaleCubit()),
-          BlocProvider<BienvenueCubit>(create: (_) => BienvenueCubit()),
+          BlocProvider<LocaleBloc>(create: (_) => LocaleBloc()),
+          BlocProvider<BienvenueBloc>(create: (_) => BienvenueBloc()),
         ],
         child: const AppView(),
       ),
@@ -40,7 +40,7 @@ class AppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = context.watch<LocaleCubit>().state;
+    final locale = context.watch<LocaleBloc>().state.locale;
     return MaterialApp(
       theme: AppTheme.dark,
       darkTheme: AppTheme.dark,

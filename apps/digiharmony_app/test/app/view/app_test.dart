@@ -1,9 +1,9 @@
 import 'package:digiharmony_app/app/app.dart';
-import 'package:digiharmony_app/bienvenue/bienvenue_cubit.dart';
+import 'package:digiharmony_app/bienvenue/bloc/bienvenue_bloc.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/demarrage/view/demarrage_view.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
-import 'package:digiharmony_app/locale/locale_cubit.dart';
+import 'package:digiharmony_app/locale/locale_bloc.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -63,21 +63,21 @@ void main() {
       await tester.pump(const Duration(seconds: 3));
     });
 
-    testWidgets('APP-4 : LocaleCubit et BienvenueCubit fournis', (
+    testWidgets('APP-4 : LocaleBloc et BienvenueBloc fournis', (
       tester,
     ) async {
       await tester.pumpWidget(App(database: database));
       await tester.pump();
       final ctx = tester.element(find.byType(DemarrageView));
-      expect(ctx.read<LocaleCubit>(), isA<LocaleCubit>());
-      expect(ctx.read<BienvenueCubit>(), isA<BienvenueCubit>());
+      expect(ctx.read<LocaleBloc>(), isA<LocaleBloc>());
+      expect(ctx.read<BienvenueBloc>(), isA<BienvenueBloc>());
       await tester.pump(const Duration(seconds: 3));
     });
 
-    testWidgets('APP-5 : LocaleCubit(fr) -> MaterialApp.locale == fr', (
-      tester,
-    ) async {
-      final cubit = LocaleCubit()..setLocale(const Locale('fr'));
+    testWidgets(
+      'APP-5 : LocaleBloc(LocaleChange(fr)) -> MaterialApp.locale == fr',
+      (tester) async {
+      final bloc = LocaleBloc()..add(const LocaleChange(Locale('fr')));
       await tester.pumpWidget(
         MultiRepositoryProvider(
           providers: [
@@ -85,8 +85,8 @@ void main() {
           ],
           child: MultiBlocProvider(
             providers: [
-              BlocProvider<LocaleCubit>.value(value: cubit),
-              BlocProvider<BienvenueCubit>(create: (_) => BienvenueCubit()),
+              BlocProvider<LocaleBloc>.value(value: bloc),
+              BlocProvider<BienvenueBloc>(create: (_) => BienvenueBloc()),
             ],
             child: const AppView(),
           ),

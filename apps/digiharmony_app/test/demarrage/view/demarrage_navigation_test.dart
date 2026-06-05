@@ -16,7 +16,7 @@ class _MockDemarrageBloc extends MockBloc<DemarrageEvent, DemarrageState>
 class _MockAppDatabase extends Mock implements AppDatabase {}
 
 // La vue reçoit directement le bloc mocké : pas besoin de fournir
-// BienvenueCubit (warm-up + flag vivent dans le bloc).
+// BienvenueBloc (warm-up + flag vivent dans le bloc).
 // AppDatabase est fourni pour couvrir la navigation vers AccueilPage.
 // Reduced motion par défaut pour éviter les boucles d'animation infinies.
 Widget _harnessNav({

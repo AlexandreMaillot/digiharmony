@@ -1,5 +1,5 @@
-import 'package:digiharmony_app/accueil/accueil_page.dart';
-import 'package:digiharmony_app/bienvenue/bienvenue_page.dart';
+import 'package:digiharmony_app/pages/accueil/views/accueil_page.dart';
+import 'package:digiharmony_app/pages/bienvenue/views/bienvenue_page.dart';
 import 'package:flutter/material.dart';
 
 /// Cibles de navigation centralisées (`pushReplacement`).
@@ -10,11 +10,7 @@ import 'package:flutter/material.dart';
 abstract final class AppRouter {
   /// Remplace l'écran courant par l'écran de bienvenue.
   static Future<void> versBienvenue(BuildContext context) {
-    return Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(
-        builder: (_) => const BienvenuePage(),
-      ),
-    );
+    return Navigator.of(context).pushReplacement(BienvenuePage.route());
   }
 
   /// Remplace l'écran courant par l'accueil.
@@ -22,10 +18,6 @@ abstract final class AppRouter {
   /// Point de bascule (DEC-FND-08) : pointe sur `AccueilPage` (placeholder V1),
   /// remplacé par l'implémentation réelle de l'Accueil (US-HOME-01).
   static Future<void> versAccueil(BuildContext context) {
-    return Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(
-        builder: (_) => const AccueilPage(),
-      ),
-    );
+    return Navigator.of(context).pushReplacement(AccueilPage.route());
   }
 }
