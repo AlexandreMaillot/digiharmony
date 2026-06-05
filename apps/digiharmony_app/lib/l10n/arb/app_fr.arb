@@ -30,5 +30,13 @@
     "tipDay05": "Pose ton téléphone et profite d'un moment de silence.",
     "tipDay06": "Souris à quelqu'un — ça illumine les deux journées.",
     "tipDay07": "Sois bienveillant·e envers toi-même. Tu fais de ton mieux.",
-    "splashTagline": "Bien-être numérique · Erasmus+"
+    "splashTagline": "Bien-être numérique · Erasmus+",
+    "placeholderJournal": "Mon journal",
+    "placeholderBulle": "Choisis ta bulle",
+    "placeholderConseil": "Conseil du jour",
+    "placeholderPause": "Faire une pause",
+    "placeholderTempsEcran": "Mon temps d'écran",
+    "placeholderNoterHumeur": "Noter mon humeur",
+    "placeholderReglages": "Réglages",
+    "reglagesTooltip": "Réglages"
 }

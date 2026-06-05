@@ -1,10 +1,10 @@
 import 'package:digiharmony_app/accueil/bloc/accueil_bloc.dart';
 import 'package:digiharmony_app/accueil/widgets/carte_humeur.dart';
-import 'package:digiharmony_app/accueil/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/accueil/widgets/particules_flottantes.dart';
 import 'package:digiharmony_app/accueil/widgets/pilule_action.dart';
 import 'package:digiharmony_app/accueil/widgets/tuile_outil.dart';
 import 'package:digiharmony_app/common/placeholder_screen.dart';
+import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -82,16 +82,20 @@ class AccueilView extends StatelessWidget {
                           TuileOutil(
                             label: l10n.homeToolBubble,
                             icone: Icons.auto_awesome,
-                            onTap: () =>
-                                ouvrirPlaceholder(context, 'Choisis ta bulle'),
+                            onTap: () => ouvrirPlaceholder(
+                              context,
+                              l10n.placeholderBulle,
+                            ),
                           ),
                           const SizedBox(width: AppSpacing.md),
                           TuileOutil(
                             label: l10n.homeToolDailyTip,
                             icone: Icons.lightbulb_outline,
                             description: tipTexte,
-                            onTap: () =>
-                                ouvrirPlaceholder(context, 'Conseil du jour'),
+                            onTap: () => ouvrirPlaceholder(
+                              context,
+                              l10n.placeholderConseil,
+                            ),
                           ),
                         ],
                       );
@@ -104,7 +108,7 @@ class AccueilView extends StatelessWidget {
                       label: l10n.homePauseCta,
                       icone: Icons.eco,
                       onTap: () =>
-                          ouvrirPlaceholder(context, 'Faire une pause'),
+                          ouvrirPlaceholder(context, l10n.placeholderPause),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -113,7 +117,7 @@ class AccueilView extends StatelessWidget {
                     child: TextButton.icon(
                       onPressed: () => ouvrirPlaceholder(
                         context,
-                        "Mon temps d'écran",
+                        l10n.placeholderTempsEcran,
                       ),
                       icon: const Icon(
                         Icons.timer_outlined,
@@ -206,8 +210,8 @@ class _Header extends StatelessWidget {
         // Bouton réglages → PlaceholderScreen.
         IconButton(
           icon: const Icon(Icons.settings, color: AppColors.textMuted),
-          tooltip: 'Réglages',
-          onPressed: () => ouvrirPlaceholder(context, 'Réglages'),
+          tooltip: l10n.reglagesTooltip,
+          onPressed: () => ouvrirPlaceholder(context, l10n.placeholderReglages),
         ),
       ],
     );

@@ -30,5 +30,13 @@
     "tipDay05": "Put your phone down and enjoy a moment of silence.",
     "tipDay06": "Smile at someone — it can brighten both your days.",
     "tipDay07": "Be kind to yourself. You are doing your best.",
-    "splashTagline": "Digital well-being · Erasmus+"
+    "splashTagline": "Digital well-being · Erasmus+",
+    "placeholderJournal": "My journal",
+    "placeholderBulle": "Choose your bubble",
+    "placeholderConseil": "Tip of the day",
+    "placeholderPause": "Take a break",
+    "placeholderTempsEcran": "My screen time",
+    "placeholderNoterHumeur": "Log my mood",
+    "placeholderReglages": "Settings",
+    "reglagesTooltip": "Settings"
 }

@@ -75,7 +75,8 @@ class _CarteEtatA extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () => ouvrirPlaceholder(context, 'Noter mon humeur'),
+                onPressed: () =>
+                    ouvrirPlaceholder(context, l10n.placeholderNoterHumeur),
                 icon: const Icon(Icons.add_circle_outline),
                 label: Text(l10n.heroLogMoodCta),
               ),
@@ -83,7 +84,8 @@ class _CarteEtatA extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             Center(
               child: TextButton(
-                onPressed: () => ouvrirPlaceholder(context, 'Mon journal'),
+                onPressed: () =>
+                    ouvrirPlaceholder(context, l10n.placeholderJournal),
                 child: Text(l10n.heroSeeJournal),
               ),
             ),
@@ -168,7 +170,8 @@ class _CarteEtatB extends StatelessWidget {
             const SizedBox(height: AppSpacing.lg),
             Center(
               child: TextButton(
-                onPressed: () => ouvrirPlaceholder(context, 'Mon journal'),
+                onPressed: () =>
+                    ouvrirPlaceholder(context, l10n.placeholderJournal),
                 child: Text(l10n.heroSeeJournal),
               ),
             ),

@@ -140,11 +140,29 @@ void main() {
       ],
     );
 
-    // HB-7 : erreur Drift → AccueilErreur.
+    // HB-7 : erreur Drift (Exception) → AccueilErreur.
     blocTest<AccueilBloc, AccueilState>(
       'HB-7 : exception Drift → AccueilErreur',
       setUp: () {
         when(() => db.conseilDuJour(any())).thenThrow(Exception('Drift error'));
+        when(
+          () => db.observerDerniereHumeurDuJour(),
+        ).thenAnswer((_) => Stream.fromIterable([null]));
+      },
+      build: () => AccueilBloc(database: db),
+      act: (bloc) => bloc.add(const AccueilDemarre()),
+      expect: () => [isA<AccueilErreur>()],
+    );
+
+    // HB-10 : StateError (base vide) → AccueilErreur — fallback État A (AC7).
+    // `conseilDuJour` lève StateError si la base est vide (app_database.dart).
+    // Le `on Object` du bloc doit le capturer ; l'écran affiche l'État A.
+    blocTest<AccueilBloc, AccueilState>(
+      'HB-10 : StateError base vide → AccueilErreur (fallback État A)',
+      setUp: () {
+        when(
+          () => db.conseilDuJour(any()),
+        ).thenThrow(StateError('Aucun conseil seedé dans la base.'));
         when(
           () => db.observerDerniereHumeurDuJour(),
         ).thenAnswer((_) => Stream.fromIterable([null]));

@@ -3,10 +3,8 @@
 /// Source de vérité : `aidd_docs/memory/design-system.md` + DEC-003.
 /// Toute couleur d'écran DOIT venir d'ici — aucune valeur hex en dur ailleurs.
 ///
-/// `DM Sans` doit être **bundlé** comme asset
-/// (pas `google_fonts` : zéro réseau).
-/// Tant que la police n'est pas vendorée,
-/// Flutter retombe sur la police système.
+/// `DM Sans` est **bundlé** comme asset (4 graisses dans `assets/fonts/`) —
+/// pas de `google_fonts` : zéro réseau, zéro collecte.
 library;
 
 import 'package:flutter/material.dart';

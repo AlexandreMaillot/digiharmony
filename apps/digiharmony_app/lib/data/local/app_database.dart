@@ -95,23 +95,21 @@ class AppDatabase extends _$AppDatabase {
   /// Dernière entrée d'humeur du jour courant, réactif.
   ///
   /// Émet `null` si aucune entrée aujourd'hui. Bornes `[minuit, minuit+1j)`,
-  /// tri `creeLe DESC LIMIT 1`.
+  /// tri `creeLe DESC LIMIT 1`. La borne supérieure est **exclue** dans le
+  /// `where` (`creeLe >= start AND creeLe < end`) — sans post-filtrage.
   Stream<EntreeHumeur?> observerDerniereHumeurDuJour() {
     final now = DateTime.now();
     final start = DateTime(now.year, now.month, now.day);
     final end = start.add(const Duration(days: 1));
-    final query =
-        (select(entreesHumeur)
-              ..where((t) => t.creeLe.isBetweenValues(start, end))
-              ..orderBy([(t) => OrderingTerm.desc(t.creeLe)])
-              ..limit(1))
-            .watchSingleOrNull();
-    // `isBetweenValues` est inclusif sur les deux bornes ; on exclut minuit+1j.
-    return query.map((row) {
-      if (row == null) return null;
-      if (!row.creeLe.isBefore(end)) return null;
-      return row;
-    });
+    return (select(entreesHumeur)
+          ..where(
+            (t) =>
+                t.creeLe.isBiggerOrEqualValue(start) &
+                t.creeLe.isSmallerThanValue(end),
+          )
+          ..orderBy([(t) => OrderingTerm.desc(t.creeLe)])
+          ..limit(1))
+        .watchSingleOrNull();
   }
 
   /// Conseil **déterministe** du jour [jour].

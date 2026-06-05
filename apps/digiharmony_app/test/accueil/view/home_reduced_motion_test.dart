@@ -1,8 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:digiharmony_app/accueil/bloc/accueil_bloc.dart';
 import 'package:digiharmony_app/accueil/view/accueil_view.dart';
-import 'package:digiharmony_app/accueil/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/accueil/widgets/particules_flottantes.dart';
+import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';

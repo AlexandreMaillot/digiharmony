@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:flutter/foundation.dart';
@@ -34,19 +32,16 @@ class AccueilBloc extends Bloc<AccueilEvent, AccueilState> {
   }
 
   final AppDatabase _database;
-  StreamSubscription<EntreeHumeur?>? _humeurSub;
 
   /// Gère [AccueilDemarre] : abonne le stream Drift + charge le conseil.
   ///
-  /// Restartable : annule l'abonnement précédent avant de démarrer (HB-8).
-  /// `emit.forEach` garantit la réactivité (AC3, HB-4).
+  /// `emit.forEach` garantit la réactivité (AC3, HB-4) et gère le cycle de
+  /// vie de l'abonnement. Restartable : un 2e `AccueilDemarre` annule le
+  /// `forEach` précédent via le mécanisme interne du Bloc (HB-8).
   Future<void> _onDemarre(
     AccueilDemarre event,
     Emitter<AccueilState> emit,
   ) async {
-    await _humeurSub?.cancel();
-    _humeurSub = null;
-
     try {
       final conseil = await _database.conseilDuJour(DateTime.now());
       final conseilVue = ConseilDuJourVue(cle: conseil.cleConseil);
@@ -65,14 +60,10 @@ class AccueilBloc extends Bloc<AccueilEvent, AccueilState> {
         },
         onError: (error, stack) => const AccueilErreur(),
       );
-    } on Exception {
+    } on Object {
+      // Capture aussi StateError (levé par conseilDuJour si base vide) —
+      // aligné sur DemarrageBloc.  Fallback silencieux → État A (AC7).
       emit(const AccueilErreur());
     }
-  }
-
-  @override
-  Future<void> close() async {
-    await _humeurSub?.cancel();
-    return super.close();
   }
 }

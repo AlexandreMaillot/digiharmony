@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:digiharmony_app/app/routing/app_router.dart';
+import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/demarrage/bloc/demarrage_bloc.dart';
 import 'package:digiharmony_app/demarrage/widgets/anneaux_ondes.dart';
 import 'package:digiharmony_app/demarrage/widgets/barre_signature.dart';
-import 'package:digiharmony_app/demarrage/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/demarrage/widgets/points_chargement.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/theme/theme.dart';
@@ -97,7 +97,15 @@ class _DemarrageViewState extends State<DemarrageView> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              HaloRespirant(animer: animer),
+              HaloRespirant(
+                taille: 240,
+                couleurs: [
+                  AppColors.primary,
+                  AppColors.primary.withValues(alpha: 0),
+                ],
+                opaciteStatique: 0.5,
+                animer: animer,
+              ),
               AnneauxOndes(animer: animer),
               _logo(animer: animer),
             ],

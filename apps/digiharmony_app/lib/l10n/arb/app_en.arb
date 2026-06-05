@@ -129,5 +129,37 @@
     "splashTagline": "Digital well-being · Erasmus+",
     "@splashTagline": {
         "description": "Tagline shown on the splash screen, below the brand signature bar"
+    },
+    "placeholderJournal": "My journal",
+    "@placeholderJournal": {
+        "description": "Title of the mood journal placeholder screen"
+    },
+    "placeholderBulle": "Choose your bubble",
+    "@placeholderBulle": {
+        "description": "Title of the bubble tool placeholder screen"
+    },
+    "placeholderConseil": "Tip of the day",
+    "@placeholderConseil": {
+        "description": "Title of the daily tip placeholder screen"
+    },
+    "placeholderPause": "Take a break",
+    "@placeholderPause": {
+        "description": "Title of the breathing pause placeholder screen"
+    },
+    "placeholderTempsEcran": "My screen time",
+    "@placeholderTempsEcran": {
+        "description": "Title of the screen time placeholder screen"
+    },
+    "placeholderNoterHumeur": "Log my mood",
+    "@placeholderNoterHumeur": {
+        "description": "Title of the log mood placeholder screen"
+    },
+    "placeholderReglages": "Settings",
+    "@placeholderReglages": {
+        "description": "Title of the settings placeholder screen"
+    },
+    "reglagesTooltip": "Settings",
+    "@reglagesTooltip": {
+        "description": "Tooltip for the settings icon button in the home screen header"
     }
 }
