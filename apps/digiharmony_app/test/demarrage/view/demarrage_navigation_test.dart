@@ -2,7 +2,6 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_page.dart';
-import 'package:digiharmony_app/pages/bienvenue/views/bienvenue_page.dart';
 import 'package:digiharmony_app/pages/demarrage/bloc/demarrage_bloc.dart';
 import 'package:digiharmony_app/pages/demarrage/views/demarrage_view.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +14,7 @@ class _MockDemarrageBloc extends MockBloc<DemarrageEvent, DemarrageState>
 
 class _MockAppDatabase extends Mock implements AppDatabase {}
 
-// La vue reçoit directement le bloc mocké : pas besoin de fournir
-// BienvenueBloc (warm-up + flag vivent dans le bloc).
+// La vue reçoit directement le bloc mocké.
 // AppDatabase est fourni pour couvrir la navigation vers AccueilPage.
 // Reduced motion par défaut pour éviter les boucles d'animation infinies.
 Widget _harnessNav({
@@ -28,7 +26,7 @@ Widget _harnessNav({
   whenListen<DemarrageState>(bloc, states, initialState: initialState);
 
   // disableAnimations sur le builder de l'app pour que toutes les pages
-  // enfants (AccueilPage, BienvenuePage...) héritent aussi du flag.
+  // enfants (AccueilPage…) héritent aussi du flag.
   Widget app = MaterialApp(
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
@@ -68,27 +66,13 @@ void main() {
         .thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
   });
 
-  group('DemarrageView — navigation (NAV-1->NAV-5) —', () {
+  group('DemarrageView — navigation (NAV-1->NAV-4) —', () {
     testWidgets(
-      'NAV-1 : PretPourBienvenue -> pushReplacement vers BienvenuePage',
+      'NAV-1 : DemarragePret -> pushReplacement vers AccueilPage',
       (tester) async {
         await tester.pumpWidget(
           _harnessNav(
-            states: Stream.value(const DemarragePretPourBienvenue()),
-          ),
-        );
-        await tester.pumpAndSettle();
-        expect(find.byType(BienvenuePage), findsOneWidget);
-        expect(find.byType(DemarrageView), findsNothing);
-      },
-    );
-
-    testWidgets(
-      'NAV-2 : PretPourAccueil -> pushReplacement vers AccueilPage',
-      (tester) async {
-        await tester.pumpWidget(
-          _harnessNav(
-            states: Stream.value(const DemarragePretPourAccueil()),
+            states: Stream.value(const DemarragePret()),
             database: database,
           ),
         );
@@ -107,27 +91,30 @@ void main() {
     );
 
     testWidgets(
-      'NAV-3 : DemarrageErreur versBienvenue=true -> Bienvenue sans crash',
+      'NAV-2 : DemarrageErreur -> AccueilPage sans crash',
       (tester) async {
         await tester.pumpWidget(
           _harnessNav(
-            states: Stream.value(
-              const DemarrageErreur(versBienvenue: true),
-            ),
+            states: Stream.value(const DemarrageErreur()),
+            database: database,
           ),
         );
-        await tester.pumpAndSettle();
-        expect(find.byType(BienvenuePage), findsOneWidget);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        expect(find.byType(AccueilPage), findsOneWidget);
         expect(tester.takeException(), isNull);
+        // Vide les timers pendants.
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(seconds: 1));
       },
     );
 
     testWidgets(
-      'NAV-4 : après navigation, Demarrage plus dans la pile (no back)',
+      'NAV-3 : après navigation, Demarrage plus dans la pile (no back)',
       (tester) async {
         await tester.pumpWidget(
           _harnessNav(
-            states: Stream.value(const DemarragePretPourAccueil()),
+            states: Stream.value(const DemarragePret()),
             database: database,
           ),
         );
@@ -145,7 +132,7 @@ void main() {
     );
 
     testWidgets(
-      'NAV-5 : DemarrageEnCours -> aucune navigation déclenchée',
+      'NAV-4 : DemarrageEnCours -> aucune navigation déclenchée',
       (tester) async {
         await tester.pumpWidget(
           _harnessNav(
@@ -154,7 +141,6 @@ void main() {
         );
         await tester.pump();
         expect(find.byType(DemarrageView), findsOneWidget);
-        expect(find.byType(BienvenuePage), findsNothing);
         expect(find.byType(AccueilPage), findsNothing);
       },
     );

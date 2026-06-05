@@ -1,7 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
-import 'package:digiharmony_app/pages/bienvenue/bloc/bienvenue_bloc.dart';
 import 'package:digiharmony_app/pages/demarrage/bloc/demarrage_bloc.dart';
 import 'package:digiharmony_app/pages/demarrage/views/demarrage_page.dart';
 import 'package:digiharmony_app/pages/demarrage/views/demarrage_view.dart';
@@ -20,14 +19,11 @@ class _MockDemarrageBloc extends MockBloc<DemarrageEvent, DemarrageState>
 
 class _MockAppDatabase extends Mock implements AppDatabase {}
 
-class _MockBienvenueBloc extends MockBloc<BienvenueEvent, BienvenueState>
-    implements BienvenueBloc {}
-
 Widget _harnessView({
   DemarrageState state = const DemarrageEnCours(),
   // Par défaut reduced motion : pas de boucle d'animation → pas de Timer
   // pendant. La vue reçoit directement le bloc mocké (pas besoin de fournir
-  // AppDatabase / BienvenueBloc : warm-up + flag vivent dans le bloc).
+  // AppDatabase : warm-up vit dans le bloc).
   bool disableAnimations = true,
   Locale locale = const Locale('en'),
 }) {
@@ -167,36 +163,38 @@ void main() {
     ) async {
       initMockHydratedStorage();
       final db = _MockAppDatabase();
-      final bienvenueBloc = _MockBienvenueBloc();
-      when(() => bienvenueBloc.state).thenReturn(const BienvenueState());
-      // Warm-up immédiat. Le délai minimal (2,5s) garde DemarrageView visible
-      // tant qu'on ne pompe pas au-delà.
+      // Warm-up immédiat. En reduced motion, la durée minimale est 800 ms.
+      // On ne pompe qu'une frame initiale : DemarrageView doit être présente.
       when(() => db.conseilDuJour(any())).thenAnswer(
         (_) async => const Conseil(id: 1, cleConseil: 'tip'),
       );
+      when(() => db.observerDerniereHumeurDuJour())
+          .thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
 
       await tester.pumpWidget(
         RepositoryProvider<AppDatabase>.value(
           value: db,
-          child: BlocProvider<BienvenueBloc>.value(
-            value: bienvenueBloc,
-            child: const MaterialApp(
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              home: MediaQuery(
-                data: MediaQueryData(disableAnimations: true),
-                child: DemarragePage(),
-              ),
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: MediaQuery(
+              data: MediaQueryData(disableAnimations: true),
+              child: DemarragePage(),
             ),
           ),
         ),
       );
+      // Juste après le premier pump : le DemarrageBloc est en cours (Drift
+      // warm-up OK mais délai minimal pas encore écoulé) → DemarrageView.
       await tester.pump();
       expect(find.byType(DemarrageView), findsOneWidget);
-      // Vide le timer du délai minimal (2,5s) ; warm-up reste pendant (10s)
-      // mais sera annulé au démontage du widget.
-      await tester.pump(const Duration(seconds: 3));
-      await bienvenueBloc.close();
+      // Vide le délai minimal (800ms reduced) + timers AccueilBloc ensuite.
+      await tester.pump(const Duration(milliseconds: 900));
+      // Navigation déclenchée (DemarragePret) → AccueilPage.
+      // Démontage propre pour annuler les boucles flutter_animate d'AccueilPage.
+      await tester.pumpWidget(const SizedBox());
+      // AccueilPage peut avoir des timers jusqu'à ~1,6s : on pompe au-delà.
+      await tester.pump(const Duration(seconds: 2));
     });
   });
 }

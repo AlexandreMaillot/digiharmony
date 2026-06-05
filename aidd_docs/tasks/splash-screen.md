@@ -4,7 +4,7 @@ route: "/" (écran de démarrage, route initiale de l'app)
 us: [US-1.1]
 github: "#1"
 milestone: Phase 1
-shared_components: [AppTheme, AppColors, AppDatabase, OnboardingCubit, AppRouter]
+shared_components: [AppTheme, AppColors, AppDatabase, AppRouter]
 i18n_keys: [splashTagline]
 tests: aidd_docs/tasks/splash-screen.tests.md
 created: 2026-06-05
@@ -15,11 +15,19 @@ depends_on: [foundations-bootstrap.md (US-FND-01)]
 
 ## ✅ Décisions de validation (2026-06-05) — FONT FOI
 
-- **Nommage FRANÇAIS** : cet écran s'appelle **Demarrage** (Splash → Demarrage). Dossier `lib/demarrage/`, classes `DemarragePage`/`DemarrageView`/`DemarrageBloc`/`DemarrageEvent`/`DemarrageState`, fichiers `demarrage_*.dart`. Route `/` inchangée. Onboarding → **Bienvenue** (`BienvenueCubit`, clé HydratedBloc `bienvenue`, `estBienvenueVue()`). Scaffolding (`AppTheme`/`AppDatabase`/`AppRouter`) reste anglais.
+- **Nommage FRANÇAIS** : cet écran s'appelle **Demarrage** (Splash → Demarrage). Dossier `lib/demarrage/`, classes `DemarragePage`/`DemarrageView`/`DemarrageBloc`/`DemarrageEvent`/`DemarrageState`, fichiers `demarrage_*.dart`. Route `/` inchangée. Scaffolding (`AppTheme`/`AppDatabase`/`AppRouter`) reste anglais.
 - **Logo central 110×110** : utiliser `assets/images/logo_digiharmony_square.png` (carré 969×969), affiché en `BoxFit.cover`/`contain` dans le cadre 110×110 radius 22.
 - **Splash natif** (fourni par Fondations) : `flutter_native_splash`, fond `#16213C` (`AppColors.backgroundDeep`), logo carré — continuité visuelle avant `SplashPage`.
 - **Tagline** : `splashTagline` traduite `fr`+`en` réellement, repli `en` pour les 6 autres langues (TODO). `DIGIHARMONY` jamais traduit.
 - Délai min **injectable** (`SplashDemarre(dureeMinimale)`) ; reduced-motion → boucles off + délai ~0,8 s.
+
+## ✅ Décision produit (2026-06-05) — FONT FOI — ONBOARDING ABANDONNÉ
+
+- **L'onboarding (écran Bienvenue) est abandonné** : le Demarrage route **toujours directement vers l'Accueil**, quelle que soit l'historique d'utilisation (1re ouverture ou non).
+- **`DemarrageBloc`** n'a plus de dépendance sur `BienvenueBloc`. Il ne lit plus aucun flag d'onboarding. État simplifié : `DemarrageInitial` → `DemarrageEnCours` → `DemarragePret` | `DemarrageErreur` (les deux terminent vers l'Accueil).
+- **`BienvenueBloc` et `BienvenuePage`** restent dans le codebase à l'état **DORMANT** : fournis globalement par `App` (au cas où une future US les réactive), mais plus consommés par le Demarrage.
+- **`AppRouter.versBienvenue`** reste présent (dormant) dans `AppRouter` — ne pas le supprimer.
+- **En cas d'erreur Drift** : le Demarrage route quand même vers l'Accueil (tolérance d'erreur §7 maintenue).
 
 # Page Plan — Splash Screen (US-1.1)
 

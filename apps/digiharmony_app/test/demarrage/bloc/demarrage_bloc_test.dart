@@ -1,6 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
-import 'package:digiharmony_app/pages/bienvenue/bloc/bienvenue_bloc.dart';
 import 'package:digiharmony_app/pages/demarrage/bloc/demarrage_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -9,12 +8,8 @@ import '../../helpers/hydrated_storage.dart';
 
 class _MockAppDatabase extends Mock implements AppDatabase {}
 
-class _MockBienvenueBloc extends MockBloc<BienvenueEvent, BienvenueState>
-    implements BienvenueBloc {}
-
 void main() {
   late _MockAppDatabase database;
-  late _MockBienvenueBloc bienvenue;
 
   setUpAll(() {
     registerFallbackValue(DateTime(2026));
@@ -23,17 +18,13 @@ void main() {
   setUp(() {
     initMockHydratedStorage();
     database = _MockAppDatabase();
-    bienvenue = _MockBienvenueBloc();
     // Warm-up Drift par défaut : succès immédiat.
     when(() => database.conseilDuJour(any())).thenAnswer(
       (_) async => const Conseil(id: 1, cleConseil: 'tipDay01'),
     );
-    // Bienvenue non vue par défaut.
-    when(() => bienvenue.state).thenReturn(const BienvenueState());
   });
 
-  DemarrageBloc build() =>
-      DemarrageBloc(database: database, bienvenueBloc: bienvenue);
+  DemarrageBloc build() => DemarrageBloc(database: database);
 
   const court = Duration(milliseconds: 10);
 
@@ -42,29 +33,13 @@ void main() {
   });
 
   blocTest<DemarrageBloc, DemarrageState>(
-    'SB-2/SB-5 : DemarrageDemarre -> EnCours puis PretPourBienvenue (flag false)',
+    'SB-2/SB-5 : DemarrageDemarre -> EnCours puis DemarragePret (route Accueil)',
     build: build,
     act: (b) => b.add(const DemarrageDemarre(dureeMinimale: court)),
     wait: const Duration(milliseconds: 60),
     expect: () => const [
       DemarrageEnCours(),
-      DemarragePretPourBienvenue(),
-    ],
-  );
-
-  blocTest<DemarrageBloc, DemarrageState>(
-    'SB-6 : flag true -> PretPourAccueil',
-    build: () {
-      when(() => bienvenue.state).thenReturn(
-        const BienvenueState(estBienvenueVue: true),
-      );
-      return build();
-    },
-    act: (b) => b.add(const DemarrageDemarre(dureeMinimale: court)),
-    wait: const Duration(milliseconds: 60),
-    expect: () => const [
-      DemarrageEnCours(),
-      DemarragePretPourAccueil(),
+      DemarragePret(),
     ],
   );
 
@@ -86,7 +61,7 @@ void main() {
   );
 
   blocTest<DemarrageBloc, DemarrageState>(
-    'SB-7/SB-8 : warm-up échoue + flag false -> DemarrageErreur(versBienvenue:true)',
+    'SB-7/SB-8 : warm-up échoue -> DemarrageErreur (route Accueil quand même)',
     build: () {
       when(() => database.conseilDuJour(any())).thenThrow(
         StateError('Drift KO'),
@@ -97,26 +72,7 @@ void main() {
     wait: const Duration(milliseconds: 60),
     expect: () => const [
       DemarrageEnCours(),
-      DemarrageErreur(versBienvenue: true),
-    ],
-  );
-
-  blocTest<DemarrageBloc, DemarrageState>(
-    'SB-9 : warm-up échoue + flag true -> DemarrageErreur(versBienvenue:false)',
-    build: () {
-      when(() => bienvenue.state).thenReturn(
-        const BienvenueState(estBienvenueVue: true),
-      );
-      when(() => database.conseilDuJour(any())).thenThrow(
-        StateError('Drift KO'),
-      );
-      return build();
-    },
-    act: (b) => b.add(const DemarrageDemarre(dureeMinimale: court)),
-    wait: const Duration(milliseconds: 60),
-    expect: () => const [
-      DemarrageEnCours(),
-      DemarrageErreur(versBienvenue: false),
+      DemarrageErreur(),
     ],
   );
 

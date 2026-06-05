@@ -4,7 +4,6 @@ import 'dart:developer' as developer;
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
-import 'package:digiharmony_app/pages/bienvenue/bloc/bienvenue_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
@@ -14,35 +13,28 @@ part 'demarrage_state.dart';
 /// Bloc du démarrage (splash).
 ///
 /// Machine à états : `DemarrageInitial` → `DemarrageEnCours` →
-/// `DemarragePretPourBienvenue` | `DemarragePretPourAccueil`
-/// | `DemarrageErreur`.
+/// `DemarragePret` | `DemarrageErreur`.
 ///
 /// Cœur : `max(init, dureeMinimale)` via `Future.wait([warmUp, delayed(d)])`
-/// (DEC-S-ARCHI-2). Le flag « bienvenue déjà vue » est lu sur le
-/// `BienvenueBloc` (DEC-S-010). En cas d'échec du warm-up Drift, l'app
-/// **route quand même** selon le flag (§7).
+/// (DEC-S-ARCHI-2). L'onboarding est abandonné : le Demarrage route toujours
+/// vers l'Accueil (DEC-PROD-2026). En cas d'échec du warm-up Drift, l'app
+/// route quand même vers l'Accueil (§7).
 class DemarrageBloc extends Bloc<DemarrageEvent, DemarrageState> {
-  /// Crée le bloc avec la base [database] (warm-up Drift) et le
-  /// [bienvenueBloc] (flag de routage).
+  /// Crée le bloc avec la base [database] (warm-up Drift).
   DemarrageBloc({
     required AppDatabase database,
-    required BienvenueBloc bienvenueBloc,
   }) : _database = database,
-       _bienvenueBloc = bienvenueBloc,
        super(const DemarrageInitial()) {
     on<DemarrageDemarre>(_onDemarre, transformer: droppable());
   }
 
   final AppDatabase _database;
-  final BienvenueBloc _bienvenueBloc;
 
   Future<void> _onDemarre(
     DemarrageDemarre event,
     Emitter<DemarrageState> emit,
   ) async {
     emit(const DemarrageEnCours());
-
-    final versBienvenue = !_bienvenueBloc.state.estBienvenueVue;
 
     try {
       // max(init, dureeMinimale) : on attend que LES DEUX soient finis.
@@ -54,21 +46,17 @@ class DemarrageBloc extends Bloc<DemarrageEvent, DemarrageState> {
       // Tolérance d'erreur (§7, DEC-S) : l'app doit démarrer malgré tout.
       // On respecte la durée minimale avant de router pour éviter un flash.
       developer.log(
-        'DemarrageBloc: échec warm-up Drift — routage de secours',
+        'DemarrageBloc: échec warm-up Drift — routage de secours vers Accueil',
         error: e,
         stackTrace: stack,
         name: 'demarrage',
       );
       await Future<void>.delayed(event.dureeMinimale);
-      emit(DemarrageErreur(versBienvenue: versBienvenue));
+      emit(const DemarrageErreur());
       return;
     }
 
-    emit(
-      versBienvenue
-          ? const DemarragePretPourBienvenue()
-          : const DemarragePretPourAccueil(),
-    );
+    emit(const DemarragePret());
   }
 
   /// Force l'ouverture paresseuse de Drift et mesure sa complétion.

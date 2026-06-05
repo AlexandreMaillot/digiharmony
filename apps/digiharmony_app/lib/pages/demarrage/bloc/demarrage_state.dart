@@ -1,7 +1,7 @@
 part of 'demarrage_bloc.dart';
 
 /// Statut de la machine à états du démarrage (splash).
-enum DemarrageStatus { initial, enCours, pretBienvenue, pretAccueil, erreur }
+enum DemarrageStatus { initial, enCours, pret, erreur }
 
 /// Extension de getters utilitaires sur [DemarrageStatus].
 extension DemarrageStatusX on DemarrageStatus {
@@ -9,9 +9,7 @@ extension DemarrageStatusX on DemarrageStatus {
   bool get estEnCours => this == DemarrageStatus.enCours;
 
   /// `true` quand l'initialisation est terminée sans erreur.
-  bool get estPret =>
-      this == DemarrageStatus.pretBienvenue ||
-      this == DemarrageStatus.pretAccueil;
+  bool get estPret => this == DemarrageStatus.pret;
 
   /// `true` en cas d'erreur d'initialisation.
   bool get estEnErreur => this == DemarrageStatus.erreur;
@@ -39,30 +37,22 @@ final class DemarrageEnCours extends DemarrageState {
   List<Object?> get props => [];
 }
 
-/// Init terminée + délai écoulé, bienvenue **non vue** → route Bienvenue.
-final class DemarragePretPourBienvenue extends DemarrageState {
-  const DemarragePretPourBienvenue();
+/// Init terminée + délai écoulé → route toujours vers l'Accueil.
+///
+/// L'onboarding (Bienvenue) est abandonné : le Demarrage route directement
+/// vers l'Accueil quelle que soit l'historique d'utilisation (DEC-PROD-2026).
+final class DemarragePret extends DemarrageState {
+  const DemarragePret();
 
   @override
   List<Object?> get props => [];
 }
 
-/// Init terminée + délai écoulé, bienvenue **déjà vue** → route Accueil.
-final class DemarragePretPourAccueil extends DemarrageState {
-  const DemarragePretPourAccueil();
-
-  @override
-  List<Object?> get props => [];
-}
-
-/// Échec d'init (ex. ouverture Drift). L'app route **quand même** (§7) :
-/// [versBienvenue] indique la cible déduite du flag bienvenue.
+/// Échec d'init (ex. ouverture Drift). L'app route **quand même** (§7)
+/// vers l'Accueil — jamais vers Bienvenue (onboarding abandonné).
 final class DemarrageErreur extends DemarrageState {
-  const DemarrageErreur({required this.versBienvenue});
-
-  /// `true` → router vers Bienvenue, `false` → vers Accueil.
-  final bool versBienvenue;
+  const DemarrageErreur();
 
   @override
-  List<Object?> get props => [versBienvenue];
+  List<Object?> get props => [];
 }

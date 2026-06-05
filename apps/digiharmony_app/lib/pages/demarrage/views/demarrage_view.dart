@@ -83,16 +83,11 @@ class _DemarrageViewState extends State<DemarrageView> {
       case DemarrageInitial():
       case DemarrageEnCours():
         break;
-      case DemarragePretPourBienvenue():
-        unawaited(AppRouter.versBienvenue(context));
-      case DemarragePretPourAccueil():
+      case DemarragePret():
+      case DemarrageErreur():
+        // L'onboarding est abandonné : on route toujours vers l'Accueil
+        // (DEC-PROD-2026). BienvenueBloc reste dormant.
         unawaited(AppRouter.versAccueil(context));
-      case DemarrageErreur(:final versBienvenue):
-        unawaited(
-          versBienvenue
-              ? AppRouter.versBienvenue(context)
-              : AppRouter.versAccueil(context),
-        );
     }
   }
 }
