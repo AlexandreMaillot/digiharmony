@@ -7,7 +7,9 @@
 |---|---|---|---|---|---|---|
 | [foundations-bootstrap.md](./foundations-bootstrap.md) | Socle technique (thème, Drift, HydratedBloc, LocaleCubit, routing, assets, splash natif) | [#3](https://github.com/AlexandreMaillot/digiharmony/issues/3) (US-FND-01) | Phase 1 | — | `foundations-bootstrap.tests.md` ✅ | **implemente** |
 | [splash-screen.md](./splash-screen.md) | Splash Screen (route `/`) | [#1](https://github.com/AlexandreMaillot/digiharmony/issues/1) | Phase 1 | Fondations | `splash-screen.tests.md` ✅ | **valide** |
-| [accueil-home.md](./accueil-home.md) | Accueil / Home (route `/home`) | [#2](https://github.com/AlexandreMaillot/digiharmony/issues/2) | Phase 1 | Fondations | `accueil-home.tests.md` ✅ | **valide** |
+| [accueil-home.md](./accueil-home.md) | Accueil (route `/accueil`) | [#2](https://github.com/AlexandreMaillot/digiharmony/issues/2) | Phase 1 | Fondations | `accueil-home.tests.md` ✅ | **implemente** |
+| [noter-humeur.md](./noter-humeur.md) | Noter mon humeur (saisie 1-tap, `SaisieHumeurPage` empilée) | Noter mon humeur (Erwin) | Phase 1 | Fondations (#3), Accueil (#2) | `noter-humeur.tests.md` ⏳ | **valide** |
+| [soutien.md](./soutien.md) | Écran de soutien (« Super conseil », `SoutienPage` empilée, déclenchée à l'ouverture) | Écran de soutien (Erwin) | Phase 1 | Noter mon humeur (#6), Fondations (#3) | `soutien.tests.md` ⏳ | **valide** |
 
 ## Composants partagés (fournis par Fondations)
 

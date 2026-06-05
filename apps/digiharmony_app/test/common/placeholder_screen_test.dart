@@ -1,4 +1,3 @@
-import 'package:digiharmony_app/accueil/accueil_page.dart';
 import 'package:digiharmony_app/bienvenue/bienvenue_page.dart';
 import 'package:digiharmony_app/common/placeholder_screen.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
@@ -31,12 +30,8 @@ void main() {
       expect(find.byType(Scaffold), findsOneWidget);
     });
 
-    testWidgets('PH-3 : AccueilPage rend un Scaffold sans crash',
-        (tester) async {
-      await tester.pumpWidget(_wrap(const AccueilPage()));
-      await tester.pump();
-      expect(find.byType(Scaffold), findsOneWidget);
-    });
+    // PH-3 supprimé : AccueilPage n'est plus un placeholder (lit AppDatabase,
+    // porte des boucles d'animation). Couvert par test/accueil/.
 
     testWidgets('PH-4 : fond conforme au thème (scaffoldBackgroundColor)',
         (tester) async {

@@ -5,24 +5,39 @@ import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/locale/locale_cubit.dart';
 import 'package:digiharmony_app/theme/theme.dart';
-import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../../helpers/hydrated_storage.dart';
 
+class _MockAppDatabase extends Mock implements AppDatabase {}
+
 void main() {
   group('App', () {
-    late AppDatabase database;
+    late _MockAppDatabase database;
+
+    setUpAll(() {
+      registerFallbackValue(DateTime(2026));
+    });
 
     setUp(() {
       initMockHydratedStorage();
-      database = AppDatabase.forTesting(NativeDatabase.memory());
+      database = _MockAppDatabase();
+      when(() => database.conseilDuJour(any())).thenAnswer(
+        (_) async => const Conseil(id: 1, cleConseil: 'tipDay01'),
+      );
+      when(() => database.observerDerniereHumeurDuJour())
+          .thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
+      TestWidgetsFlutterBinding.instance.platformDispatcher
+              .accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(disableAnimations: true);
     });
 
-    tearDown(() async {
-      await database.close();
+    tearDown(() {
+      TestWidgetsFlutterBinding
+          .instance.platformDispatcher.clearAccessibilityFeaturesTestValue();
     });
 
     testWidgets('APP-1/APP-2 : thème foncé câblé (AppTheme.dark, dark mode)',
@@ -56,9 +71,17 @@ void main() {
         (tester) async {
       final cubit = LocaleCubit()..setLocale(const Locale('fr'));
       await tester.pumpWidget(
-        BlocProvider<LocaleCubit>.value(
-          value: cubit,
-          child: const AppView(),
+        MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider<AppDatabase>.value(value: database),
+          ],
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider<LocaleCubit>.value(value: cubit),
+              BlocProvider<BienvenueCubit>(create: (_) => BienvenueCubit()),
+            ],
+            child: const AppView(),
+          ),
         ),
       );
       await tester.pump();

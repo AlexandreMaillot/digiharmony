@@ -1,6 +1,24 @@
+import 'dart:async';
+
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+/// Déclenche un retour haptique léger (sans permission `VIBRATE`) puis ouvre
+/// un [PlaceholderScreen] portant le [titre] donné (push standard).
+///
+/// Centralise le geste « tap → haptique + placeholder » des destinations V1.
+void ouvrirPlaceholder(BuildContext context, String titre) {
+  unawaited(HapticFeedback.lightImpact());
+  unawaited(
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => PlaceholderScreen(titre: titre),
+      ),
+    ),
+  );
+}
 
 /// Écran neutre générique « Bientôt disponible ».
 ///
@@ -32,10 +50,9 @@ class PlaceholderScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.sm),
               Text(
                 l10n.placeholderComingSoon,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
-                    ?.copyWith(color: AppColors.textMuted),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: AppColors.textMuted),
                 textAlign: TextAlign.center,
               ),
             ],
