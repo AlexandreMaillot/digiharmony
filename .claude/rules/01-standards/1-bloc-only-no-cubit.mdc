@@ -1,0 +1,34 @@
+---
+description: APPLIQUER Bloc uniquement (pas Cubit) LORS de toute gestion d'état côté Flutter
+globs: apps/*/lib/**/*.dart, apps/*/test/**/*.dart, aidd_docs/tasks/**/*.md
+alwaysApply: true
+---
+
+Principe:
+- Toute gestion d'état côté Flutter passe par `Bloc<Event, State>` (package `bloc` / `flutter_bloc`)
+- `Cubit` est **interdit** sur ce projet — la dichotomie events/states est obligatoire
+
+Pourquoi:
+- Traçabilité des transitions (logs d'events, bloc_observer, replay)
+- Compatibilité transformers `bloc_concurrency` (sequential, droppable, restartable)
+- Tests `bloc_test` plus expressifs avec events nommés
+- Décision équipe actée sur la fondation admin (voir ADR DEC-002 implicite + mémoire projet)
+
+Conventions:
+- Events : `sealed class <Nom>Evenement extends Equatable` + sous-classes `final class`
+- States : `final class <Nom>Etat extends Equatable` avec `copyWith` (pattern sentinelle pour nullable)
+- Noms FR : `ConnexionPageBloc`, `ConnexionPageEvenement`, `ConnexionPageEtat`
+- Handlers avec `transformer:` explicite (`sequential()`, `droppable()`, `restartable()` selon le cas)
+- Cancel des `StreamSubscription` dans `close()`
+
+Interdictions:
+- `extends Cubit<State>`
+- `emit(...)` direct dans la view sans passer par un `add(Event)`
+- Logique métier dans un `Cubit` même s'il paraît "plus simple"
+
+Exceptions tolérées:
+- Aucune — si tu crois qu'un Cubit est justifié, c'est qu'un Bloc avec 1 seul event l'est aussi. Utilise le Bloc.
+
+Plans (fichiers `aidd_docs/tasks/**/*.md`):
+- Un plan ne doit jamais mentionner "Cubit" comme brique proposée
+- Les références à l'état doivent parler de "Bloc + event + state"

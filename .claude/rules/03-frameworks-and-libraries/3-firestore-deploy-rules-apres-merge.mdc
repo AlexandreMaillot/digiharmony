@@ -1,0 +1,71 @@
+---
+description: Toute PR qui modifie firestore.rules DOIT être suivie d'un déploiement des rules — sinon PERMISSION_DENIED systématique en prod. Gérer aussi le conflit 409 sur firestore.indexes.json.
+globs:
+  - "firestore.rules"
+  - "firestore.indexes.json"
+alwaysApply: false
+---
+
+# Firestore — déployer les rules après merge d'une PR qui les modifie
+
+## Pourquoi
+
+Une PR qui ajoute/étend une règle dans `firestore.rules` (ou un index
+dans `firestore.indexes.json`) **ne change rien côté serveur** tant
+qu'on n'a pas exécuté `firebase deploy`. Le code applicatif mergé sur
+`master` s'appuie alors sur une règle qui n'existe pas encore en prod
+→ `PERMISSION_DENIED` systématique pour les nouveaux chemins, ou
+`MISSING_INDEX` pour les nouvelles queries composites.
+
+Vécu 2× cette session :
+- PR5 lier client/utilisateur (rule famille phone-lookup `clients`)
+- PR Actions requises (rule lecture owner `contre_propositions/`)
+
+À chaque fois : la PR mergée, l'utilisateur teste, `PERMISSION_DENIED`,
+puis on déploie et c'est résolu.
+
+## Règle
+
+Dès qu'une PR touche `firestore.rules` ou `firestore.indexes.json` :
+
+1. **Après merge**, déployer immédiatement :
+   ```bash
+   firebase deploy --only firestore:rules,firestore:indexes --project creappi-athena-dev
+   ```
+2. Noter dans la description de la PR : « ⚠️ Déploiement rules/indexes
+   requis après merge » (rappel pour le reviewer / le PO).
+3. Le déploiement de rules sur `creappi-athena-dev` = action sur prod
+   (un seul env, cf. mémoire `project_athena_envs`) → demander
+   confirmation utilisateur avant de lancer.
+
+## Conflit 409 sur les indexes
+
+Quand une query composite échoue côté client, Firebase met **un lien de
+création d'index dans le message d'erreur**. Si l'utilisateur clique ce
+lien, l'index est créé côté serveur — mais il n'est PAS dans
+`firestore.indexes.json` (ou il y est sous une forme légèrement
+différente). Le `firebase deploy --only firestore:indexes` échoue alors
+avec `HTTP Error: 409, index already exists`, **et l'échec global empêche
+le déploiement des rules dans la même commande**.
+
+Solution :
+- Déployer **rules et indexes séparément** : d'abord
+  `firebase deploy --only firestore:rules` (le crucial), puis
+  `firebase deploy --only firestore:indexes` (qui peut échouer en 409 —
+  c'est OK, l'index est déjà là).
+- Ne PAS utiliser `--force` sur les indexes (ça supprimerait les index
+  non listés dans le fichier — destructif).
+
+## Bypass acceptables
+
+- PR qui ne touche QUE le code applicatif (pas `firestore.rules` ni
+  `firestore.indexes.json`) → pas de déploiement requis
+- Tests `fake_cloud_firestore` (ignorent rules + indexes)
+
+## Référence
+
+- `feedback_isolation_worktree_contamination.md` (pour le contexte
+  agents) — non lié mais souvent dans la même session
+- DEC-087 (token refresh) — autre cause de `PERMISSION_DENIED`, à ne pas
+  confondre : ici c'est « rule pas déployée », là c'était « token JWT
+  pas rafraîchi »

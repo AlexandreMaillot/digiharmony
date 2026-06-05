@@ -26,3 +26,4 @@ pubspec_overrides.yaml
 # === OS ===
 .DS_Store
 Thumbs.db
+.aidd/cache/
