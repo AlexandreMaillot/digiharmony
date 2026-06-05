@@ -1,6 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:digiharmony_app/accueil/accueil_page.dart';
 import 'package:digiharmony_app/bienvenue/bienvenue_page.dart';
+import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/demarrage/bloc/demarrage_bloc.dart';
 import 'package:digiharmony_app/demarrage/view/demarrage_view.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
@@ -12,32 +13,59 @@ import 'package:mocktail/mocktail.dart';
 class _MockDemarrageBloc extends MockBloc<DemarrageEvent, DemarrageState>
     implements DemarrageBloc {}
 
+class _MockAppDatabase extends Mock implements AppDatabase {}
+
 // La vue reçoit directement le bloc mocké : pas besoin de fournir
-// AppDatabase / BienvenueCubit (warm-up + flag vivent dans le bloc).
+// BienvenueCubit (warm-up + flag vivent dans le bloc).
+// AppDatabase est fourni pour couvrir la navigation vers AccueilPage.
 // Reduced motion par défaut pour éviter les boucles d'animation infinies.
 Widget _harnessNav({
   required Stream<DemarrageState> states,
   DemarrageState initialState = const DemarrageEnCours(),
+  AppDatabase? database,
 }) {
   final bloc = _MockDemarrageBloc();
   whenListen<DemarrageState>(bloc, states, initialState: initialState);
 
-  return BlocProvider<DemarrageBloc>.value(
-    value: bloc,
-    child: const MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: MediaQuery(
-        data: MediaQueryData(disableAnimations: true),
-        child: DemarrageView(),
-      ),
+  // disableAnimations sur le builder de l'app pour que toutes les pages
+  // enfants (AccueilPage, BienvenuePage...) héritent aussi du flag.
+  Widget app = MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    builder: (context, child) => MediaQuery(
+      data: MediaQuery.of(context).copyWith(disableAnimations: true),
+      child: child!,
+    ),
+    home: BlocProvider<DemarrageBloc>.value(
+      value: bloc,
+      child: const DemarrageView(),
     ),
   );
+
+  if (database != null) {
+    app = RepositoryProvider<AppDatabase>.value(
+      value: database,
+      child: app,
+    );
+  }
+
+  return app;
 }
 
 void main() {
+  late _MockAppDatabase database;
+
   setUpAll(() {
     registerFallbackValue(const DemarrageEnCours());
+    registerFallbackValue(DateTime(2026));
+  });
+
+  setUp(() {
+    database = _MockAppDatabase();
+    when(() => database.conseilDuJour(any()))
+        .thenAnswer((_) async => const Conseil(id: 1, cleConseil: 'tipDay01'));
+    when(() => database.observerDerniereHumeurDuJour())
+        .thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
   });
 
   group('DemarrageView — navigation (NAV-1->NAV-5) —', () {
@@ -61,11 +89,20 @@ void main() {
         await tester.pumpWidget(
           _harnessNav(
             states: Stream.value(const DemarragePretPourAccueil()),
+            database: database,
           ),
         );
-        await tester.pumpAndSettle();
+        // AccueilPage porte des animations flutter_animate en boucle :
+        // pumpAndSettle() timeout. On pompe assez de frames pour que la
+        // navigation soit traitée. On vide aussi le timer asynchrone de
+        // AccueilBloc (conseilDuJour) avant démontage.
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
         expect(find.byType(AccueilPage), findsOneWidget);
         expect(find.byType(DemarrageView), findsNothing);
+        // Vide les timers pendants (AccueilBloc async init).
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(seconds: 1));
       },
     );
 
@@ -91,12 +128,19 @@ void main() {
         await tester.pumpWidget(
           _harnessNav(
             states: Stream.value(const DemarragePretPourAccueil()),
+            database: database,
           ),
         );
-        await tester.pumpAndSettle();
+        // AccueilPage porte des animations flutter_animate en boucle :
+        // pumpAndSettle() timeout. Pompage fini suffisant pour la navigation.
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
         expect(find.byType(AccueilPage), findsOneWidget);
         // pushReplacement : la pile ne contient plus DemarrageView.
         expect(find.byType(DemarrageView), findsNothing);
+        // Vide les timers pendants (AccueilBloc async init).
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(seconds: 1));
       },
     );
 
