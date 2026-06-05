@@ -18,7 +18,9 @@ scope: all
 - Journal d'humeur JAMAIS dans `HydratedBloc` — toujours dérivé de `Drift`.
 - Persistance locale = `Drift` uniquement (aucune autre solution).
 - Après modif modèle Drift : `dart run build_runner build --delete-conflicting-outputs`.
-- Toute chaîne UI passe par l'ARB (gen-l10n) — 8 langues ; el/ro/tr/mk = relecture locuteur natif.
+- Toute chaîne UI passe par l'ARB (gen-l10n) — 8 langues ; el/ro/tr/mk = relecture locuteur natif. (Marque `DIGIHARMONY` = clé constante non traduite.)
+- Polices = **assets bundlés** (ex. DM Sans `assets/fonts/`), JAMAIS `google_fonts` (fetch réseau → viole zéro-collecte).
+- État via **`Bloc`** uniquement (Cubit interdit, règle `1-bloc-only-no-cubit`) ; suffixes `Event`/`State` autorisés (dérogation). Pages sous `lib/pages/<page>/{bloc,views,widgets}` avec `page()`/`route()`.
 - Zéro collecte : aucun SDK réseau/analytics/tracking/Crashlytics ; pas de notif/push (bandeau in-app).
 - Permissions : seule `PACKAGE_USAGE_STATS` (Android) autorisée ; vibration via `HapticFeedback` (pas de `VIBRATE`).
 - Android release : `isMinifyEnabled = false` et `isShrinkResources = false` (protège libs natives Drift).
