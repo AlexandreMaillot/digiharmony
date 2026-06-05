@@ -1,0 +1,14 @@
+name: core_package
+description: Core DigiHarmony (modeles humeur, conseils, regles metier)
+version: 0.1.0+1
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.11.0
+
+dev_dependencies:
+  mocktail: ^1.0.5
+  # Contrainte relachee : le workspace partage test_api avec flutter_test (epingle par le SDK).
+  test: any
+  very_good_analysis: ^10.2.0

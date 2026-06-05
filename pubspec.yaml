@@ -1,0 +1,16 @@
+name: digiharmony
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+# Pub workspace (Dart 3.6+) — requis par Melos 7.x
+workspace:
+  - apps/digiharmony_app
+  - packages/core_package
+
+dev_dependencies:
+  melos: ^7.0.0
+
+melos:
+  name: digiharmony
