@@ -7,6 +7,7 @@ class LegalUrls {
 
   static const String privacyPolicy =
       'https://digiharmony.org/legal/privacy_policy.html';
-  static const String github = 'https://github.com/AlexandreMaillot/digiharmony';
+  static const String github =
+      'https://github.com/AlexandreMaillot/digiharmony';
   static const String website = 'https://digiharmony.org';
 }

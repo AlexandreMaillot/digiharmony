@@ -23,8 +23,9 @@ void main() {
       expect(find.text('Coming soon'), findsOneWidget);
     });
 
-    testWidgets('PH-2 : BienvenuePage rend un Scaffold sans crash',
-        (tester) async {
+    testWidgets('PH-2 : BienvenuePage rend un Scaffold sans crash', (
+      tester,
+    ) async {
       await tester.pumpWidget(_wrap(const BienvenuePage()));
       await tester.pump();
       expect(find.byType(Scaffold), findsOneWidget);
@@ -33,16 +34,16 @@ void main() {
     // PH-3 supprimé : AccueilPage n'est plus un placeholder (lit AppDatabase,
     // porte des boucles d'animation). Couvert par test/accueil/.
 
-    testWidgets('PH-4 : fond conforme au thème (scaffoldBackgroundColor)',
-        (tester) async {
+    testWidgets('PH-4 : fond conforme au thème (scaffoldBackgroundColor)', (
+      tester,
+    ) async {
       await tester.pumpWidget(_wrap(const PlaceholderScreen(titre: 'Y')));
       await tester.pump();
       final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
       // Couleur de fond héritée du thème, pas surchargée en dur.
       expect(scaffold.backgroundColor, isNull);
       expect(
-        Theme.of(tester.element(find.byType(Scaffold)))
-            .scaffoldBackgroundColor,
+        Theme.of(tester.element(find.byType(Scaffold))).scaffoldBackgroundColor,
         AppColors.background,
       );
     });

@@ -28,9 +28,9 @@ void main() {
     });
 
     test('TIP-3 : index = joursDepuisEpoch % n', () async {
-      final all = await (db.select(db.conseils)
-            ..orderBy([(t) => OrderingTerm.asc(t.id)]))
-          .get();
+      final all = await (db.select(
+        db.conseils,
+      )..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final day = DateTime(2026, 6, 5);
       final jour = DateTime(day.year, day.month, day.day);
       final jours = jour.difference(DateTime(1970)).inDays;
@@ -73,7 +73,9 @@ void main() {
 
   group('observerDerniereHumeurDuJour', () {
     Future<void> insert(String code, int valence, DateTime at) {
-      return db.into(db.entreesHumeur).insert(
+      return db
+          .into(db.entreesHumeur)
+          .insert(
             EntreesHumeurCompanion.insert(
               codeEmotion: code,
               valence: valence,

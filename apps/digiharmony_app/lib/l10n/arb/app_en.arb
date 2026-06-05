@@ -125,5 +125,9 @@
     "tipDay07": "Be kind to yourself. You are doing your best.",
     "@tipDay07": {
         "description": "Daily tip day 07"
+    },
+    "splashTagline": "Digital well-being · Erasmus+",
+    "@splashTagline": {
+        "description": "Tagline shown on the splash screen, below the brand signature bar"
     }
 }

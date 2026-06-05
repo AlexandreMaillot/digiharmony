@@ -1,6 +1,6 @@
-import 'package:digiharmony_app/accueil/accueil_page.dart';
 import 'package:digiharmony_app/bienvenue/bienvenue_cubit.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
+import 'package:digiharmony_app/demarrage/view/demarrage_page.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/locale/locale_cubit.dart';
 import 'package:digiharmony_app/theme/theme.dart';
@@ -48,7 +48,7 @@ class AppView extends StatelessWidget {
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const AccueilPage(),
+      home: const DemarragePage(),
     );
   }
 }
