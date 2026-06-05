@@ -1,7 +1,165 @@
 {
     "@@locale": "en",
-    "counterAppBarTitle": "Counter",
-    "@counterAppBarTitle": {
-        "description": "Text shown in the AppBar of the Counter Page"
+    "placeholderComingSoon": "Coming soon",
+    "@placeholderComingSoon": {
+        "description": "Neutral message shown on placeholder screens for features not yet available"
+    },
+    "placeholderBienvenue": "Welcome",
+    "@placeholderBienvenue": {
+        "description": "Title of the welcome (bienvenue) placeholder screen"
+    },
+    "placeholderAccueil": "Home",
+    "@placeholderAccueil": {
+        "description": "Title of the home (accueil) placeholder screen"
+    },
+    "homeBrandName": "DigiHarmony",
+    "@homeBrandName": {
+        "description": "Brand wordmark — never translated, always DigiHarmony"
+    },
+    "homeGreeting": "Hello 👋",
+    "@homeGreeting": {
+        "description": "Fixed greeting on the home screen (no time-of-day variation)"
+    },
+    "homeGreetingSubtitle": "How are you feeling today?",
+    "@homeGreetingSubtitle": {
+        "description": "Subtitle under the greeting"
+    },
+    "heroMoodQuestion": "How are you feeling today?",
+    "@heroMoodQuestion": {
+        "description": "HeroCard State A — main question when no mood logged today"
+    },
+    "heroMoodInvite": "Take a moment for yourself.",
+    "@heroMoodInvite": {
+        "description": "HeroCard State A — secondary invite"
+    },
+    "heroLogMoodCta": "Log my mood",
+    "@heroLogMoodCta": {
+        "description": "HeroCard State A — primary CTA button"
+    },
+    "heroSeeJournal": "See my journal",
+    "@heroSeeJournal": {
+        "description": "Link to the mood journal (shown in both State A and B)"
+    },
+    "heroMoodTodayPrefix": "Today you are feeling",
+    "@heroMoodTodayPrefix": {
+        "description": "HeroCard State B — prefix before the mood label"
+    },
+    "heroMoodLoggedAt": "Mood logged at {heure}",
+    "@heroMoodLoggedAt": {
+        "description": "HeroCard State B — time the mood was logged",
+        "placeholders": {
+            "heure": {
+                "type": "String",
+                "description": "Formatted time string (locale-aware)"
+            }
+        }
+    },
+    "homeToolBubble": "Choose your bubble",
+    "@homeToolBubble": {
+        "description": "Tile label for the bubble tool"
+    },
+    "homeToolDailyTip": "Tip of the day",
+    "@homeToolDailyTip": {
+        "description": "Tile label for the daily tip tool"
+    },
+    "homePauseCta": "Take a break",
+    "@homePauseCta": {
+        "description": "Breathing pause pill label"
+    },
+    "homeScreenTime": "My screen time",
+    "@homeScreenTime": {
+        "description": "Screen time link label"
+    },
+    "moodHappy": "Happy",
+    "@moodHappy": {
+        "description": "Mood label for happy"
+    },
+    "moodCalm": "Calm",
+    "@moodCalm": {
+        "description": "Mood label for calm"
+    },
+    "moodDynamic": "Dynamic",
+    "@moodDynamic": {
+        "description": "Mood label for dynamic"
+    },
+    "moodSad": "Sad",
+    "@moodSad": {
+        "description": "Mood label for sad"
+    },
+    "moodAngry": "Angry",
+    "@moodAngry": {
+        "description": "Mood label for angry"
+    },
+    "moodNervous": "Nervous",
+    "@moodNervous": {
+        "description": "Mood label for nervous"
+    },
+    "moodTired": "Tired",
+    "@moodTired": {
+        "description": "Mood label for tired"
+    },
+    "tipDay01": "Take a few deep breaths to reset your mind.",
+    "@tipDay01": {
+        "description": "Daily tip day 01"
+    },
+    "tipDay02": "Drink a glass of water and stretch for two minutes.",
+    "@tipDay02": {
+        "description": "Daily tip day 02"
+    },
+    "tipDay03": "Write down one thing you are grateful for today.",
+    "@tipDay03": {
+        "description": "Daily tip day 03"
+    },
+    "tipDay04": "Step outside for five minutes of fresh air.",
+    "@tipDay04": {
+        "description": "Daily tip day 04"
+    },
+    "tipDay05": "Put your phone down and enjoy a moment of silence.",
+    "@tipDay05": {
+        "description": "Daily tip day 05"
+    },
+    "tipDay06": "Smile at someone — it can brighten both your days.",
+    "@tipDay06": {
+        "description": "Daily tip day 06"
+    },
+    "tipDay07": "Be kind to yourself. You are doing your best.",
+    "@tipDay07": {
+        "description": "Daily tip day 07"
+    },
+    "splashTagline": "Digital well-being · Erasmus+",
+    "@splashTagline": {
+        "description": "Tagline shown on the splash screen, below the brand signature bar"
+    },
+    "placeholderJournal": "My journal",
+    "@placeholderJournal": {
+        "description": "Title of the mood journal placeholder screen"
+    },
+    "placeholderBulle": "Choose your bubble",
+    "@placeholderBulle": {
+        "description": "Title of the bubble tool placeholder screen"
+    },
+    "placeholderConseil": "Tip of the day",
+    "@placeholderConseil": {
+        "description": "Title of the daily tip placeholder screen"
+    },
+    "placeholderPause": "Take a break",
+    "@placeholderPause": {
+        "description": "Title of the breathing pause placeholder screen"
+    },
+    "placeholderTempsEcran": "My screen time",
+    "@placeholderTempsEcran": {
+        "description": "Title of the screen time placeholder screen"
+    },
+    "placeholderNoterHumeur": "Log my mood",
+    "@placeholderNoterHumeur": {
+        "description": "Title of the log mood placeholder screen"
+    },
+    "placeholderReglages": "Settings",
+    "@placeholderReglages": {
+        "description": "Title of the settings placeholder screen"
+    },
+    "reglagesTooltip": "Settings",
+    "@reglagesTooltip": {
+        "description": "Tooltip for the settings icon button in the home screen header"
     }
 }

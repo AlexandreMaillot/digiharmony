@@ -1,0 +1,72 @@
+---
+description: "`ScaffoldMessenger.maybeOf(context)` invoqué depuis un `Dialog` (poussé par `showDialog`) remonte au Scaffold parent DERRIÈRE le Dialog → `SnackBar` masqués. Fix : envelopper le contenu du Dialog dans `ScaffoldMessenger(Scaffold(backgroundColor: transparent, body: ...))` pour avoir un scope local."
+globs:
+  - "apps/athena_app/lib/pages/**/views/*.dart"
+  - "apps/athena_admin/lib/pages/**/views/*.dart"
+alwaysApply: false
+---
+
+# Flutter — `ScaffoldMessenger` local obligatoire dans un `Dialog`
+
+## Symptôme
+
+Tu pousses un Dialog via `showDialog<T>(context, builder: ...)`. Dans le contenu de la Dialog, un `BlocListener` (ou similaire) dispatch :
+```dart
+ScaffoldMessenger.maybeOf(context).showSnackBar(SnackBar(...));
+```
+Côté UX : **le SnackBar est invisible**. Aucune erreur Flutter, juste masqué derrière la modal Dialog.
+
+Cause : `ScaffoldMessenger.maybeOf(context)` remonte l'arbre de widgets et trouve le `ScaffoldMessenger` du `Scaffold` parent — qui est **DERRIÈRE le Dialog**, donc occulté par la barrier modale + le contenu du Dialog.
+
+Vécu 2026-05-18 — `ModalSigninOtp` mobile : les SnackBar d'erreur réseau / rate limit Firebase Auth (`17010`) étaient totalement invisibles pour l'utilisateur final pendant des semaines. PR #874.
+
+## Règle
+
+Tout `Dialog` (ou modal route équivalent) qui doit afficher un `SnackBar` depuis son contenu DOIT envelopper son `child:` dans un `ScaffoldMessenger` + `Scaffold` locaux :
+
+```dart
+Dialog(
+  backgroundColor: colorScheme.surface,
+  child: ConstrainedBox(
+    constraints: const BoxConstraints(maxWidth: 343),
+    // Scope local pour que ScaffoldMessenger.maybeOf(context) trouve un
+    // messager AU-DESSUS de la barrier modale (pas derrière).
+    child: ScaffoldMessenger(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: <ton contenu réel ici>,
+      ),
+    ),
+  ),
+)
+```
+
+Le `Scaffold` interne est obligatoire (le `ScaffoldMessenger` cherche un `Scaffold` descendant pour ancrer ses SnackBar). `backgroundColor: Colors.transparent` préserve l'apparence du Dialog parent.
+
+## Anti-patterns
+
+- ❌ `ScaffoldMessenger.of(navigatorContext.context)` ou `findRootAncestor` pour récupérer le messager parent : techniquement fonctionne mais le SnackBar apparaît **derrière** la modal (masqué par la barrier).
+- ❌ Afficher les erreurs uniquement en inline (sans SnackBar) — perd l'UX cohérente avec le reste de l'app.
+- ❌ Pop la modal AVANT d'afficher le SnackBar : marche pour les erreurs terminales mais pas pour les erreurs transitoires (rate limit, réseau) où la modal doit rester ouverte.
+
+## Cas spécial : pop modal + SnackBar persistant après
+
+Si l'erreur doit pop la modal puis afficher un SnackBar persistant sur l'écran parent (ex. erreur RGPD collision), récupérer le `ScaffoldMessenger` parent AVANT le pop :
+
+```dart
+final messager = ScaffoldMessenger.maybeOf(
+  Navigator.of(context, rootNavigator: true).context,
+);
+Navigator.of(context).pop();
+messager?.showSnackBar(SnackBar(content: Text('Erreur persistante...'),
+  duration: const Duration(seconds: 8),
+));
+```
+
+Pattern existant dans `apps/athena_app/lib/pages/auth_modal_signin/views/modal_signin_otp.dart` `_onEtatChange` pour `ErreurAuthCollisionClient`.
+
+## Référence
+
+- PR #874 — fix `ModalSigninOtp` ScaffoldMessenger local.
+- Vécu 2026-05-18 (rate limit Firebase Auth `17010` silencieux sur app mobile prod).
+- Flutter docs : `ScaffoldMessenger.maybeOf` recherche l'ancêtre, pas le descendant.

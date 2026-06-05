@@ -1,0 +1,77 @@
+---
+description: Tout shell racine multi-pages admin (mode web) doit basculer sur `Scaffold(drawer:)` + bouton hamburger en mode mobile (< 768 px) via `LayoutBuilder` + `breakpointDepuisLargeur`. Sinon, sidebar fixe 240 px écrase le body sur écran mobile (~60 % de la largeur mangée, cards KPI overflow).
+globs: apps/athena_admin/lib/pages/**/views/**.dart
+alwaysApply: false
+---
+
+# Shell admin responsive — Drawer mobile, sidebar permanente tablet/desktop
+
+## Quand
+Toute vue racine qui assemble une `MenuLateral` (ou équivalent sidebar fixe) + un body dynamique piloté par un bloc de navigation. Cas typique : `AccueilAdminView`, futurs shells de modules admin déportés.
+
+## Règle
+
+Wrapper le `Scaffold` dans un `LayoutBuilder` qui résout le breakpoint via `core/responsive/breakpoints_athena.dart` :
+
+```dart
+LayoutBuilder(
+  builder: (context, constraints) {
+    final breakpoint = breakpointDepuisLargeur(constraints.maxWidth);
+
+    if (breakpoint.estMobile) {
+      return Scaffold(
+        drawer: const SizedBox(
+          width: kLargeurMenuLateral,
+          child: Drawer(child: MenuLateral()),
+        ),
+        body: SafeArea(
+          child: Column(
+            children: <Widget>[
+              // Bouton hamburger (titre absent — sous-pages ont leur AppBar).
+              Builder(
+                builder: (innerContext) => SizedBox(
+                  height: 48,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      tooltip: localisation.shellOuvrirMenuTooltip,
+                      icon: const Icon(Icons.menu),
+                      onPressed: () => Scaffold.of(innerContext).openDrawer(),
+                    ),
+                  ),
+                ),
+              ),
+              const Expanded(child: _FlowBuilderShell()),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Tablet + desktop : sidebar permanente.
+    return const Scaffold(
+      body: SafeArea(
+        child: Row(
+          children: <Widget>[
+            SizedBox(width: kLargeurMenuLateral, child: MenuLateral()),
+            VerticalDivider(width: 1),
+            Expanded(child: _FlowBuilderShell()),
+          ],
+        ),
+      ),
+    );
+  },
+)
+```
+
+## Notes
+
+- Le `Builder` est OBLIGATOIRE pour que `Scaffold.of(innerContext).openDrawer()` trouve le `Scaffold` parent (sinon `Scaffold.of` remonte plus haut et plante).
+- Pas de titre dans la barre top mobile : les sous-pages ont leur propre AppBar avec leur titre. Le hamburger global est SEPARÉ — accepter la double bande sur mobile.
+- `MenuLateral` peut rester inchangé : il sait se rendre en Container plein de hauteur, compatible Drawer.
+- Breakpoint `< 768 px` couvre tous les téléphones modernes. Tablet (≥ 768 px) garde la sidebar permanente.
+
+## Référence
+- DEC-112 (admin shell responsive drawer mobile)
+- Commit `02e6ca9a` (fix prod 2026-05-19)
+- `apps/athena_admin/lib/core/responsive/breakpoints_athena.dart` (`BreakpointEcran.estMobile`)

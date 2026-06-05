@@ -1,15 +1,114 @@
-// Ignore for testing purposes
-// ignore_for_file: prefer_const_constructors
-
 import 'package:digiharmony_app/app/app.dart';
-import 'package:digiharmony_app/counter/counter.dart';
+import 'package:digiharmony_app/data/local/app_database.dart';
+import 'package:digiharmony_app/l10n/l10n.dart';
+import 'package:digiharmony_app/locale/locale_bloc.dart';
+import 'package:digiharmony_app/pages/bienvenue/bloc/bienvenue_bloc.dart';
+import 'package:digiharmony_app/pages/demarrage/views/demarrage_view.dart';
+import 'package:digiharmony_app/theme/theme.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+import '../../helpers/hydrated_storage.dart';
+
+class _MockAppDatabase extends Mock implements AppDatabase {}
 
 void main() {
   group('App', () {
-    testWidgets('renders CounterPage', (tester) async {
-      await tester.pumpWidget(App());
-      expect(find.byType(CounterPage), findsOneWidget);
+    late _MockAppDatabase database;
+
+    setUpAll(() {
+      registerFallbackValue(DateTime(2026));
+    });
+
+    setUp(() {
+      initMockHydratedStorage();
+      database = _MockAppDatabase();
+      when(() => database.conseilDuJour(any())).thenAnswer(
+        (_) async => const Conseil(id: 1, cleConseil: 'tipDay01'),
+      );
+      when(() => database.observerDerniereHumeurDuJour())
+          .thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
+      TestWidgetsFlutterBinding.instance.platformDispatcher
+              .accessibilityFeaturesTestValue =
+          const FakeAccessibilityFeatures(disableAnimations: true);
+    });
+
+    tearDown(() {
+      TestWidgetsFlutterBinding
+          .instance.platformDispatcher.clearAccessibilityFeaturesTestValue();
+    });
+
+    testWidgets('APP-1/APP-2 : thème foncé câblé (AppTheme.dark, dark mode)', (
+      tester,
+    ) async {
+      await tester.pumpWidget(App(database: database));
+      await tester.pump();
+      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+      expect(app.theme, AppTheme.dark);
+      expect(app.darkTheme, AppTheme.dark);
+      expect(app.themeMode, ThemeMode.dark);
+      await tester.pump(const Duration(seconds: 3));
+    });
+
+    testWidgets('APP-3 : RepositoryProvider<AppDatabase> accessible', (
+      tester,
+    ) async {
+      await tester.pumpWidget(App(database: database));
+      await tester.pump();
+      final ctx = tester.element(find.byType(DemarrageView));
+      expect(ctx.read<AppDatabase>(), same(database));
+      // Vide le timer du délai minimal pour ne pas laisser de Timer pendant.
+      await tester.pump(const Duration(seconds: 3));
+    });
+
+    testWidgets('APP-4 : LocaleBloc et BienvenueBloc fournis', (
+      tester,
+    ) async {
+      await tester.pumpWidget(App(database: database));
+      await tester.pump();
+      final ctx = tester.element(find.byType(DemarrageView));
+      expect(ctx.read<LocaleBloc>(), isA<LocaleBloc>());
+      expect(ctx.read<BienvenueBloc>(), isA<BienvenueBloc>());
+      await tester.pump(const Duration(seconds: 3));
+    });
+
+    testWidgets(
+      'APP-5 : LocaleBloc(LocaleChange(fr)) -> MaterialApp.locale == fr',
+      (tester) async {
+      final bloc = LocaleBloc()..add(const LocaleChange(Locale('fr')));
+      await tester.pumpWidget(
+        MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider<AppDatabase>.value(value: database),
+          ],
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider<LocaleBloc>.value(value: bloc),
+              BlocProvider<BienvenueBloc>(create: (_) => BienvenueBloc()),
+            ],
+            child: const AppView(),
+          ),
+        ),
+      );
+      await tester.pump();
+      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+      expect(app.locale, const Locale('fr'));
+      // Vide le timer du délai minimal (DemarragePage est le home).
+      await tester.pump(const Duration(seconds: 3));
+    });
+
+    testWidgets('APP-6 : délégués i18n + 8 langues supportées', (tester) async {
+      await tester.pumpWidget(App(database: database));
+      await tester.pump();
+      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+      expect(
+        app.localizationsDelegates,
+        contains(AppLocalizations.delegate),
+      );
+      expect(app.supportedLocales.length, 8);
+      await tester.pump(const Duration(seconds: 3));
     });
   });
 }

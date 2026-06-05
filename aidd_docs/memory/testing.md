@@ -17,8 +17,8 @@ scope: all
 ## Testing Strategy
 
 État actuel (en place) :
-- Exemple very_good : `test/widget_test.dart`, `test/app/view/app_test.dart`, `test/counter/...` — 7 tests passent.
-- Helper `PumpApp` (`test/helpers/pump_app.dart`) injecte les `localizationsDelegates`.
+- Phase 1 testée (Fondations + Demarrage + Accueil) : ~111 tests verts (unitaires, `bloc_test`, widgets, Drift en mémoire). Tests en miroir de `lib/pages/<page>/`.
+- Helpers dans `test/helpers/` (init storage HydratedBloc pour les tests).
 
 Convention cible (à construire) :
 - Unitaires : logique métier `core_package`, cubits/blocs.
@@ -36,4 +36,10 @@ Convention cible (à construire) :
 ## Mocking and Stubbing
 
 - `mocktail` : `class MockX extends Mock implements X {}`, `when(...)` / `verify(...)`.
-- Cubits/blocs : `blocTest` avec `build`/`act`/`expect`.
+- Blocs : `blocTest` avec `build`/`act`/`expect` (transformer explicite testé si concurrency).
+
+## Pièges connus
+
+- **`flutter_animate` en boucle infinie (`.repeat`) ⇒ `pumpAndSettle()` ne se stabilise jamais** (timeout). Les écrans Demarrage/Accueil (halo, particules) en contiennent. Dans les tests widgets touchant ces écrans : wrapper le `MaterialApp` avec `MediaQuery(disableAnimations: true)` **ou** piloter le temps avec des `pump(Duration)` finis ciblés — JAMAIS `pumpAndSettle()`.
+- **`gen-l10n` avant `flutter test`** si des clés ARB ont changé (sinon `AppLocalizations` désynchronisé).
+- **Drift créée plusieurs fois** : injecter une `AppDatabase` mockée/en mémoire par test pour éviter le warning « created multiple times » + des timers pendants.

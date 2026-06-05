@@ -15,9 +15,13 @@ mal adaptés à Drift. `flutter_bloc`/`bloc`/`equatable` sont déjà fournis par
 
 ## Decision
 
-Utiliser **HydratedBloc** pour l'état léger persistant (ex. `LocaleCubit` au-dessus de
+Utiliser **HydratedBloc** pour l'état léger persistant (ex. `LocaleBloc` au-dessus de
 `MaterialApp` pour la bascule de langue immédiate sans redémarrage). Le **journal d'humeur
 n'est JAMAIS stocké dans HydratedBloc** — il reste dans Drift (DEC-001).
+
+> **Bloc-only** : on utilise `HydratedBloc<Event, State>` (jamais `HydratedCubit`/`Cubit`) —
+> voir règle `1-bloc-only-no-cubit`. Les suffixes anglais `Event`/`State` sont autorisés
+> (dérogation actée 2026-06-05) ; le reste du nommage métier reste en français.
 
 ## Alternatives Considered
 
