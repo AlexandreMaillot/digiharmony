@@ -1,4 +1,6 @@
 {
     "@@locale": "el",
-    "counterAppBarTitle": "Μετρητής"
+    "placeholderComingSoon": "Coming soon",
+    "placeholderBienvenue": "Welcome",
+    "placeholderAccueil": "Home"
 }

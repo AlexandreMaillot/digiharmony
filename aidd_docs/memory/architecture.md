@@ -63,6 +63,9 @@ flowchart LR
 - **Variables**: camelCase
 - **Constants**: lowerCamelCase (Dart `const`)
 - **Types/Interfaces**: PascalCase
+- **Couche de données (Drift) en FRANÇAIS** : noms de tables, colonnes, DAO, entités et méthodes de requête en français. SQL/colonnes en `snake_case` (ex. `entrees_humeur`, `code_emotion`, `cree_le`) ; classes Dart en PascalCase français (ex. table `EntreesHumeur`, ligne `EntreeHumeur`, `Conseil`). Méthodes de requête en français (ex. `observerDerniereHumeurDuJour()`, `conseilDuJour()`). S'applique à tout « collection / table / etc. ».
+- **Features / pages en FRANÇAIS** : racine domaine en français + **suffixes Flutter standard conservés** (`AccueilPage`, `AccueilView`, `AccueilBloc`, `AccueilState`/`Event`). Fichiers snake_case français (`accueil_page.dart`), dossiers français (`lib/accueil/`). Traductions de domaine : **Splash → Demarrage**, **Onboarding → Bienvenue**, **Home → Accueil**.
+- **Scaffolding technique conservé en anglais** : `AppTheme`, `AppColors`, `MoodColors`, `AppSpacing`, `AppRadii`, `AppDatabase`, `AppRouter`, `LocaleCubit`, `bootstrap`, `main_*`. Les codes d'émotion (clés `happy/calm/dynamic/sad/angry/nervous/tired`, DEC-003) restent stables (valeurs de code, pas des identifiants d'UI).
 
 ## Services communication
 

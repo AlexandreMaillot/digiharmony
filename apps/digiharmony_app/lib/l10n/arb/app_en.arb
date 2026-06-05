@@ -1,7 +1,15 @@
 {
     "@@locale": "en",
-    "counterAppBarTitle": "Counter",
-    "@counterAppBarTitle": {
-        "description": "Text shown in the AppBar of the Counter Page"
+    "placeholderComingSoon": "Coming soon",
+    "@placeholderComingSoon": {
+        "description": "Neutral message shown on placeholder screens for features not yet available"
+    },
+    "placeholderBienvenue": "Welcome",
+    "@placeholderBienvenue": {
+        "description": "Title of the welcome (bienvenue) placeholder screen"
+    },
+    "placeholderAccueil": "Home",
+    "@placeholderAccueil": {
+        "description": "Title of the home (accueil) placeholder screen"
     }
 }

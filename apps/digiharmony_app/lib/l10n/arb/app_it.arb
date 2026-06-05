@@ -1,4 +1,6 @@
 {
     "@@locale": "it",
-    "counterAppBarTitle": "Contatore"
+    "placeholderComingSoon": "Coming soon",
+    "placeholderBienvenue": "Welcome",
+    "placeholderAccueil": "Home"
 }

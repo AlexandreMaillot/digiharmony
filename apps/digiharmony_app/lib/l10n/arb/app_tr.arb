@@ -1,4 +1,6 @@
 {
     "@@locale": "tr",
-    "counterAppBarTitle": "Sayaç"
+    "placeholderComingSoon": "Coming soon",
+    "placeholderBienvenue": "Welcome",
+    "placeholderAccueil": "Home"
 }

@@ -1,4 +1,6 @@
 {
     "@@locale": "mk",
-    "counterAppBarTitle": "Бројач"
+    "placeholderComingSoon": "Coming soon",
+    "placeholderBienvenue": "Welcome",
+    "placeholderAccueil": "Home"
 }
