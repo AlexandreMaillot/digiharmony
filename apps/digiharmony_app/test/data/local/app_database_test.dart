@@ -73,6 +73,7 @@ void main() {
 
   group('observerDerniereHumeurDuJour', () {
     Future<void> insert(String code, int valence, DateTime at) {
+      final jour = DateTime(at.year, at.month, at.day);
       return db
           .into(db.entreesHumeur)
           .insert(
@@ -80,6 +81,7 @@ void main() {
               codeEmotion: code,
               valence: valence,
               creeLe: at,
+              jour: jour,
             ),
           );
     }
@@ -102,15 +104,17 @@ void main() {
       expect(await db.observerDerniereHumeurDuJour().first, isNull);
     });
 
-    test('MOOD-4 : deux entrées aujourd hui -> la plus récente', () async {
-      final now = DateTime.now();
-      final tot = DateTime(now.year, now.month, now.day, 9);
-      final tard = DateTime(now.year, now.month, now.day, 18);
-      await insert('calm', 1, tot);
-      await insert('angry', -1, tard);
-      final row = await db.observerDerniereHumeurDuJour().first;
-      expect(row!.codeEmotion, 'angry');
-    });
+    test(
+      'MOOD-4 : UPSERT deux fois aujourd hui -> dernière émotion conservée',
+      () async {
+        // Schéma v2 : unicité par jour → 2 UPSERT successifs = 1 ligne.
+        // La deuxième saisie écrase la première.
+        await db.enregistrerHumeurDuJour('calm');
+        await db.enregistrerHumeurDuJour('angry');
+        final row = await db.observerDerniereHumeurDuJour().first;
+        expect(row!.codeEmotion, 'angry');
+      },
+    );
 
     test('MOOD-5 : réactif (null puis entrée)', () async {
       final stream = db.observerDerniereHumeurDuJour();

@@ -38,5 +38,12 @@
     "placeholderTempsEcran": "My screen time",
     "placeholderNoterHumeur": "Log my mood",
     "placeholderReglages": "Settings",
-    "reglagesTooltip": "Settings"
+    "reglagesTooltip": "Settings",
+    "saisieHumeurTitre": "How are you feeling today?",
+    "saisieHumeurSousTitre": "A single tap — that's all it takes.",
+    "saisieHumeurSelectionne": "You selected: {emotion}",
+    "saisieHumeurEnregistrementEnCours": "Saving…",
+    "saisieHumeurEnregistree": "Mood saved",
+    "saisieHumeurAnnuler": "Undo",
+    "saisieHumeurDonneesLocales": "Your data stays on your device"
 }

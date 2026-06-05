@@ -1,8 +1,11 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:digiharmony_app/common/placeholder_screen.dart';
+import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_view.dart';
+import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_view.dart';
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,16 +17,20 @@ class MockAccueilBloc extends MockBloc<AccueilEvent, AccueilState>
 
 /// Pompe l'AccueilView avec animations désactivées.
 extension PumpNav on WidgetTester {
-  Future<void> pumpNavTest(AccueilBloc bloc) {
+  Future<void> pumpNavTest(AccueilBloc bloc, {AppDatabase? db}) {
+    final database = db ?? AppDatabase.forTesting(NativeDatabase.memory());
     return pumpWidget(
       MediaQuery(
         data: const MediaQueryData(disableAnimations: true),
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: BlocProvider<AccueilBloc>.value(
-            value: bloc,
-            child: const AccueilView(),
+          home: RepositoryProvider<AppDatabase>.value(
+            value: database,
+            child: BlocProvider<AccueilBloc>.value(
+              value: bloc,
+              child: const AccueilView(),
+            ),
           ),
         ),
       ),
@@ -86,18 +93,18 @@ void main() {
       },
     );
 
-    // HN-2 : CTA « Log my mood » (État A) → PlaceholderScreen.
+    // HN-2 : CTA « Log my mood » (État A) → SaisieHumeurView.
     testWidgets(
-      'HN-2 : Log my mood → PlaceholderScreen',
+      'HN-2 : Log my mood → SaisieHumeurView',
       (tester) async {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
         await tester.pumpNavTest(bloc);
         await tester.tap(find.text('Log my mood'));
-        await tester.pumpAndSettle();
-        expect(find.byType(PlaceholderScreen), findsOneWidget);
-        expectHaptique();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(SaisieHumeurView), findsOneWidget);
       },
     );
 

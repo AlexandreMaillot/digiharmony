@@ -38,5 +38,12 @@
     "placeholderTempsEcran": "Mon temps d'écran",
     "placeholderNoterHumeur": "Noter mon humeur",
     "placeholderReglages": "Réglages",
-    "reglagesTooltip": "Réglages"
+    "reglagesTooltip": "Réglages",
+    "saisieHumeurTitre": "Comment tu te sens aujourd'hui ?",
+    "saisieHumeurSousTitre": "Un seul tap — c'est tout ce qu'il faut.",
+    "saisieHumeurSelectionne": "Tu as sélectionné : {emotion}",
+    "saisieHumeurEnregistrementEnCours": "Enregistrement en cours…",
+    "saisieHumeurEnregistree": "Humeur enregistrée",
+    "saisieHumeurAnnuler": "Annuler",
+    "saisieHumeurDonneesLocales": "Tes données restent sur ton appareil"
 }

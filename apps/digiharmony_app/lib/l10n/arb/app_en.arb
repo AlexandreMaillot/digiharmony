@@ -161,5 +161,39 @@
     "reglagesTooltip": "Settings",
     "@reglagesTooltip": {
         "description": "Tooltip for the settings icon button in the home screen header"
+    },
+    "saisieHumeurTitre": "How are you feeling today?",
+    "@saisieHumeurTitre": {
+        "description": "SaisieHumeur screen — main title"
+    },
+    "saisieHumeurSousTitre": "A single tap — that's all it takes.",
+    "@saisieHumeurSousTitre": {
+        "description": "SaisieHumeur screen — subtitle below the title"
+    },
+    "saisieHumeurSelectionne": "You selected: {emotion}",
+    "@saisieHumeurSelectionne": {
+        "description": "SaisieHumeur — feedback card showing selected emotion",
+        "placeholders": {
+            "emotion": {
+                "type": "String",
+                "description": "Localised label of the selected emotion"
+            }
+        }
+    },
+    "saisieHumeurEnregistrementEnCours": "Saving…",
+    "@saisieHumeurEnregistrementEnCours": {
+        "description": "SaisieHumeur — shown while the UPSERT is in flight"
+    },
+    "saisieHumeurEnregistree": "Mood saved",
+    "@saisieHumeurEnregistree": {
+        "description": "SaisieHumeur — snackbar message after successful save"
+    },
+    "saisieHumeurAnnuler": "Undo",
+    "@saisieHumeurAnnuler": {
+        "description": "SaisieHumeur — snackbar action label to cancel the save"
+    },
+    "saisieHumeurDonneesLocales": "Your data stays on your device",
+    "@saisieHumeurDonneesLocales": {
+        "description": "SaisieHumeur — reassurance footer about local storage"
     }
 }

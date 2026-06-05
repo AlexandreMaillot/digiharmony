@@ -53,8 +53,23 @@ class $EntreesHumeurTable extends EntreesHumeur
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _jourMeta = const VerificationMeta('jour');
   @override
-  List<GeneratedColumn> get $columns => [id, codeEmotion, valence, creeLe];
+  late final GeneratedColumn<DateTime> jour = GeneratedColumn<DateTime>(
+    'jour',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    codeEmotion,
+    valence,
+    creeLe,
+    jour,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -97,11 +112,23 @@ class $EntreesHumeurTable extends EntreesHumeur
     } else if (isInserting) {
       context.missing(_creeLeMeta);
     }
+    if (data.containsKey('jour')) {
+      context.handle(
+        _jourMeta,
+        jour.isAcceptableOrUnknown(data['jour']!, _jourMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_jourMeta);
+    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {jour},
+  ];
   @override
   EntreeHumeur map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -122,6 +149,10 @@ class $EntreesHumeurTable extends EntreesHumeur
         DriftSqlType.dateTime,
         data['${effectivePrefix}cree_le'],
       )!,
+      jour: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}jour'],
+      )!,
     );
   }
 
@@ -138,7 +169,7 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
   /// Code stable de l'émotion (aligné `MoodColors.byKey`).
   final String codeEmotion;
 
-  /// Valence : >= 0 positive/neutre, < 0 négative.
+  /// Valence : >= 0 positive/neutre, < 0 négative (DEC-SH-002).
   ///
   /// Sert au futur compteur « 7 émotions négatives consécutives », dérivé de
   /// Drift (DEC-001), jamais dupliqué dans HydratedBloc.
@@ -146,11 +177,18 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
 
   /// Horodatage local de création.
   final DateTime creeLe;
+
+  /// Jour normalisé (minuit local) — clé d'unicité quotidienne (v2).
+  ///
+  /// Stocké comme DateTime à 00:00:00 local. Index UNIQUE généré par Drift
+  /// via [uniqueKeys]. Permet l'UPSERT par jour (DEC-SH-001).
+  final DateTime jour;
   const EntreeHumeur({
     required this.id,
     required this.codeEmotion,
     required this.valence,
     required this.creeLe,
+    required this.jour,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -159,6 +197,7 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
     map['code_emotion'] = Variable<String>(codeEmotion);
     map['valence'] = Variable<int>(valence);
     map['cree_le'] = Variable<DateTime>(creeLe);
+    map['jour'] = Variable<DateTime>(jour);
     return map;
   }
 
@@ -168,6 +207,7 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
       codeEmotion: Value(codeEmotion),
       valence: Value(valence),
       creeLe: Value(creeLe),
+      jour: Value(jour),
     );
   }
 
@@ -181,6 +221,7 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
       codeEmotion: serializer.fromJson<String>(json['codeEmotion']),
       valence: serializer.fromJson<int>(json['valence']),
       creeLe: serializer.fromJson<DateTime>(json['creeLe']),
+      jour: serializer.fromJson<DateTime>(json['jour']),
     );
   }
   @override
@@ -191,6 +232,7 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
       'codeEmotion': serializer.toJson<String>(codeEmotion),
       'valence': serializer.toJson<int>(valence),
       'creeLe': serializer.toJson<DateTime>(creeLe),
+      'jour': serializer.toJson<DateTime>(jour),
     };
   }
 
@@ -199,11 +241,13 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
     String? codeEmotion,
     int? valence,
     DateTime? creeLe,
+    DateTime? jour,
   }) => EntreeHumeur(
     id: id ?? this.id,
     codeEmotion: codeEmotion ?? this.codeEmotion,
     valence: valence ?? this.valence,
     creeLe: creeLe ?? this.creeLe,
+    jour: jour ?? this.jour,
   );
   EntreeHumeur copyWithCompanion(EntreesHumeurCompanion data) {
     return EntreeHumeur(
@@ -213,6 +257,7 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
           : this.codeEmotion,
       valence: data.valence.present ? data.valence.value : this.valence,
       creeLe: data.creeLe.present ? data.creeLe.value : this.creeLe,
+      jour: data.jour.present ? data.jour.value : this.jour,
     );
   }
 
@@ -222,13 +267,14 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
           ..write('id: $id, ')
           ..write('codeEmotion: $codeEmotion, ')
           ..write('valence: $valence, ')
-          ..write('creeLe: $creeLe')
+          ..write('creeLe: $creeLe, ')
+          ..write('jour: $jour')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, codeEmotion, valence, creeLe);
+  int get hashCode => Object.hash(id, codeEmotion, valence, creeLe, jour);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -236,7 +282,8 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
           other.id == this.id &&
           other.codeEmotion == this.codeEmotion &&
           other.valence == this.valence &&
-          other.creeLe == this.creeLe);
+          other.creeLe == this.creeLe &&
+          other.jour == this.jour);
 }
 
 class EntreesHumeurCompanion extends UpdateCompanion<EntreeHumeur> {
@@ -244,31 +291,37 @@ class EntreesHumeurCompanion extends UpdateCompanion<EntreeHumeur> {
   final Value<String> codeEmotion;
   final Value<int> valence;
   final Value<DateTime> creeLe;
+  final Value<DateTime> jour;
   const EntreesHumeurCompanion({
     this.id = const Value.absent(),
     this.codeEmotion = const Value.absent(),
     this.valence = const Value.absent(),
     this.creeLe = const Value.absent(),
+    this.jour = const Value.absent(),
   });
   EntreesHumeurCompanion.insert({
     this.id = const Value.absent(),
     required String codeEmotion,
     required int valence,
     required DateTime creeLe,
+    required DateTime jour,
   }) : codeEmotion = Value(codeEmotion),
        valence = Value(valence),
-       creeLe = Value(creeLe);
+       creeLe = Value(creeLe),
+       jour = Value(jour);
   static Insertable<EntreeHumeur> custom({
     Expression<int>? id,
     Expression<String>? codeEmotion,
     Expression<int>? valence,
     Expression<DateTime>? creeLe,
+    Expression<DateTime>? jour,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (codeEmotion != null) 'code_emotion': codeEmotion,
       if (valence != null) 'valence': valence,
       if (creeLe != null) 'cree_le': creeLe,
+      if (jour != null) 'jour': jour,
     });
   }
 
@@ -277,12 +330,14 @@ class EntreesHumeurCompanion extends UpdateCompanion<EntreeHumeur> {
     Value<String>? codeEmotion,
     Value<int>? valence,
     Value<DateTime>? creeLe,
+    Value<DateTime>? jour,
   }) {
     return EntreesHumeurCompanion(
       id: id ?? this.id,
       codeEmotion: codeEmotion ?? this.codeEmotion,
       valence: valence ?? this.valence,
       creeLe: creeLe ?? this.creeLe,
+      jour: jour ?? this.jour,
     );
   }
 
@@ -301,6 +356,9 @@ class EntreesHumeurCompanion extends UpdateCompanion<EntreeHumeur> {
     if (creeLe.present) {
       map['cree_le'] = Variable<DateTime>(creeLe.value);
     }
+    if (jour.present) {
+      map['jour'] = Variable<DateTime>(jour.value);
+    }
     return map;
   }
 
@@ -310,7 +368,8 @@ class EntreesHumeurCompanion extends UpdateCompanion<EntreeHumeur> {
           ..write('id: $id, ')
           ..write('codeEmotion: $codeEmotion, ')
           ..write('valence: $valence, ')
-          ..write('creeLe: $creeLe')
+          ..write('creeLe: $creeLe, ')
+          ..write('jour: $jour')
           ..write(')'))
         .toString();
   }
@@ -532,6 +591,7 @@ typedef $$EntreesHumeurTableCreateCompanionBuilder =
       required String codeEmotion,
       required int valence,
       required DateTime creeLe,
+      required DateTime jour,
     });
 typedef $$EntreesHumeurTableUpdateCompanionBuilder =
     EntreesHumeurCompanion Function({
@@ -539,6 +599,7 @@ typedef $$EntreesHumeurTableUpdateCompanionBuilder =
       Value<String> codeEmotion,
       Value<int> valence,
       Value<DateTime> creeLe,
+      Value<DateTime> jour,
     });
 
 class $$EntreesHumeurTableFilterComposer
@@ -567,6 +628,11 @@ class $$EntreesHumeurTableFilterComposer
 
   ColumnFilters<DateTime> get creeLe => $composableBuilder(
     column: $table.creeLe,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get jour => $composableBuilder(
+    column: $table.jour,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -599,6 +665,11 @@ class $$EntreesHumeurTableOrderingComposer
     column: $table.creeLe,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get jour => $composableBuilder(
+    column: $table.jour,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$EntreesHumeurTableAnnotationComposer
@@ -623,6 +694,9 @@ class $$EntreesHumeurTableAnnotationComposer
 
   GeneratedColumn<DateTime> get creeLe =>
       $composableBuilder(column: $table.creeLe, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get jour =>
+      $composableBuilder(column: $table.jour, builder: (column) => column);
 }
 
 class $$EntreesHumeurTableTableManager
@@ -660,11 +734,13 @@ class $$EntreesHumeurTableTableManager
                 Value<String> codeEmotion = const Value.absent(),
                 Value<int> valence = const Value.absent(),
                 Value<DateTime> creeLe = const Value.absent(),
+                Value<DateTime> jour = const Value.absent(),
               }) => EntreesHumeurCompanion(
                 id: id,
                 codeEmotion: codeEmotion,
                 valence: valence,
                 creeLe: creeLe,
+                jour: jour,
               ),
           createCompanionCallback:
               ({
@@ -672,11 +748,13 @@ class $$EntreesHumeurTableTableManager
                 required String codeEmotion,
                 required int valence,
                 required DateTime creeLe,
+                required DateTime jour,
               }) => EntreesHumeurCompanion.insert(
                 id: id,
                 codeEmotion: codeEmotion,
                 valence: valence,
                 creeLe: creeLe,
+                jour: jour,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

@@ -7,10 +7,10 @@ import 'package:path_provider/path_provider.dart';
 
 part 'app_database.g.dart';
 
-/// Journal d'humeur — table en **lecture seule** pour l'Accueil (état A/B).
+/// Journal d'humeur — table LECTURE et ÉCRITURE (US #6 « Noter mon humeur »).
 ///
-/// L'écriture appartient à l'écran « Noter mon humeur » (hors périmètre).
-/// Schéma minimal provisoire (DEC-FND-06), figé avec l'US « Noter mon humeur ».
+/// Schéma v2 : colonne `jour` normalisée (minuit local) + index unique pour
+/// garantir une entrée max par jour (UPSERT, DEC-SH-001).
 @DataClassName('EntreeHumeur')
 class EntreesHumeur extends Table {
   @override
@@ -22,7 +22,7 @@ class EntreesHumeur extends Table {
   /// Code stable de l'émotion (aligné `MoodColors.byKey`).
   TextColumn get codeEmotion => text().named('code_emotion')();
 
-  /// Valence : >= 0 positive/neutre, < 0 négative.
+  /// Valence : >= 0 positive/neutre, < 0 négative (DEC-SH-002).
   ///
   /// Sert au futur compteur « 7 émotions négatives consécutives », dérivé de
   /// Drift (DEC-001), jamais dupliqué dans HydratedBloc.
@@ -30,6 +30,17 @@ class EntreesHumeur extends Table {
 
   /// Horodatage local de création.
   DateTimeColumn get creeLe => dateTime().named('cree_le')();
+
+  /// Jour normalisé (minuit local) — clé d'unicité quotidienne (v2).
+  ///
+  /// Stocké comme DateTime à 00:00:00 local. Index UNIQUE généré par Drift
+  /// via [uniqueKeys]. Permet l'UPSERT par jour (DEC-SH-001).
+  DateTimeColumn get jour => dateTime().named('jour')();
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+        {jour},
+      ];
 }
 
 /// Conseils bienveillants — dataset local seedé, rotation quotidienne.
@@ -55,22 +66,54 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   /// Référence Unix epoch pour la rotation déterministe des conseils.
   static final DateTime _epoch = DateTime(1970);
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (m) async {
-      await m.createAll();
-      await _seedConseils();
-    },
-    beforeOpen: (details) async {
-      // Idempotence : seed si la table est vide (ré-ouverture).
-      await _seedConseils();
-    },
-  );
+        onCreate: (m) async {
+          await m.createAll();
+          await _seedConseils();
+        },
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            // Ajoute la colonne `jour` (nullable transitoire pour le backfill).
+            await m.addColumn(entreesHumeur, entreesHumeur.jour);
+            // Backfill : dérive `jour` depuis `cree_le`.
+            // Drift sérialise DateTime en epoch unix (microsecondes UTC).
+            // On recalcule le minuit local en secondes * 1000 (format Drift).
+            // Formule : jour_ms = (cree_le / 86400000000) * 86400000000
+            // => troncature au jour UTC (acceptable pour backfill — données
+            // existantes sont en test uniquement, pas en prod).
+            await customStatement(
+              'UPDATE entrees_humeur '
+              'SET jour = (cree_le / 86400000000) * 86400000000',
+            );
+            // Déduplication avant index unique : ne garder que la dernière
+            // entrée par jour (max cree_le), supprimer les doublons éventuels.
+            await customStatement(
+              'DELETE FROM entrees_humeur WHERE id NOT IN ( '
+              ' SELECT id FROM entrees_humeur e1 '
+              ' WHERE cree_le = ( '
+              '  SELECT MAX(cree_le) FROM entrees_humeur e2 '
+              '  WHERE e2.jour = e1.jour '
+              ' ) '
+              ')',
+            );
+            // Index unique sur `jour`.
+            await customStatement(
+              'CREATE UNIQUE INDEX IF NOT EXISTS ux_entrees_humeur_jour '
+              'ON entrees_humeur(jour)',
+            );
+          }
+        },
+        beforeOpen: (details) async {
+          // Idempotence : seed si la table est vide (ré-ouverture).
+          await _seedConseils();
+        },
+      );
 
   /// Seed des conseils (~7), idempotent : ne fait rien si déjà peuplé.
   Future<void> _seedConseils() async {
@@ -91,6 +134,8 @@ class AppDatabase extends _$AppDatabase {
       );
     });
   }
+
+  // ─── Lecture ─────────────────────────────────────────────────────────────
 
   /// Dernière entrée d'humeur du jour courant, réactif.
   ///
@@ -127,6 +172,97 @@ class AppDatabase extends _$AppDatabase {
     final joursDepuisEpoch = jourNormalise.difference(_epoch).inDays;
     final index = joursDepuisEpoch % all.length;
     return all[index];
+  }
+
+  // ─── Écriture ─────────────────────────────────────────────────────────────
+
+  /// UPSERT de l'humeur du jour courant (DEC-SH-001/003).
+  ///
+  /// Écrase l'entrée existante du même jour (re-notation autorisée).
+  /// Retourne l'entrée précédente du jour (ou null) avant écrasement,
+  /// pour permettre l'annulation (restauration, DEC-SH-007).
+  Future<EntreeHumeur?> enregistrerHumeurDuJour(String codeEmotion) async {
+    final now = DateTime.now();
+    final jourNormalise = DateTime(now.year, now.month, now.day);
+
+    // Lire l'entrée existante du jour avant l'UPSERT.
+    final ancienne = await (select(entreesHumeur)
+          ..where((t) => t.jour.equals(jourNormalise))
+          ..limit(1))
+        .getSingleOrNull();
+
+    // UPSERT : conflit sur l'index unique `jour` → update.
+    // `DoUpdate` avec `target: [entreesHumeur.jour]` cible explicitement
+    // la contrainte unique sur `jour` (DEC-SH-001).
+    final companion = EntreesHumeurCompanion.insert(
+      codeEmotion: codeEmotion,
+      valence: valencePour(codeEmotion),
+      creeLe: now,
+      jour: jourNormalise,
+    );
+    await into(entreesHumeur).insert(
+      companion,
+      onConflict: DoUpdate(
+        (_) => companion,
+        target: [entreesHumeur.jour],
+      ),
+    );
+
+    return ancienne;
+  }
+
+  /// Annule la dernière saisie selon le contexte (DEC-SH-007).
+  ///
+  /// - [ancienneEntree] != null → restaure l'ancienne valeur du jour.
+  /// - [ancienneEntree] == null → supprime l'entrée du jour.
+  Future<void> annulerDerniereSaisie({EntreeHumeur? ancienneEntree}) async {
+    final now = DateTime.now();
+    final jourCourant = DateTime(now.year, now.month, now.day);
+
+    if (ancienneEntree != null) {
+      // Restaure l'ancienne entrée (UPSERT ciblant `jour`).
+      final restauree = EntreesHumeurCompanion.insert(
+        codeEmotion: ancienneEntree.codeEmotion,
+        valence: ancienneEntree.valence,
+        creeLe: ancienneEntree.creeLe,
+        jour: ancienneEntree.jour,
+      );
+      await into(entreesHumeur).insert(
+        restauree,
+        onConflict: DoUpdate(
+          (_) => restauree,
+          target: [entreesHumeur.jour],
+        ),
+      );
+    } else {
+      // Supprime l'entrée du jour.
+      await (delete(entreesHumeur)
+            ..where((t) => t.jour.equals(jourCourant)))
+          .go();
+    }
+  }
+}
+
+// ─── Helper de valence ─────────────────────────────────────────────────────
+
+/// Valence déterministe pour un [codeEmotion] (DEC-SH-002).
+///
+/// Négative (< 0) : sad, angry, nervous, tired.
+/// Positive/neutre (>= 0) : happy, calm, dynamic.
+///
+/// Fonction pure, testable isolément.
+int valencePour(String codeEmotion) {
+  switch (codeEmotion) {
+    case 'sad':
+    case 'angry':
+    case 'nervous':
+    case 'tired':
+      return -1;
+    case 'happy':
+    case 'calm':
+    case 'dynamic':
+    default:
+      return 1;
   }
 }
 

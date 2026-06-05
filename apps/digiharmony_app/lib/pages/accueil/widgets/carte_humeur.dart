@@ -1,3 +1,4 @@
+import 'package:digiharmony_app/app/routing/app_router.dart';
 import 'package:digiharmony_app/common/placeholder_screen.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
@@ -75,8 +76,7 @@ class _CarteEtatA extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () =>
-                    ouvrirPlaceholder(context, l10n.placeholderNoterHumeur),
+                onPressed: () => AppRouter.versSaisieHumeur(context),
                 icon: const Icon(Icons.add_circle_outline),
                 label: Text(l10n.heroLogMoodCta),
               ),
