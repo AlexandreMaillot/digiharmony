@@ -23,6 +23,7 @@ class BienvenueCubit extends HydratedCubit<bool> {
       json['completed'] as bool? ?? false;
 
   @override
-  Map<String, dynamic> toJson(bool state) =>
-      <String, dynamic>{'completed': state};
+  Map<String, dynamic> toJson(bool state) => <String, dynamic>{
+    'completed': state,
+  };
 }

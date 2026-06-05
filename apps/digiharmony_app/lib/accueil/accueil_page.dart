@@ -27,10 +27,9 @@ class AccueilPage extends StatelessWidget {
               const SizedBox(height: AppSpacing.sm),
               Text(
                 context.l10n.placeholderComingSoon,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
-                    ?.copyWith(color: AppColors.textMuted),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: AppColors.textMuted),
                 textAlign: TextAlign.center,
               ),
             ],

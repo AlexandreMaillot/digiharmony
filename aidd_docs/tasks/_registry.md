@@ -6,7 +6,7 @@
 | Plan | Page / Rôle | US (GitHub) | Milestone | Dépend de | Tests | Statut |
 |---|---|---|---|---|---|---|
 | [foundations-bootstrap.md](./foundations-bootstrap.md) | Socle technique (thème, Drift, HydratedBloc, LocaleCubit, routing, assets, splash natif) | [#3](https://github.com/AlexandreMaillot/digiharmony/issues/3) (US-FND-01) | Phase 1 | — | `foundations-bootstrap.tests.md` ✅ | **implemente** |
-| [splash-screen.md](./splash-screen.md) | Splash Screen (route `/`) | [#1](https://github.com/AlexandreMaillot/digiharmony/issues/1) | Phase 1 | Fondations | `splash-screen.tests.md` ✅ | **valide** |
+| [splash-screen.md](./splash-screen.md) | Démarrage (Splash, route `/`) | [#1](https://github.com/AlexandreMaillot/digiharmony/issues/1) | Phase 1 | Fondations | `splash-screen.tests.md` ✅ | **implemente** |
 | [accueil-home.md](./accueil-home.md) | Accueil / Home (route `/home`) | [#2](https://github.com/AlexandreMaillot/digiharmony/issues/2) | Phase 1 | Fondations | `accueil-home.tests.md` ✅ | **valide** |
 
 ## Composants partagés (fournis par Fondations)

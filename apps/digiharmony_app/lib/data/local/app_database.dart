@@ -62,15 +62,15 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) async {
-          await m.createAll();
-          await _seedConseils();
-        },
-        beforeOpen: (details) async {
-          // Idempotence : seed si la table est vide (ré-ouverture).
-          await _seedConseils();
-        },
-      );
+    onCreate: (m) async {
+      await m.createAll();
+      await _seedConseils();
+    },
+    beforeOpen: (details) async {
+      // Idempotence : seed si la table est vide (ré-ouverture).
+      await _seedConseils();
+    },
+  );
 
   /// Seed des conseils (~7), idempotent : ne fait rien si déjà peuplé.
   Future<void> _seedConseils() async {
@@ -100,11 +100,12 @@ class AppDatabase extends _$AppDatabase {
     final now = DateTime.now();
     final start = DateTime(now.year, now.month, now.day);
     final end = start.add(const Duration(days: 1));
-    final query = (select(entreesHumeur)
-          ..where((t) => t.creeLe.isBetweenValues(start, end))
-          ..orderBy([(t) => OrderingTerm.desc(t.creeLe)])
-          ..limit(1))
-        .watchSingleOrNull();
+    final query =
+        (select(entreesHumeur)
+              ..where((t) => t.creeLe.isBetweenValues(start, end))
+              ..orderBy([(t) => OrderingTerm.desc(t.creeLe)])
+              ..limit(1))
+            .watchSingleOrNull();
     // `isBetweenValues` est inclusif sur les deux bornes ; on exclut minuit+1j.
     return query.map((row) {
       if (row == null) return null;
@@ -118,9 +119,9 @@ class AppDatabase extends _$AppDatabase {
   /// `index = joursDepuisEpoch % nbConseils`, stable toute la journée,
   /// sans aléatoire ni stockage d'état.
   Future<Conseil> conseilDuJour(DateTime jour) async {
-    final all = await (select(conseils)
-          ..orderBy([(t) => OrderingTerm.asc(t.id)]))
-        .get();
+    final all = await (select(
+      conseils,
+    )..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
     if (all.isEmpty) {
       throw StateError('Aucun conseil seedé dans la base.');
     }

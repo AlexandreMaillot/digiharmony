@@ -87,10 +87,12 @@ abstract final class AppRadii {
   static const double button = 12;
   static const double card = 24;
 
-  static const BorderRadius buttonRadius =
-      BorderRadius.all(Radius.circular(button));
-  static const BorderRadius cardRadius =
-      BorderRadius.all(Radius.circular(card));
+  static const BorderRadius buttonRadius = BorderRadius.all(
+    Radius.circular(button),
+  );
+  static const BorderRadius cardRadius = BorderRadius.all(
+    Radius.circular(card),
+  );
 }
 
 /// Thème applicatif central (foncé uniquement).

@@ -24,24 +24,27 @@ Widget _harness(void Function(BuildContext) onTap) {
 
 void main() {
   group('AppRouter', () {
-    testWidgets('RT-2 : versBienvenue remplace par BienvenuePage',
-        (tester) async {
+    testWidgets('RT-2 : versBienvenue remplace par BienvenuePage', (
+      tester,
+    ) async {
       await tester.pumpWidget(_harness(AppRouter.versBienvenue));
       await tester.tap(find.text('go'));
       await tester.pumpAndSettle();
       expect(find.byType(BienvenuePage), findsOneWidget);
     });
 
-    testWidgets('RT-1/RT-4 : versAccueil remplace par AccueilPage',
-        (tester) async {
+    testWidgets('RT-1/RT-4 : versAccueil remplace par AccueilPage', (
+      tester,
+    ) async {
       await tester.pumpWidget(_harness(AppRouter.versAccueil));
       await tester.tap(find.text('go'));
       await tester.pumpAndSettle();
       expect(find.byType(AccueilPage), findsOneWidget);
     });
 
-    testWidgets('RT-3 : pushReplacement -> écran source non réaffiché',
-        (tester) async {
+    testWidgets('RT-3 : pushReplacement -> écran source non réaffiché', (
+      tester,
+    ) async {
       await tester.pumpWidget(_harness(AppRouter.versAccueil));
       await tester.tap(find.text('go'));
       await tester.pumpAndSettle();

@@ -11,5 +11,9 @@
     "placeholderAccueil": "Home",
     "@placeholderAccueil": {
         "description": "Title of the home (accueil) placeholder screen"
+    },
+    "splashTagline": "Digital well-being · Erasmus+",
+    "@splashTagline": {
+        "description": "Tagline shown on the splash screen, below the brand signature bar"
     }
 }
