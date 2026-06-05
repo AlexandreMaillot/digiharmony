@@ -36,10 +36,10 @@ flowchart LR
 
 - Plateformes : Android (prioritaire) puis iOS.
 - État applicatif : `flutter_bloc` / `bloc`.
-- État léger persistant : `HydratedBloc` (langue via `LocaleCubit`, flags onboarding/tuto) — jamais le journal.
+- État léger persistant : `HydratedBloc` (langue via `LocaleBloc`, flags onboarding/tuto) — jamais le journal.
 - Persistance : `Drift` (SQLite type-safe) pour journal d'humeur, conseils, agrégats ; réactif via `watch()` ; codegen `build_runner` ; `sqlite3_flutter_libs`.
 - 2 fichiers locaux distincts (Drift + HydratedBloc), tous deux sur l'appareil → zéro-collecte.
-- i18n : `gen-l10n` / ARB, 8 langues, bascule immédiate sans redémarrage via `LocaleCubit` au-dessus de `MaterialApp`.
+- i18n : `gen-l10n` / ARB, 8 langues, bascule immédiate sans redémarrage via `LocaleBloc` au-dessus de `MaterialApp`.
 - Vibration : `HapticFeedback` natif (0 dépendance, 0 permission).
 - Audio Detox : `just_audio` + `just_audio_background`.
 - Temps d'écran : `app_usage` (Android best-effort via `ACTION_USAGE_ACCESS_SETTINGS` ; iOS = repli).
@@ -48,7 +48,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    UI[Widgets] --> Bloc[Bloc / Cubit]
+    UI[Widgets] --> Bloc[Bloc]
     Bloc --> Drift[(Drift)]
     Bloc --> Hydrated[(HydratedBloc)]
     UI -.langue.-> Locale[LocaleCubit]
@@ -64,13 +64,13 @@ flowchart LR
 - **Constants**: lowerCamelCase (Dart `const`)
 - **Types/Interfaces**: PascalCase
 - **Couche de données (Drift) en FRANÇAIS** : noms de tables, colonnes, DAO, entités et méthodes de requête en français. SQL/colonnes en `snake_case` (ex. `entrees_humeur`, `code_emotion`, `cree_le`) ; classes Dart en PascalCase français (ex. table `EntreesHumeur`, ligne `EntreeHumeur`, `Conseil`). Méthodes de requête en français (ex. `observerDerniereHumeurDuJour()`, `conseilDuJour()`). S'applique à tout « collection / table / etc. ».
-- **Features / pages en FRANÇAIS** : racine domaine en français + **suffixes Flutter standard conservés** (`AccueilPage`, `AccueilView`, `AccueilBloc`, `AccueilState`/`Event`). Fichiers snake_case français (`accueil_page.dart`), dossiers français (`lib/accueil/`). Traductions de domaine : **Splash → Demarrage**, **Onboarding → Bienvenue**, **Home → Accueil**.
-- **Scaffolding technique conservé en anglais** : `AppTheme`, `AppColors`, `MoodColors`, `AppSpacing`, `AppRadii`, `AppDatabase`, `AppRouter`, `LocaleCubit`, `bootstrap`, `main_*`. Les codes d'émotion (clés `happy/calm/dynamic/sad/angry/nervous/tired`, DEC-003) restent stables (valeurs de code, pas des identifiants d'UI).
+- **Features / pages en FRANÇAIS** : racine domaine en français + **suffixes Flutter standard conservés** (`AccueilPage`, `AccueilView`, `AccueilBloc`, `AccueilState`/`AccueilEvent` — suffixes anglais `Event`/`State` **autorisés**, dérogation actée 2026-06-05). Structure imposée (règle `0-flutter-pages-structure`) : `lib/pages/<page>/bloc/<page>_bloc/` (bloc+event+state) + `views/` (`<page>_page.dart` avec `page()`/`route()`, `<page>_view.dart`). Traductions de domaine : **Splash → Demarrage**, **Onboarding → Bienvenue**, **Home → Accueil**.
+- **Scaffolding technique conservé en anglais** : `AppTheme`, `AppColors`, `MoodColors`, `AppSpacing`, `AppRadii`, `AppDatabase`, `AppRouter`, `LocaleBloc`, `bootstrap`, `main_*`. Les codes d'émotion (clés `happy/calm/dynamic/sad/angry/nervous/tired`, DEC-003) restent stables (valeurs de code, pas des identifiants d'UI).
 
 ## Services communication
 
 - Aucun service externe, aucun réseau : app 100% locale, RGPD par absence de traitement.
-- Flux interne : `Widget` → `Bloc`/`Cubit` → `Drift` (journal/agrégats, réactif `watch()`) ou `HydratedBloc` (langue/flags).
+- Flux interne : `Widget` → `Bloc` → `Drift` (journal/agrégats, réactif `watch()`) ou `HydratedBloc` (langue/flags). **Cubit interdit** (bloc-only, voir règle `1-bloc-only-no-cubit`).
 - Le journal et les agrégats sont toujours dérivés de `Drift`, jamais dupliqués dans `HydratedBloc`.
 
 ```mermaid
