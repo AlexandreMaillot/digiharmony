@@ -1,5 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:digiharmony_app/bienvenue/bloc/bienvenue_bloc.dart';
+import 'package:digiharmony_app/pages/bienvenue/bloc/bienvenue_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
-import 'package:digiharmony_app/accueil/bloc/accueil_bloc.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
+import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

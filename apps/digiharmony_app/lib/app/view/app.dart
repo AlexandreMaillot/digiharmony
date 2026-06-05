@@ -1,7 +1,7 @@
-import 'package:digiharmony_app/bienvenue/bloc/bienvenue_bloc.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/locale/locale_bloc.dart';
+import 'package:digiharmony_app/pages/bienvenue/bloc/bienvenue_bloc.dart';
 import 'package:digiharmony_app/pages/demarrage/views/demarrage_page.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';

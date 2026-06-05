@@ -1,6 +1,6 @@
-import 'package:digiharmony_app/accueil/bloc/accueil_bloc.dart';
-import 'package:digiharmony_app/accueil/widgets/carte_humeur.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
+import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
+import 'package:digiharmony_app/pages/accueil/widgets/carte_humeur.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

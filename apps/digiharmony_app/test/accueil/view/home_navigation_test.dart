@@ -1,8 +1,8 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:digiharmony_app/accueil/bloc/accueil_bloc.dart';
-import 'package:digiharmony_app/accueil/view/accueil_view.dart';
 import 'package:digiharmony_app/common/placeholder_screen.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
+import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
+import 'package:digiharmony_app/pages/accueil/views/accueil_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

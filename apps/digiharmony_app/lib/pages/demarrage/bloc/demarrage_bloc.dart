@@ -3,8 +3,8 @@ import 'dart:developer' as developer;
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:digiharmony_app/bienvenue/bloc/bienvenue_bloc.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
+import 'package:digiharmony_app/pages/bienvenue/bloc/bienvenue_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
