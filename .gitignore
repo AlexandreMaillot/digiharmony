@@ -26,3 +26,7 @@ pubspec_overrides.yaml
 # === OS ===
 .DS_Store
 Thumbs.db
+
+# === Session logs (ne jamais committer) ===
+.specstory/
+.claude/
