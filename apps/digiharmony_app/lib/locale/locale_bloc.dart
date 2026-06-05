@@ -1,3 +1,4 @@
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
@@ -13,8 +14,8 @@ part 'locale_state.dart';
 class LocaleBloc extends HydratedBloc<LocaleEvent, LocaleState> {
   /// Démarre sans préférence (suit la langue système).
   LocaleBloc() : super(const LocaleState()) {
-    on<LocaleChange>(_onLocaleChange);
-    on<LocaleSysteme>(_onLocaleSysteme);
+    on<LocaleChange>(_onLocaleChange, transformer: sequential());
+    on<LocaleSysteme>(_onLocaleSysteme, transformer: sequential());
   }
 
   void _onLocaleChange(LocaleChange event, Emitter<LocaleState> emit) {

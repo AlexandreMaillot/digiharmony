@@ -1,0 +1,93 @@
+---
+description: UTILISER `DimensionsLayout` pour toute largeur max de conteneur dans athena_admin — jamais de `_kLargeurMaxContenu` local
+globs: apps/athena_admin/lib/pages/**/*.dart
+alwaysApply: true
+---
+
+# Règle : largeurs max centralisées via `DimensionsLayout`
+
+## Contexte
+
+Les 3 premières pages admin (dashboard, demandes taxi, chauffeurs liste) définissaient chacune `const double _kLargeurMaxContenu = 1200;` localement. Résultat :
+
+- Vide massif sur viewport ≥ 2K (~ 550px de chaque côté)
+- Tableaux 7+ colonnes compressés inutilement
+- Tout changement global (ex. passer à 1600) nécessitait de modifier N pages
+
+DEC-015 centralise les largeurs max dans `core/theme/dimensions_layout.dart` avec 3 constantes sémantiques.
+
+## ❌ Interdit
+
+```dart
+// ❌ constante locale à la page
+const double _kLargeurMaxContenu = 1200;
+
+class MaPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: _kLargeurMaxContenu), // ❌
+```
+
+```dart
+// ❌ magic number inline
+ConstrainedBox(
+  constraints: const BoxConstraints(maxWidth: 1200), // ❌
+```
+
+## ✅ Obligatoire
+
+```dart
+import 'package:athena_admin/core/theme/dimensions_layout.dart';
+
+class MaPageListe extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: DimensionsLayout.largeurMaxContenuAdmin, // ✅ 1600
+          ),
+          ...
+```
+
+## Choisir la bonne constante
+
+| Constante                        | Valeur | Quand l'utiliser                                                 |
+| -------------------------------- | ------ | ---------------------------------------------------------------- |
+| `largeurMaxContenuAdmin`         | 1600   | **Listes**, **tableaux**, **dashboard**, **cartes KPI**          |
+| `largeurMaxFormulaire`           | 1200   | **Formulaires 2 colonnes** (inputs textuels) — inputs restent lisibles (≈ 580px par colonne) |
+| `largeurMaxDialogTravail`        | 1280   | **Dialogs de travail** (planning 24h, éditeur modal)             |
+
+### Heuristique
+
+- **Tableau ou KPI** → `largeurMaxContenuAdmin` (1600).
+- **Formulaire** avec colonnes d'inputs → `largeurMaxFormulaire` (1200).
+- **Dialog** qui couvre l'écran → `largeurMaxDialogTravail` (1280).
+
+## Si aucune constante n'est adaptée
+
+**Ne pas** redéfinir localement. Ajouter une 4e constante sémantique dans `DimensionsLayout` avec un commentaire expliquant le cas d'usage. Privilégier un nom métier (`largeurMaxDetailFiche`, `largeurMaxRapport`) plutôt qu'un nom de page (`largeurMaxFactures`).
+
+## Cas Dialogs non-travail
+
+Les dialogs de confirmation courts (suppression, quitter) ne sont pas concernés — ils ont leur propre `maxWidth` explicite (typiquement 480-560) défini localement avec un commentaire justifiant la taille. Voir `pattern_crud_admin.md §9` (Dialog canonique).
+
+## Détection dans un diff
+
+```bash
+grep -rn "_kLargeurMaxContenu\|maxWidth: 12[0-9][0-9]\|maxWidth: 16[0-9][0-9]" apps/athena_admin/lib/pages/ \
+  | grep -v "dimensions_layout.dart"
+```
+
+Si des lignes remontent : refacto requis vers `DimensionsLayout`.
+
+## Références
+
+- DEC-015 — `aidd_docs/internal/decisions/015-dimensions-layout-admin-1600.md`
+- Source : `apps/athena_admin/lib/core/theme/dimensions_layout.dart`

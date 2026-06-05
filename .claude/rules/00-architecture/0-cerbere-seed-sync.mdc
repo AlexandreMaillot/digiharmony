@@ -1,0 +1,32 @@
+---
+description: APPLIQUER la synchronisation Dart ↔ JS Cerbère LORS de l'ajout d'un nouveau droit Cerbère ou d'un nouveau rôle
+globs: apps/athena_admin/lib/core/permissions/*.dart, scripts/seed_cerbere_roles.mjs
+alwaysApply: true
+---
+
+Principe :
+- Le **middleware Dart Frog vérifie les droits Cerbère côté Firestore** (`_cerbere_roles/{roleId}.droits`), pas côté Dart compile-time.
+- La **source de vérité Firestore prod** est le script `scripts/seed_cerbere_roles.mjs` (firebase-admin SDK qui bypass `allow write: if false`).
+- Toute divergence Dart vs JS = bug runtime 403 (vécu 2x : `admin:parametres:tarifs:gerer` puis `admin:facturation:exporter` en 2026-05-06).
+
+Checklist obligatoire à l'ajout d'un nouveau droit Cerbère :
+1. [ ] `apps/athena_admin/lib/core/permissions/cerbere_droits.dart` — ajout `CerbereDroit(cle:..., nom:..., description:...)` dans `kAthenaAdminDroits`
+2. [ ] `apps/athena_admin/lib/core/permissions/cerbere_roles_seed.dart` — ajout dans `kRoleAdmin.droits` (et `kRoleStandardiste.droits` si pertinent)
+3. [ ] `scripts/seed_cerbere_roles.mjs` — ajout dans `ADMIN_DROITS` et/ou `STANDARDISTE_DROITS` (miroir)
+4. [ ] Run `node scripts/seed_cerbere_roles.mjs --project=creappi-athena-dev` après merge sur master
+5. [ ] Tests `cerbere_droits_test.dart` + `cerbere_roles_seed_test.dart` mis à jour
+
+Vérification automatique :
+- `apps/athena_admin/test/core/permissions/cerbere_seed_drift_test.dart` — test snapshot qui parse le script JS et compare avec la liste Dart. **Échec rouge si drift**.
+
+Cas particulier — nouveau rôle :
+- Ajouter dans `cerbere_roles_seed.dart` : nouvelle constante `kRole<Nom>` (ex. `kRoleSuperAdmin`).
+- Ajouter dans `seed_cerbere_roles.mjs` : nouveau `seedRole('super_admin', 'Super Administrateur', DROITS)`.
+- Vérifier `VerificateurDroitCerbere` côté backend : si le `role_id` du user lit le doc inexistant → `aDroit() = false` → 403.
+
+Pourquoi :
+- Le bug n'est **pas détectable à `flutter analyze`** ni à `dart test` côté Dart — il dépend de l'état Firestore.
+- Le test drift CI (cf. `cerbere_seed_drift_test.dart`) ferme la fenêtre.
+- La discipline manuelle a échoué 2x → le test est la seule mitigation robuste.
+
+Référence : DEC-073 (Seed Cerbère JS sync obligatoire).

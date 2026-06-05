@@ -1,0 +1,13 @@
+---
+description: Ne jamais utiliser `Size.fromHeight(h)` pour `minimumSize` / `maximumSize` dans un `ButtonStyle`. L'API renvoie `Size(double.infinity, h)` qui force le bouton à prendre toute la largeur du parent — casse les layouts d'`AlertDialog`, de Row non-bounded, et crashe en intrinsic computation. Utiliser `Size(0, h)` pour ne contraindre que la hauteur.
+globs: apps/**/*.dart
+alwaysApply: false
+---
+- Interdit : `minimumSize: Size.fromHeight(50)` dans un `ElevatedButton.styleFrom` / `FilledButton.styleFrom` / `OutlinedButton.styleFrom` / `TextButton.styleFrom` — c'est l'équivalent de `Size(infinity, 50)`.
+- Correct : `minimumSize: const Size(0, 50)` — hauteur imposée, largeur naturelle.
+- Pour un bouton full-width volontaire : wrap `SizedBox(width: double.infinity, child: FilledButton(...))` au site d'appel. Le SizedBox impose la largeur, pas le thème.
+- Vérifier aussi `maximumSize` et `fixedSize` : `Size.fromHeight` a la même sémantique infinity partout.
+- Cas vécus projet (2026-04-23, fiche chauffeur admin) :
+  1. `OutlinedButton "Modifier"` dans le Row header → crash `BoxConstraints forces an infinite width`.
+  2. `AlertDialog` boutons Désactiver/Supprimer étalés en pleine largeur, Annuler décalé au-dessus.
+  Les 2 causés par `Size.fromHeight(Espacements.max)` dans `theme_athena.dart` partagé entre `elevatedButtonTheme` + `filledButtonTheme` + `outlinedButtonTheme`.

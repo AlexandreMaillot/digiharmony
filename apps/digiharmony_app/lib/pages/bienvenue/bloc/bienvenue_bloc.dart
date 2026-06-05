@@ -1,3 +1,4 @@
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
@@ -11,7 +12,7 @@ part 'bienvenue_state.dart';
 class BienvenueBloc extends HydratedBloc<BienvenueEvent, BienvenueState> {
   /// Démarre avec la bienvenue non vue.
   BienvenueBloc() : super(const BienvenueState()) {
-    on<BienvenueTerminee>(_onBienvenueTerminee);
+    on<BienvenueTerminee>(_onBienvenueTerminee, transformer: sequential());
   }
 
   /// Clé de stockage HydratedBloc dédiée.

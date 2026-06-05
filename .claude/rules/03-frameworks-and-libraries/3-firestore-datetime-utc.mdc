@@ -1,0 +1,23 @@
+---
+description: `Timestamp.fromDate(DateTime).toDate()` ne préserve PAS la timezone d'origine — Firestore stocke en UTC mais `toDate()` retourne un `DateTime.local()`. Round-trip naïf → écart de fuseau. Pour des modèles métier qui round-trip Firestore, **forcer `.toUtc()`** côté `fromFirestore` (et idéalement aussi côté `toFirestore` pour symétrie) afin que les égalités Equatable et les comparaisons restent cohérentes.
+globs: apps/**/lib/**/*.dart, packages/**/lib/**/*.dart
+alwaysApply: false
+---
+- **Anti-pattern** :
+  ```dart
+  // toFirestore
+  'dateCreation': Timestamp.fromDate(profil.dateCreation),
+  // fromFirestore
+  dateCreation: (data['dateCreation'] as Timestamp).toDate(),  // ⚠ retourne local
+  ```
+  Si `profil.dateCreation` était `DateTime.utc(2026, 5, 8, 14, 0)` (UTC), après round-trip il devient `DateTime(2026, 5, 8, 18, 0)` (local Réunion UTC+4). Equatable casse, tests égalité plantent.
+- **Correct** :
+  ```dart
+  // fromFirestore — force UTC pour symétrie avec ce qu'on a écrit
+  dateCreation: (data['dateCreation'] as Timestamp).toDate().toUtc(),
+  ```
+  Côté `toFirestore`, `Timestamp.fromDate(d.toUtc())` est défensif si la date d'entrée n'est pas garantie UTC.
+- **Tests émulateur Firestore** : `fake_cloud_firestore` fait le round-trip via Timestamp comme la prod → tests égalité bloquent si `toUtc()` oublié. Pattern à appliquer dans tous les modèles `fromFirestore()`.
+- **Affichage UI** : convertir en local au moment du formatage (`DateFormat.yMMMd('fr_FR').format(d.toLocal())`), pas au moment de la lecture Firestore.
+- **Comparaisons** : utiliser `a.toUtc().isBefore(b.toUtc())` pour éviter les pièges TZ implicites.
+- Cas vécu projet (2026-05-09, modal signin OTP PR1 — `ProfilClient.fromFirestore`) : tests `creerProfilEtConsentements` plantaient car `dateCreation` round-trip basculait UTC → Réunion. Fix : `.toUtc()` après `.toDate()` côté `fromFirestore`.
