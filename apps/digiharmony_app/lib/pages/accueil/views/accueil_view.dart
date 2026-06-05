@@ -77,27 +77,30 @@ class AccueilView extends StatelessWidget {
                           ? state.conseil.cle
                           : 'tipDay01';
                       final tipTexte = _resoudreConseil(context, tipKey);
-                      return Row(
-                        children: [
-                          TuileOutil(
-                            label: l10n.homeToolBubble,
-                            icone: Icons.auto_awesome,
-                            onTap: () => ouvrirPlaceholder(
-                              context,
-                              l10n.placeholderBulle,
+                      return IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            TuileOutil(
+                              label: l10n.homeToolBubble,
+                              icone: Icons.auto_awesome,
+                              onTap: () => ouvrirPlaceholder(
+                                context,
+                                l10n.placeholderBulle,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: AppSpacing.md),
-                          TuileOutil(
-                            label: l10n.homeToolDailyTip,
-                            icone: Icons.lightbulb_outline,
-                            description: tipTexte,
-                            onTap: () => ouvrirPlaceholder(
-                              context,
-                              l10n.placeholderConseil,
+                            const SizedBox(width: AppSpacing.md),
+                            TuileOutil(
+                              label: l10n.homeToolDailyTip,
+                              icone: Icons.lightbulb_outline,
+                              description: tipTexte,
+                              onTap: () => ouvrirPlaceholder(
+                                context,
+                                l10n.placeholderConseil,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       );
                     },
                   ),

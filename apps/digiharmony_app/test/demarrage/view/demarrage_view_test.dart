@@ -119,7 +119,7 @@ void main() {
       expect(scaffold.backgroundColor, AppColors.backgroundDeep);
     });
 
-    testWidgets('SV-10 : DIGIHARMONY présent même en locale fr (non traduit)', (
+    testWidgets('SV-10 : DIGIHARMONY présent en locale fr', (
       tester,
     ) async {
       await tester.pumpWidget(_harnessView(locale: const Locale('fr')));
@@ -168,6 +168,7 @@ void main() {
       when(() => db.conseilDuJour(any())).thenAnswer(
         (_) async => const Conseil(id: 1, cleConseil: 'tip'),
       );
+      // ignore: unnecessary_lambdas closure requise par mocktail when()
       when(() => db.observerDerniereHumeurDuJour())
           .thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
 
@@ -191,7 +192,8 @@ void main() {
       // Vide le délai minimal (800ms reduced) + timers AccueilBloc ensuite.
       await tester.pump(const Duration(milliseconds: 900));
       // Navigation déclenchée (DemarragePret) → AccueilPage.
-      // Démontage propre pour annuler les boucles flutter_animate d'AccueilPage.
+      // Démontage propre pour annuler les boucles flutter_animate
+      // d'AccueilPage.
       await tester.pumpWidget(const SizedBox());
       // AccueilPage peut avoir des timers jusqu'à ~1,6s : on pompe au-delà.
       await tester.pump(const Duration(seconds: 2));
