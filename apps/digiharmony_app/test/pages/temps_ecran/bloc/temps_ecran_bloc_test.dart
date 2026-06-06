@@ -24,6 +24,8 @@ void main() {
     service = _MockService();
     database = AppDatabase.forTesting(NativeDatabase.memory());
     when(() => service.plateformeSupportee).thenReturn(true);
+    // Default: Android path (rapportEmbarque = false).
+    when(() => service.rapportEmbarque).thenReturn(false);
   });
 
   tearDown(() => database.close());
@@ -145,6 +147,68 @@ void main() {
       final hist = await database.observerHistoriqueUsage().first;
       expect(hist, hasLength(1));
       expect(hist.first.totalSecondes, const Duration(minutes: 15).inSeconds);
+    },
+  );
+
+  // ── iOS path tests (rapportEmbarque = true) ─────────────────────────────
+
+  blocTest<TempsEcranBloc, TempsEcranState>(
+    'iOS-AC1 : rapportEmbarque=true + accès accordé → pret (sans usageDuJour)',
+    setUp: () {
+      when(() => service.rapportEmbarque).thenReturn(true);
+      when(() => service.aLAcces()).thenAnswer((_) async => true);
+      // usageDuJour should NOT be called on iOS path.
+    },
+    build: build,
+    act: (b) => b.add(const TempsEcranDemarre()),
+    expect: () => [
+      const TempsEcranState(status: TempsEcranStatus.chargement),
+      const TempsEcranState(status: TempsEcranStatus.pret),
+    ],
+    verify: (_) => verifyNever(() => service.usageDuJour()),
+  );
+
+  blocTest<TempsEcranBloc, TempsEcranState>(
+    'iOS-AC2 : rapportEmbarque=true + accès non accordé → permissionRequise',
+    setUp: () {
+      when(() => service.rapportEmbarque).thenReturn(true);
+      when(() => service.aLAcces()).thenAnswer((_) async => false);
+    },
+    build: build,
+    act: (b) => b.add(const TempsEcranDemarre()),
+    expect: () => [
+      const TempsEcranState(status: TempsEcranStatus.chargement),
+      const TempsEcranState(status: TempsEcranStatus.permissionRequise),
+    ],
+  );
+
+  blocTest<TempsEcranBloc, TempsEcranState>(
+    'iOS-AC3 : PermissionDemandee iOS → ouvrirReglagesAcces + re-charge',
+    setUp: () {
+      when(() => service.rapportEmbarque).thenReturn(true);
+      when(() => service.ouvrirReglagesAcces()).thenAnswer((_) async {});
+      when(() => service.aLAcces()).thenAnswer((_) async => true);
+    },
+    build: build,
+    act: (b) => b.add(const TempsEcranPermissionDemandee()),
+    expect: () => [
+      const TempsEcranState(status: TempsEcranStatus.chargement),
+      const TempsEcranState(status: TempsEcranStatus.pret),
+    ],
+    verify: (_) => verify(() => service.ouvrirReglagesAcces()).called(1),
+  );
+
+  blocTest<TempsEcranBloc, TempsEcranState>(
+    'iOS-AC4 : Drift non écrit sur chemin iOS (pas de persistance)',
+    setUp: () {
+      when(() => service.rapportEmbarque).thenReturn(true);
+      when(() => service.aLAcces()).thenAnswer((_) async => true);
+    },
+    build: build,
+    act: (b) => b.add(const TempsEcranDemarre()),
+    verify: (_) async {
+      final hist = await database.observerHistoriqueUsage().first;
+      expect(hist, isEmpty);
     },
   );
 }

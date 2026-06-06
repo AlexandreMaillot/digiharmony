@@ -1,8 +1,11 @@
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/temps_ecran/bloc/temps_ecran_bloc.dart';
+import 'package:digiharmony_app/pages/temps_ecran/services/service_temps_ecran.dart';
+import 'package:digiharmony_app/pages/temps_ecran/widgets/vue_autorisation_ios.dart';
 import 'package:digiharmony_app/pages/temps_ecran/widgets/vue_etat_message.dart';
 import 'package:digiharmony_app/pages/temps_ecran/widgets/vue_permission.dart';
+import 'package:digiharmony_app/pages/temps_ecran/widgets/vue_rapport_ios.dart';
 import 'package:digiharmony_app/pages/temps_ecran/widgets/vue_resume.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -84,10 +87,18 @@ class _TempsEcranViewState extends State<TempsEcranView>
 }
 
 /// Switch d'états (sans le footer commun, géré par la View).
+///
+/// Le différenciateur iOS/Android en état [TempsEcranStatus.pret] se fait
+/// via [ServiceTempsEcran.rapportEmbarque] (DEC-TE-12) :
+///   - iOS (`rapportEmbarque == true`) → [VueRapportIos] (PlatformView).
+///   - Android (`rapportEmbarque == false`) → [VueResume] (jauge custom).
+/// Le Bloc reste agnostique de la plateforme.
 class _Contenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final service = context.read<ServiceTempsEcran>();
+
     return BlocBuilder<TempsEcranBloc, TempsEcranState>(
       builder: (context, state) {
         switch (state.status) {
@@ -108,8 +119,31 @@ class _Contenu extends StatelessWidget {
               ),
             );
           case TempsEcranStatus.permissionRequise:
-            return const Center(child: VuePermission());
+            // iOS : écran d'autorisation FamilyControls dédié (DEC-TE-15).
+            // Android : écran d'accès PACKAGE_USAGE_STATS existant.
+            return Center(
+              child: service.rapportEmbarque
+                  ? const VueAutorisationIos()
+                  : const VuePermission(),
+            );
           case TempsEcranStatus.pret:
+            // iOS : PlatformView DeviceActivityReport (rapport système).
+            // Android : jauge + historique custom.
+            if (service.rapportEmbarque) {
+              return Column(
+                children: [
+                  const Expanded(child: VueRapportIos()),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    l10n.tempsEcranIosDonneesSysteme,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textMuted,
+                    ),
+                  ),
+                ],
+              );
+            }
             return VueResume(
               resume: state.resume!,
               historique: state.historique,

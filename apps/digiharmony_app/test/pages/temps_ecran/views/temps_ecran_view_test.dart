@@ -2,7 +2,9 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/temps_ecran/bloc/temps_ecran_bloc.dart';
 import 'package:digiharmony_app/pages/temps_ecran/modeles/resume_temps_ecran.dart';
+import 'package:digiharmony_app/pages/temps_ecran/services/service_temps_ecran.dart';
 import 'package:digiharmony_app/pages/temps_ecran/views/temps_ecran_view.dart';
+import 'package:digiharmony_app/pages/temps_ecran/widgets/vue_autorisation_ios.dart';
 import 'package:digiharmony_app/pages/temps_ecran/widgets/vue_permission.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +15,14 @@ import 'package:mocktail/mocktail.dart';
 class _MockBloc extends MockBloc<TempsEcranEvent, TempsEcranState>
     implements TempsEcranBloc {}
 
+class _MockService extends Mock implements ServiceTempsEcran {}
+
 extension on WidgetTester {
-  Future<void> pumpVue(TempsEcranBloc bloc) {
+  Future<void> pumpVue(
+    TempsEcranBloc bloc, {
+    ServiceTempsEcran? service,
+  }) {
+    final svc = service ?? (_MockService()..stubAndroid());
     return pumpWidget(
       MediaQuery(
         data: const MediaQueryData(disableAnimations: true),
@@ -23,13 +31,30 @@ extension on WidgetTester {
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: BlocProvider<TempsEcranBloc>.value(
-            value: bloc,
-            child: const TempsEcranView(),
+          home: RepositoryProvider<ServiceTempsEcran>.value(
+            value: svc,
+            child: BlocProvider<TempsEcranBloc>.value(
+              value: bloc,
+              child: const TempsEcranView(),
+            ),
           ),
         ),
       ),
     );
+  }
+}
+
+extension on _MockService {
+  /// Stub Android defaults (rapportEmbarque = false).
+  void stubAndroid() {
+    when(() => rapportEmbarque).thenReturn(false);
+    when(() => plateformeSupportee).thenReturn(true);
+  }
+
+  /// Stub iOS defaults (rapportEmbarque = true).
+  void stubIos() {
+    when(() => rapportEmbarque).thenReturn(true);
+    when(() => plateformeSupportee).thenReturn(true);
   }
 }
 
@@ -142,5 +167,58 @@ void main() {
     await tester.tap(find.text('Enable access in settings'));
     await tester.pump();
     verify(() => bloc.add(const TempsEcranPermissionDemandee())).called(1);
+  });
+
+  // ── iOS path tests ─────────────────────────────────────────────────────────
+
+  group('iOS (rapportEmbarque = true)', () {
+    late _MockService iosService;
+
+    setUp(() {
+      iosService = _MockService()..stubIos();
+    });
+
+    testWidgets(
+        'iOS-AC1 : permissionRequise → VueAutorisationIos (pas VuePermission)',
+        (tester) async {
+      stub(const TempsEcranState(status: TempsEcranStatus.permissionRequise));
+      await tester.pumpVue(bloc, service: iosService);
+      await tester.pump();
+      expect(find.byType(VueAutorisationIos), findsOneWidget);
+      expect(find.byType(VuePermission), findsNothing);
+      expect(find.text('Allow'), findsOneWidget);
+    });
+
+    testWidgets(
+        'iOS-AC2 : tap CTA autorisation iOS → ajoute PermissionDemandee',
+        (tester) async {
+      stub(const TempsEcranState(status: TempsEcranStatus.permissionRequise));
+      await tester.pumpVue(bloc, service: iosService);
+      await tester.pump();
+      await tester.tap(find.text('Allow'));
+      await tester.pump();
+      verify(() => bloc.add(const TempsEcranPermissionDemandee())).called(1);
+    });
+
+    testWidgets(
+        'iOS-AC3 : pret → footer données système affiché (pas VueResume)',
+        (tester) async {
+      stub(const TempsEcranState(status: TempsEcranStatus.pret));
+      await tester.pumpVue(bloc, service: iosService);
+      await tester.pump();
+      expect(
+        find.text("This data stays in your iPhone; the app can't see it."),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets(
+        'iOS-AC4 : Android VuePermission absent sur permissionRequise iOS',
+        (tester) async {
+      stub(const TempsEcranState(status: TempsEcranStatus.permissionRequise));
+      await tester.pumpVue(bloc, service: iosService);
+      await tester.pump();
+      expect(find.text('Enable access in settings'), findsNothing);
+    });
   });
 }

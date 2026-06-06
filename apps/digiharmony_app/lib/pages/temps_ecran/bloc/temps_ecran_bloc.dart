@@ -55,9 +55,15 @@ class TempsEcranBloc extends Bloc<TempsEcranEvent, TempsEcranState> {
     TempsEcranPermissionDemandee event,
     Emitter<TempsEcranState> emit,
   ) async {
-    // Ouvre les réglages système ; l'état bascule au retour au premier plan
-    // (TempsEcranRevenuAuPremierPlan), pas ici.
+    // Android : ouvre les réglages système ; l'état bascule au retour au
+    // premier plan (TempsEcranRevenuAuPremierPlan) — pas ici.
+    // iOS : déclenche requestAuthorization (dialog système, async) puis
+    // recharge directement sans attendre le retour au premier plan.
     await _service.ouvrirReglagesAcces();
+    if (_service.rapportEmbarque) {
+      // Re-vérifie le statut après que l'utilisateur a répondu au dialog.
+      await _charger(emit);
+    }
   }
 
   /// Séquence partagée par Démarre / Réessaye / RevenuAuPremierPlan.
@@ -73,6 +79,16 @@ class TempsEcranBloc extends Bloc<TempsEcranEvent, TempsEcranState> {
         emit(state.copierAvec(status: TempsEcranStatus.permissionRequise));
         return;
       }
+
+      // Chemin iOS (rapport embarqué) : les chiffres ne traversent jamais vers
+      // Dart — la PlatformView DeviceActivityReport les rend côté Swift
+      // (DEC-TE-12, DEC-TE-13). Pas de Drift iOS, pas d'historique custom.
+      if (_service.rapportEmbarque) {
+        emit(state.copierAvec(status: TempsEcranStatus.pret));
+        return;
+      }
+
+      // Chemin Android : lecture app_usage + agrégation + historique Drift.
       final usages = await _service.usageDuJour();
       final resume = agregeUsage(usages);
       if (resume == null) {

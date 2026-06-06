@@ -14,7 +14,7 @@ import 'package:flutter/services.dart';
 ///
 /// Tant que ce flag est `false`, le comportement iOS reste `indisponible`
 /// (chemin actuel inchangé, DEC-TE-03).
-const bool kScreenTimeIosActif = false;
+const bool kScreenTimeIosActif = true;
 
 /// Statut d'autorisation FamilyControls retourné par le canal natif iOS.
 ///

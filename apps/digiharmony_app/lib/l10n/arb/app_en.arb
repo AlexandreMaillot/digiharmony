@@ -519,6 +519,26 @@
             "duree": { "type": "String" }
         }
     },
+    "tempsEcranIosAutorisationTitre": "To see your screen time",
+    "@tempsEcranIosAutorisationTitre": {
+        "description": "iOS FamilyControls authorization screen title."
+    },
+    "tempsEcranIosAutorisationExplication": "DigiHarmony uses Apple Screen Time. This data stays in your iPhone: the app can't see it, nothing is sent.",
+    "@tempsEcranIosAutorisationExplication": {
+        "description": "iOS authorization explanation — bienveillant, zero-collection reassurance."
+    },
+    "tempsEcranIosAutorisationCta": "Allow",
+    "@tempsEcranIosAutorisationCta": {
+        "description": "iOS FamilyControls authorization CTA button."
+    },
+    "tempsEcranIosRefuse": "Access not allowed. You can enable it in Settings.",
+    "@tempsEcranIosRefuse": {
+        "description": "iOS FamilyControls denied state — graceful, bienveillant."
+    },
+    "tempsEcranIosDonneesSysteme": "This data stays in your iPhone; the app can't see it.",
+    "@tempsEcranIosDonneesSysteme": {
+        "description": "iOS report footer — zero-collection reassurance."
+    },
     "tutoNotifsTitre": "Reduce my notifications",
     "@tutoNotifsTitre": {
         "description": "Notifications tutorial in-app title."
