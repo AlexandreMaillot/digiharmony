@@ -610,8 +610,9 @@ static Future<void> versTempsEcran(BuildContext context) {
   titre, ou utiliser la nouvelle `tempsEcranTitre` ? (les deux ont la même valeur FR). Recommandation :
   réutiliser `homeScreenTime` pour le **lien Accueil** et la cohérence, `tempsEcranTitre` pour le **titre
   in-page** si une nuance est voulue. À harmoniser.
-- **Q-TE-8 (fenêtre temporelle)** : V1 = **« aujourd'hui »** `[minuit local, now]`. Confirmer (vs
-  « dernières 24 h » glissantes). `app_usage` agrège sur l'intervalle demandé.
+- ✅ **Q-TE-8 — RÉSOLUE (2026-06-06)** : fenêtre = **« aujourd'hui »** `[minuit local, now]`
+  (jour calendaire, remise à zéro à 00:00), confirmée par l'utilisateur. Option « 24 h glissantes »
+  écartée. `app_usage` agrège sur l'intervalle demandé.
 - **Q-TE-9 (milestone)** : Phase 1 (avec le reste) ou Phase 2 ? Supposé **Phase 2** (le placeholder
   Accueil suggère une livraison ultérieure). À confirmer pour le registre.
 
@@ -631,7 +632,7 @@ static Future<void> versTempsEcran(BuildContext context) {
 | DEC-TE-08 | Façade `ServiceTempsEcran` injectée (mockable `mocktail`) pour isoler la plateforme et tester le Bloc sans `MethodChannel`. |
 | DEC-TE-09 | Présentation **non culpabilisante** : pas de score/objectif/jauge d'alerte/comparaison/streak ; message bienveillant + footer « données locales ». |
 | DEC-TE-10 | Navigation `AppRouter.versTempsEcran` en `push` (DEC-FND-07, pas de GoRouter). Recâblage du lien Accueil = dépendance d'intégration append-only (#2). |
-| DEC-TE-11 | Fenêtre temporelle V1 = **« aujourd'hui »** `[minuit local, now]`. 🟡 Q-TE-8. |
+| DEC-TE-11 | Fenêtre temporelle V1 = **« aujourd'hui »** `[minuit local, now]` (jour calendaire). ✅ **Tranché (2026-06-06)** — Q-TE-8 confirmée, 24 h glissantes écartées. |
 
 ---
 
