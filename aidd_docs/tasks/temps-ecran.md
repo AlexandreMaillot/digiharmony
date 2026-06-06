@@ -3,7 +3,7 @@ page: Mon temps d'écran
 slug: temps-ecran
 route: TempsEcranPage (push via AppRouter.versTempsEcran)
 feature_dir: apps/digiharmony_app/lib/pages/temps_ecran/
-status: proposition_a_valider
+status: valide
 github:
 us:
   - "US-TE-01 « Consulter mon temps d'écran » → GitHub #12 (milestone Phase 2 🟡 non assigné — milestone inexistant)"
@@ -582,7 +582,21 @@ static Future<void> versTempsEcran(BuildContext context) {
 
 ---
 
-## 13. Questions à valider (🟡 hypothèses non confirmées — à trancher avec l'utilisateur)
+## 13. Questions à valider
+
+> ✅ **TOUTES TRANCHÉES (2026-06-06) — plan `valide`.**
+> - **Q-TE-1 (design)** : maquette Banani non disponible → composition §5 **dérivée de la mémoire /
+>   design-system** (assumée).
+> - **Q-TE-2** : option (A) MethodChannel natif `digiharmony/usage_access` + écran d'explication avant accès.
+> - **Q-TE-3** : **top N apps** avec libellé best-effort (package name), **sans icône** V1 (DEC-TE-06).
+> - **Q-TE-4** : **pas** de flag onboarding HydratedBloc (DEC-TE-05).
+> - **Q-TE-5** : **historique multi-jours persisté dans Drift** (agrégat journalier local, DEC-TE-04 révisé).
+> - **Q-TE-7** : titre in-page = **réutiliser `homeScreenTime`** (pas de nouvelle clé).
+> - **Q-TE-8** : fenêtre « aujourd'hui » `[minuit, now]` (DEC-TE-11).
+> - **Q-TE-9** : milestone **Phase 2**.
+> Réserve produit : sensibilité usage = privée mais locale ; aucun envoi. Contenu/UX restent affinables.
+
+### Historique des questions (résolues — pour traçabilité)
 
 > Banani (design) et Erwin (US) **non joignables en mode arrière-plan** → ces points sont des
 > **hypothèses raisonnables** dérivées de la mémoire projet, à confirmer avant implémentation.
@@ -625,9 +639,9 @@ static Future<void> versTempsEcran(BuildContext context) {
 | DEC-TE-01 | Implémentation native via **`app_usage: ^4.1.0`** (déjà au pubspec, acté architecture.md). Pas de MethodChannel maison pour la **lecture** d'usage, pas d'autre package. Zéro réseau/tracking. |
 | DEC-TE-02 | Détection de permission + ouverture des réglages **non fournies** par `app_usage` → **option (A)** : MethodChannel maison minimal `digiharmony/usage_access` (`aLAcces`, `ouvrirReglagesAcces`), **sans** dépendance ni permission supplémentaire. (Option B heuristique documentée mais rejetée.) ✅ **Tranché (2026-06-06)** : option (A) acceptée + écran d'explication préalable au CTA d'accès natif. |
 | DEC-TE-03 | **V1 Android-first** ; iOS (Screen Time = entitlement spécial, accès non équivalent) = **état dégradé bienveillant** `indisponible`, pas de crash. |
-| DEC-TE-04 | **Zéro persistance des données d'usage** : agrégats calculés à la volée, affichés, jetés. **Ni Drift ni HydratedBloc.** Pas d'historisation V1. |
-| DEC-TE-05 | Couche de persistance : seul un **flag léger** (onboarding permission) pourrait aller dans **HydratedBloc** (jamais Drift, jamais de données d'usage). **Non retenu en V1** (re-vérif système = source de vérité). 🟡 Q-TE-4. |
-| DEC-TE-06 | Noms d'app = **lisibilisation du package name** (limite `AppUsageInfo.appName`). Pas d'icône d'app en V1. Libellé/icône exacts = MethodChannel étendu, **hors V1**. 🟡 Q-TE-3. |
+| DEC-TE-04 | ✅ **Révisé (2026-06-06, Q-TE-5)** : **historique multi-jours** → persistance **LOCALE** d'un **agrégat journalier** (total + éventuellement top apps) dans **Drift** (nouvelle table `UsagesEcranJournaliers` ou équivalent, 1 ligne/jour). Reste **100 % local, jamais transmis** (compatible zéro-collecte = pas de collecte externe). Le détail par app du jour courant reste calculé à la volée ; seul l'agrégat est persisté pour la tendance. (Supersede l'ancien « éphémère, pas de Drift ».) |
+| DEC-TE-05 | ✅ **Tranché (2026-06-06, Q-TE-4)** : **pas de flag onboarding** en HydratedBloc — la permission est re-vérifiée à chaque ouverture (source de vérité = OS). |
+| DEC-TE-06 | ✅ **Tranché (2026-06-06, Q-TE-3)** : répartition = **top N apps** avec libellé **best-effort depuis le package name** (sans icône en V1) + barres de proportion + bucket « Autres ». Icône/libellé exacts = hors V1. |
 | DEC-TE-07 | Permission accordée/refusée détectée au **retour au premier plan** (`AppLifecycleState.resumed` → event) → bascule d'état **réactive**, sans refresh manuel. |
 | DEC-TE-08 | Façade `ServiceTempsEcran` injectée (mockable `mocktail`) pour isoler la plateforme et tester le Bloc sans `MethodChannel`. |
 | DEC-TE-09 | Présentation **non culpabilisante** : pas de score/objectif/jauge d'alerte/comparaison/streak ; message bienveillant + footer « données locales ». |
