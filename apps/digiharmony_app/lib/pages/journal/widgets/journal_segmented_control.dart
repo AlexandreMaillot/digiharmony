@@ -6,10 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// SegmentedControl 3 vues : Jour (défaut) / Semaine / Mois.
 ///
-/// Pill arrondi (fond `AppColors.surface`) avec le segment actif surligné par
-/// une pastille pleine `AppColors.primary` (texte foncé en gras), **sans
+/// Pill arrondi (fond `AppColors.backgroundDeep` contrastant) avec un
+/// indicateur unique `AppColors.primary` qui **coulisse** vers l'actif, **sans
 /// séparateurs**. Dispatche [JournalVueChangee]. Cibles tactiles ≥ 48dp ;
-/// segment actif annoncé (a11y). Transition désactivée en reduced-motion.
+/// segment actif annoncé (a11y). Glissement coupé en reduced-motion.
 class JournalSegmentedControl extends StatelessWidget {
   const JournalSegmentedControl({super.key});
 
@@ -19,40 +19,67 @@ class JournalSegmentedControl extends StatelessWidget {
     final vueActive = context.select<JournalBloc, JournalVue>(
       (b) => b.state.vueActive,
     );
+    final reduced = MediaQuery.disableAnimationsOf(context);
 
     final items = <(JournalVue, String)>[
       (JournalVue.jour, l10n.journalSegmentDay),
       (JournalVue.semaine, l10n.journalSegmentWeek),
       (JournalVue.mois, l10n.journalSegmentMonth),
     ];
+    final indexActif = items.indexWhere((e) => e.$1 == vueActive);
+    // Alignement horizontal de l'indicateur : -1 (gauche) → +1 (droite).
+    final alignementX = items.length == 1
+        ? 0.0
+        : -1 + 2 * indexActif / (items.length - 1);
 
     return Container(
       height: 48,
       padding: const EdgeInsets.all(4),
       decoration: const BoxDecoration(
-        // Piste plus sombre que l'AppBar (`surface`) pour contraster — sinon le
-        // conteneur se fond dans la barre. Le segment actif reste en `primary`.
+        // Piste plus sombre que l'AppBar (`surface`) pour contraster.
         color: AppColors.backgroundDeep,
         borderRadius: BorderRadius.all(Radius.circular(24)),
       ),
-      child: Row(
+      child: Stack(
         children: [
-          for (final (vue, libelle) in items)
-            Expanded(
-              child: _Segment(
-                libelle: libelle,
-                actif: vue == vueActive,
-                onTap: () =>
-                    context.read<JournalBloc>().add(JournalVueChangee(vue)),
+          // Indicateur glissant (largeur = 1 segment).
+          AnimatedAlign(
+            alignment: Alignment(alignementX, 0),
+            duration:
+                reduced ? Duration.zero : const Duration(milliseconds: 260),
+            curve: Curves.easeOutCubic,
+            child: FractionallySizedBox(
+              widthFactor: 1 / items.length,
+              heightFactor: 1,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
               ),
             ),
+          ),
+          // Libellés tappables par-dessus l'indicateur.
+          Row(
+            children: [
+              for (final (vue, libelle) in items)
+                Expanded(
+                  child: _Segment(
+                    libelle: libelle,
+                    actif: vue == vueActive,
+                    onTap: () =>
+                        context.read<JournalBloc>().add(JournalVueChangee(vue)),
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );
   }
 }
 
-/// Un segment du contrôle — surligné en pastille pleine s'il est actif.
+/// Libellé d'un segment (par-dessus l'indicateur glissant).
 class _Segment extends StatelessWidget {
   const _Segment({
     required this.libelle,
@@ -66,7 +93,6 @@ class _Segment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final reduced = MediaQuery.disableAnimationsOf(context);
     return Semantics(
       button: true,
       selected: actif,
@@ -74,20 +100,13 @@ class _Segment extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
-        child: AnimatedContainer(
-          duration: reduced ? Duration.zero : const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: actif ? AppColors.primary : Colors.transparent,
-            borderRadius: const BorderRadius.all(Radius.circular(20)),
-          ),
+        child: Center(
           child: Text(
             libelle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: actif ? AppColors.backgroundDeep : AppColors.textMuted,
-              fontWeight: actif ? FontWeight.w700 : FontWeight.w500,
-            ),
+                  color: actif ? AppColors.backgroundDeep : AppColors.textMuted,
+                  fontWeight: actif ? FontWeight.w700 : FontWeight.w500,
+                ),
           ),
         ),
       ),
