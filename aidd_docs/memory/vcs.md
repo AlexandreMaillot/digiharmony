@@ -17,6 +17,15 @@ scope: all
 - Exclus via `.gitignore` racine : `*.jks`, `*.keystore`, `**/key.properties`, `*.env`, `.env`
 - Jamais de keystore ni de mots de passe dans le VCS (repo public)
 
+## Tooling `.claude/` — politique de versionnement
+
+- **Versionnés** (config projet partagée) : `.claude/rules/`, `.claude/agents/`, `.claude/commands/`,
+  `.claude/skills/`.
+- **Ignorés** (local) : `.specstory/` (logs de session) et `.claude/settings.local.json` + tout autre
+  fichier `.claude/` non listé ci-dessus.
+- `.gitignore` : `.claude/*` puis exceptions `!.claude/rules/` `!.claude/agents/` `!.claude/commands/`
+  `!.claude/skills/`. (Ne jamais re-déversionner les règles : `CLAUDE.md` les référence.)
+
 ## Branching Strategy
 
 - Convention : branche unique `main` pour l'instant ; pas de process PR formalisé
