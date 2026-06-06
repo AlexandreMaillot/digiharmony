@@ -1,11 +1,9 @@
-import 'dart:async';
-
+import 'package:digiharmony_app/common/anim/tap_anime.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/locale/locale_bloc.dart';
 import 'package:digiharmony_app/pages/parametres/modeles/langue_supportee.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Section de sélection de la langue (cœur fonctionnel de l'écran Paramètres).
@@ -75,9 +73,10 @@ class _LigneLangue extends StatelessWidget {
       label: estActif
           ? '${langue.endonyme} — ${l10n.parametresLangueActiveSemantique}'
           : langue.endonyme,
-      child: InkWell(
+      child: TapAnime(
         borderRadius: AppRadii.buttonRadius,
         onTap: () => _onTap(context),
+        estBouton: false,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(
@@ -120,9 +119,7 @@ class _LigneLangue extends StatelessWidget {
   }
 
   void _onTap(BuildContext context) {
-    // HapticFeedback.selectionClick() est fire-and-forget : lancé sans await
-    // pour que le dispatch LocaleChange soit immédiat (DEC-PARAM-04).
-    unawaited(HapticFeedback.selectionClick());
+    // Le haptique est géré par TapAnime (DEC-PARAM-04).
     context.read<LocaleBloc>().add(LocaleChange(Locale(langue.code)));
   }
 }

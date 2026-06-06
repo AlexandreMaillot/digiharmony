@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 /// Pilule « Faire une pause » avec animation breathing en boucle.
@@ -34,8 +37,15 @@ class PiluleAction extends StatelessWidget {
       color: AppColors.surface,
       borderRadius: const BorderRadius.all(Radius.circular(AppSpacing.xl)),
       child: InkWell(
-        onTap: onTap,
+        onTap: () {
+          unawaited(HapticFeedback.selectionClick());
+          onTap();
+        },
         borderRadius: const BorderRadius.all(Radius.circular(AppSpacing.xl)),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        focusColor: Colors.transparent,
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg,

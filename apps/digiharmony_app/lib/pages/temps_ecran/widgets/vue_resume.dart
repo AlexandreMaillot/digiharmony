@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:digiharmony_app/app/routing/app_router.dart';
 import 'package:digiharmony_app/common/anim/compteur_anime.dart';
+import 'package:digiharmony_app/common/anim/tap_anime.dart';
 import 'package:digiharmony_app/common/placeholder_screen.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/temps_ecran/bloc/temps_ecran_bloc.dart';
@@ -471,7 +472,7 @@ class _CarteAction extends StatelessWidget {
     return Material(
       color: AppColors.surface,
       borderRadius: AppRadii.cardRadius,
-      child: InkWell(
+      child: TapAnime(
         onTap: onTap,
         borderRadius: AppRadii.cardRadius,
         child: Container(
