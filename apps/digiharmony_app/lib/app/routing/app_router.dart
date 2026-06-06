@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_page.dart';
 import 'package:digiharmony_app/pages/bienvenue/views/bienvenue_page.dart';
+import 'package:digiharmony_app/pages/conseils/views/conseils_page.dart';
 import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
 import 'package:digiharmony_app/pages/parametres/views/parametres_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_page.dart';
@@ -106,6 +107,24 @@ abstract final class AppRouter {
             ),
           ],
           child: const TempsEcranPage(),
+        ),
+      ),
+    );
+  }
+
+  /// Ouvre le deck de conseils (empilé, retour possible).
+  ///
+  /// La [AppDatabase] est transmise explicitement (nouveau sous-arbre de
+  /// route), comme `versJournal`. `push` (pas `pushReplacement`). Pas de
+  /// GoRouter
+  /// (DEC-FND-07 / DEC-CO-12).
+  static Future<void> versConseils(BuildContext context) {
+    final database = context.read<AppDatabase>();
+    return Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => RepositoryProvider<AppDatabase>.value(
+          value: database,
+          child: const ConseilsPage(),
         ),
       ),
     );

@@ -107,10 +107,7 @@ class AccueilView extends StatelessWidget {
                               label: l10n.homeToolDailyTip,
                               icone: Icons.lightbulb_outline,
                               description: tipTexte,
-                              onTap: () => ouvrirPlaceholder(
-                                context,
-                                l10n.placeholderConseil,
-                              ),
+                              onTap: () => AppRouter.versConseils(context),
                             ),
                           ],
                         ),
