@@ -61,6 +61,43 @@ updated: 2026-06-06
 
 ---
 
+## ⭐ RÉVISION (2026-06-06) — ALIGNEMENT MAQUETTE BANANI (FAIT LOI, prime sur le reste)
+
+Maquette Banani « Tuto — Notifications » (flow `kh_4MGOGFJNA`, thème Navy & Halo) récupérée et
+validée par l'utilisateur. Le tuto est un **guide pas-à-pas adapté à l'OS**, **PAS** un écran avec
+bouton « ouvrir les réglages ». Conséquences :
+
+- ❌ **DEC-TN-02 / DEC-TN-06 SUPERSEDÉES** : **AUCUN MethodChannel** `notification_settings`, **aucun
+  code natif** pour le tuto, **aucune ouverture de réglages système**. (Le socle natif partagé n'a donc
+  plus besoin que du channel `usage_access` de Temps d'écran.)
+- ❌ **US-TN-02 abandonnée** (« ouvrir les réglages ») → remplacée par « détection OS + bascule ».
+- ✅ **Écran = tutoriel statique OS-aware** :
+  - Navbar standard (chevron retour · logo + « DIGIHARMONY » · menu — cohérent app).
+  - Intro : `tutoNotifsIntro` « Moins de notifications, plus de calme. »
+  - **Détection OS** (`Platform.isIOS`/`isAndroid`) → affiche la liste d'étapes correspondante. Lien
+    discret en bas **`tutoNotifsAutreTelephone`** « Voir pour un autre téléphone » qui **bascule** la
+    vue vers l'autre OS (état UI local → `StatefulWidget`, ou Bloc minimal si la revue l'exige).
+  - **5 étapes iOS** + **5 étapes Android**, chaque étape = badge n° (cercle cyan) + icône (Lucide →
+    `Icons` Material équivalent) + titre + description. Contenu (clés i18n, fr réels de la maquette,
+    repli en) :
+    - iOS : 1 Réglages · 2 Notifications · 3 Choisir une app distrayante · 4 Désactiver ou regrouper
+      (« Résumé programmé ») · 5 Répéter pour chaque app.
+    - Android : 1 Paramètres · 2 Applications · 3 Sélectionner une app · 4 Notifications → Désactiver ·
+      5 Mode « Ne pas déranger ».
+  - Carte d'**encouragement** (icône soleil or `AppColors.accentGold`) : `tutoNotifsEncouragement`
+    « Chaque notification en moins, c'est une interruption de moins. Prends ton temps. »
+  - Cartes étapes : fond `AppColors.surface`, rayon 12, bord léger ; tokens design-system, **aucun hex
+    en dur**.
+- **DEC-TN-05 confirmé** : pas de logique métier → `StatelessWidget` + le toggle OS en état UI local.
+- i18n : clés `tutoNotifs*` (intro, encouragement, lien bascule, + titre/description ×10 étapes), fr+en
+  réels, repli en pour el/it/ro/tr/es/mk. **Contenu pédagogique = à faire relire par les partenaires**
+  (public mineur), mais issu de la maquette validée.
+
+> Les sections §2–§15 ci-dessous décrivant le MethodChannel/CTA réglages sont **CADUQUES** ; ne garder
+> que ce qui concerne la structure de page, l'i18n, l'a11y et le recâblage Accueil.
+
+---
+
 ## 0. Garde-fous (FONT LOI — priment sur tout détail divergent ci-dessous)
 
 - **Sans backend, sans Firebase, zéro collecte.** Aucun SDK réseau/analytics/tracking/Crashlytics.
