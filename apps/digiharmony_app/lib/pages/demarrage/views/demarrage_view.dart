@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:digiharmony_app/app/routing/app_router.dart';
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
+import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/demarrage/bloc/demarrage_bloc.dart';
 import 'package:digiharmony_app/pages/demarrage/widgets/anneaux_ondes.dart';
 import 'package:digiharmony_app/pages/demarrage/widgets/barre_signature.dart';
 import 'package:digiharmony_app/pages/demarrage/widgets/points_chargement.dart';
+import 'package:digiharmony_app/pages/soutien/bloc/soutien_bloc.dart';
+import 'package:digiharmony_app/pages/soutien/declenchement/evaluateur_soutien.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -87,8 +90,49 @@ class _DemarrageViewState extends State<DemarrageView> {
       case DemarrageErreur():
         // L'onboarding est abandonné : on route toujours vers l'Accueil
         // (DEC-PROD-2026). BienvenueBloc reste dormant.
-        unawaited(AppRouter.versAccueil(context));
+        unawaited(_versAccueilPuisEvaluerSoutien(context));
     }
+  }
+
+  /// Route vers l'Accueil puis évalue le déclenchement du soutien.
+  ///
+  /// Append-only : ne modifie pas le comportement existant (Accueil toujours
+  /// affiché). Évalue le compteur après le routage (DEC-SO-003).
+  /// Guards `context.mounted` après chaque `await` (DEC-SO-004).
+  Future<void> _versAccueilPuisEvaluerSoutien(BuildContext context) async {
+    await AppRouter.versAccueil(context);
+
+    // Le pushReplacement a changé l'arbre — vérifier avant toute lecture.
+    if (!context.mounted) return;
+
+    final db = context.read<AppDatabase>();
+    final soutienBloc = context.read<SoutienBloc>();
+    final dejaMontre =
+        soutienBloc.state.dejaMontrePourEpisodeEnCours;
+
+    final compteur = await db.compterSaisiesNegativesConsecutives();
+
+    if (!context.mounted) return;
+
+    // Réarmement : si le compteur est redescendu sous le seuil et que le flag
+    // est posé, on réarme pour le prochain épisode (DEC-SO-004).
+    if (compteur < EvaluateurSoutien.seuil && dejaMontre) {
+      soutienBloc.add(const SoutienReinitialise());
+    }
+
+    if (!EvaluateurSoutien.doitDeclencher(
+      compteurNegativesConsecutives: compteur,
+      dejaMontrePourEpisodeEnCours:
+          soutienBloc.state.dejaMontrePourEpisodeEnCours,
+    )) {
+      return;
+    }
+
+    // Marquage à l'affichage (DEC-SO-004).
+    soutienBloc.add(const SoutienMontre());
+
+    if (!context.mounted) return;
+    await AppRouter.versSoutien(context);
   }
 }
 

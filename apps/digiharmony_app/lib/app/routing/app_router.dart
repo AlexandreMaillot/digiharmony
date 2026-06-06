@@ -3,6 +3,7 @@ import 'package:digiharmony_app/pages/accueil/views/accueil_page.dart';
 import 'package:digiharmony_app/pages/bienvenue/views/bienvenue_page.dart';
 import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_page.dart';
+import 'package:digiharmony_app/pages/soutien/views/soutien_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -57,6 +58,20 @@ abstract final class AppRouter {
           value: database,
           child: const JournalPage(),
         ),
+      ),
+    );
+  }
+
+  /// Ouvre l'écran de soutien (empilé au-dessus de l'Accueil).
+  ///
+  /// « Plus tard » / chevron = [Navigator.pop] → retour Accueil.
+  /// Déclenché uniquement par le hook post-splash (DEC-SOP-003).
+  /// La page ne relit pas la base — le compteur est évalué en amont.
+  /// Pas de GoRouter (DEC-FND-07).
+  static Future<void> versSoutien(BuildContext context) {
+    return Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const SoutienPage(),
       ),
     );
   }
