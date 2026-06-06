@@ -51,7 +51,7 @@ class PastilleEmotion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final couleur = MoodColors.byKey[emotion.cle];
-    final libelle = _libelleEmotion(context, emotion.cle);
+    final libelle = libelleEmotion(context.l10n, emotion.cle);
     final disableAnimations = MediaQuery.disableAnimationsOf(context);
 
     Widget pastille = _PastilleBody(
@@ -125,28 +125,6 @@ class PastilleEmotion extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _libelleEmotion(BuildContext context, String cle) {
-    final l10n = context.l10n;
-    switch (cle) {
-      case 'happy':
-        return l10n.moodHappy;
-      case 'calm':
-        return l10n.moodCalm;
-      case 'dynamic':
-        return l10n.moodDynamic;
-      case 'sad':
-        return l10n.moodSad;
-      case 'angry':
-        return l10n.moodAngry;
-      case 'nervous':
-        return l10n.moodNervous;
-      case 'tired':
-        return l10n.moodTired;
-      default:
-        return cle;
-    }
   }
 }
 

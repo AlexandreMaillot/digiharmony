@@ -10,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Scaffold principal du journal.
 ///
-/// - Toolbar haute : retour · titre · menu options.
+/// - Toolbar haute : retour · titre.
 /// - SegmentedControl : Jour / Semaine / Mois.
 /// - Contenu : switch de vue selon [JournalVue].
 class JournalView extends StatelessWidget {
@@ -31,15 +31,6 @@ class JournalView extends StatelessWidget {
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           onPressed: () => Navigator.maybePop(context),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            tooltip: l10n.journalMenuTooltip,
-            onPressed: () {
-              // Menu options — stub V1.
-            },
-          ),
-        ],
         bottom: const PreferredSize(
           preferredSize: Size.fromHeight(56),
           child: Padding(

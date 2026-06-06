@@ -211,7 +211,13 @@ void main() {
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
 
-        expect(find.text('Boom'), findsOneWidget);
+        // Message i18n bienveillant affiché, jamais l'exception brute (public
+        // mineur). `message` reste interne, non rendu à l'écran.
+        expect(
+          find.text("Oops, saving didn't work. Please try again."),
+          findsOneWidget,
+        );
+        expect(find.text('Boom'), findsNothing);
 
         await ctrl.close();
       },

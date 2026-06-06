@@ -1,4 +1,5 @@
 import 'package:digiharmony_app/data/local/app_database.dart';
+import 'package:digiharmony_app/l10n/l10n.dart';
 
 /// Représente une émotion canonique de l'application.
 ///
@@ -38,6 +39,31 @@ const List<EmotionCanonique> emotionsCanoniques = [
   EmotionCanonique(cle: 'nervous', emoji: '😰', valence: -1),
   EmotionCanonique(cle: 'tired', emoji: '😴', valence: -1),
 ];
+
+/// Libellé localisé d'une émotion canonique (clés `mood*`). Source unique.
+///
+/// Repli sur [code] si le code est inconnu (HC-6). Toute résolution
+/// `code → libellé` de l'app doit passer par cette fonction (DRY).
+String libelleEmotion(AppLocalizations l10n, String code) {
+  switch (code) {
+    case 'happy':
+      return l10n.moodHappy;
+    case 'calm':
+      return l10n.moodCalm;
+    case 'dynamic':
+      return l10n.moodDynamic;
+    case 'sad':
+      return l10n.moodSad;
+    case 'angry':
+      return l10n.moodAngry;
+    case 'nervous':
+      return l10n.moodNervous;
+    case 'tired':
+      return l10n.moodTired;
+    default:
+      return code;
+  }
+}
 
 /// Retourne l'emoji pour un [codeEmotion], ou '' si inconnu.
 String emojiPourCode(String codeEmotion) {

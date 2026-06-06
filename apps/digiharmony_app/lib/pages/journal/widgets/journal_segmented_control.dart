@@ -1,12 +1,15 @@
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/journal/bloc/journal_bloc/journal_bloc.dart';
+import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// SegmentedControl 3 vues : Jour (défaut) / Semaine / Mois.
 ///
-/// Dispatche [JournalVueChangee] au Bloc. Cibles tactiles ≥ 48dp. Sémantique
-/// segment actif annoncée (a11y).
+/// Pill arrondi (fond `AppColors.surface`) avec le segment actif surligné par
+/// une pastille pleine `AppColors.primary` (texte foncé en gras), **sans
+/// séparateurs**. Dispatche [JournalVueChangee]. Cibles tactiles ≥ 48dp ;
+/// segment actif annoncé (a11y). Transition désactivée en reduced-motion.
 class JournalSegmentedControl extends StatelessWidget {
   const JournalSegmentedControl({super.key});
 
@@ -17,42 +20,74 @@ class JournalSegmentedControl extends StatelessWidget {
       (b) => b.state.vueActive,
     );
 
-    final segments = <JournalVue, Widget>{
-      JournalVue.jour: Semantics(
-        label: l10n.journalSegmentDay,
-        selected: vueActive == JournalVue.jour,
-        child: Text(l10n.journalSegmentDay),
-      ),
-      JournalVue.semaine: Semantics(
-        label: l10n.journalSegmentWeek,
-        selected: vueActive == JournalVue.semaine,
-        child: Text(l10n.journalSegmentWeek),
-      ),
-      JournalVue.mois: Semantics(
-        label: l10n.journalSegmentMonth,
-        selected: vueActive == JournalVue.mois,
-        child: Text(l10n.journalSegmentMonth),
-      ),
-    };
+    final items = <(JournalVue, String)>[
+      (JournalVue.jour, l10n.journalSegmentDay),
+      (JournalVue.semaine, l10n.journalSegmentWeek),
+      (JournalVue.mois, l10n.journalSegmentMonth),
+    ];
 
-    return SizedBox(
+    return Container(
       height: 48,
-      child: SegmentedButton<JournalVue>(
-        segments: segments.entries
-            .map(
-              (e) => ButtonSegment<JournalVue>(
-                value: e.key,
-                label: e.value,
+      padding: const EdgeInsets.all(4),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.all(Radius.circular(24)),
+      ),
+      child: Row(
+        children: [
+          for (final (vue, libelle) in items)
+            Expanded(
+              child: _Segment(
+                libelle: libelle,
+                actif: vue == vueActive,
+                onTap: () =>
+                    context.read<JournalBloc>().add(JournalVueChangee(vue)),
               ),
-            )
-            .toList(),
-        selected: {vueActive},
-        onSelectionChanged: (selection) {
-          if (selection.isNotEmpty) {
-            context.read<JournalBloc>().add(JournalVueChangee(selection.first));
-          }
-        },
-        showSelectedIcon: false,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Un segment du contrôle — surligné en pastille pleine s'il est actif.
+class _Segment extends StatelessWidget {
+  const _Segment({
+    required this.libelle,
+    required this.actif,
+    required this.onTap,
+  });
+
+  final String libelle;
+  final bool actif;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final reduced = MediaQuery.disableAnimationsOf(context);
+    return Semantics(
+      button: true,
+      selected: actif,
+      label: libelle,
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: reduced ? Duration.zero : const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: actif ? AppColors.primary : Colors.transparent,
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
+          ),
+          child: Text(
+            libelle,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: actif ? AppColors.backgroundDeep : AppColors.textMuted,
+              fontWeight: actif ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,7 +1,6 @@
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/journal/bloc/journal_bloc/journal_bloc.dart';
-import 'package:digiharmony_app/pages/journal/utils/journal_emotion_utils.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/modeles/emotion_canonique.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';

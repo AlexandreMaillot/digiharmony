@@ -22,7 +22,7 @@ class CarteFeedbackSelection extends StatelessWidget {
         final codeEmotion = state.codeSelectionne;
         if (codeEmotion == null) return const SizedBox.shrink();
 
-        final libelle = _libelleEmotion(context, codeEmotion);
+        final libelle = libelleEmotion(l10n, codeEmotion);
         final couleur = MoodColors.byKey[codeEmotion] ?? AppColors.primary;
 
         return Card(
@@ -70,27 +70,5 @@ class CarteFeedbackSelection extends StatelessWidget {
         );
       },
     );
-  }
-
-  String _libelleEmotion(BuildContext context, String cle) {
-    final l10n = context.l10n;
-    switch (cle) {
-      case 'happy':
-        return l10n.moodHappy;
-      case 'calm':
-        return l10n.moodCalm;
-      case 'dynamic':
-        return l10n.moodDynamic;
-      case 'sad':
-        return l10n.moodSad;
-      case 'angry':
-        return l10n.moodAngry;
-      case 'nervous':
-        return l10n.moodNervous;
-      case 'tired':
-        return l10n.moodTired;
-      default:
-        return cle;
-    }
   }
 }

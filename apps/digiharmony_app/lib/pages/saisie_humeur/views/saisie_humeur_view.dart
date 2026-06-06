@@ -107,9 +107,11 @@ class SaisieHumeurView extends StatelessWidget {
       // Retour à l'Accueil : la carte humeur s'y met à jour via Drift watch().
       Navigator.of(context).pop();
     } else if (state is EnregistrementEchoue) {
+      // Message i18n bienveillant (public mineur) plutôt que l'exception brute.
+      // `state.message` reste disponible pour usage interne/diagnostic.
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(state.message),
+          content: Text(context.l10n.saisieHumeurErreur),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
