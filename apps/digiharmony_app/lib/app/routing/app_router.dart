@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:digiharmony_app/common/anim/route_douce.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_page.dart';
 import 'package:digiharmony_app/pages/bienvenue/views/bienvenue_page.dart';
@@ -20,10 +21,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// Une seule définition des écrans cibles, partagée par le Démarrage et les
 /// futurs écrans, pour éviter la divergence de routes (DEC-FND-07).
 /// Pas de `flow_builder` en Phase 1.
+///
+/// Toutes les routes utilisent [routeDouce] (fadeIn + léger slideY).
+/// En reduced-motion, la transition est désactivée automatiquement.
 abstract final class AppRouter {
   /// Remplace l'écran courant par l'écran de bienvenue.
   static Future<void> versBienvenue(BuildContext context) {
-    return Navigator.of(context).pushReplacement(BienvenuePage.route());
+    return Navigator.of(context)
+        .pushReplacement(routeDouce(const BienvenuePage()));
   }
 
   /// Remplace l'écran courant par l'accueil.
@@ -31,7 +36,8 @@ abstract final class AppRouter {
   /// Point de bascule (DEC-FND-08) : pointe sur `AccueilPage` (placeholder V1),
   /// remplacé par l'implémentation réelle de l'Accueil (US-HOME-01).
   static Future<void> versAccueil(BuildContext context) {
-    return Navigator.of(context).pushReplacement(AccueilPage.route());
+    return Navigator.of(context)
+        .pushReplacement(routeDouce(const AccueilPage()));
   }
 
   /// Ouvre l'écran de saisie de l'humeur (empilé, retour possible).
@@ -43,8 +49,8 @@ abstract final class AppRouter {
   static Future<void> versSaisieHumeur(BuildContext context) {
     final database = context.read<AppDatabase>();
     return Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => RepositoryProvider<AppDatabase>.value(
+      routeDouce(
+        RepositoryProvider<AppDatabase>.value(
           value: database,
           child: const SaisieHumeurPage(),
         ),
@@ -61,8 +67,8 @@ abstract final class AppRouter {
   static Future<void> versJournal(BuildContext context) {
     final database = context.read<AppDatabase>();
     return Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => RepositoryProvider<AppDatabase>.value(
+      routeDouce(
+        RepositoryProvider<AppDatabase>.value(
           value: database,
           child: const JournalPage(),
         ),
@@ -77,11 +83,7 @@ abstract final class AppRouter {
   /// La page ne relit pas la base — le compteur est évalué en amont.
   /// Pas de GoRouter (DEC-FND-07).
   static Future<void> versSoutien(BuildContext context) {
-    return Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => const SoutienPage(),
-      ),
-    );
+    return Navigator.of(context).push(routeDouce(const SoutienPage()));
   }
 
   /// Ouvre l'écran « Mon temps d'écran » (empilé, retour possible).
@@ -93,8 +95,8 @@ abstract final class AppRouter {
   static Future<void> versTempsEcran(BuildContext context) {
     final database = context.read<AppDatabase>();
     return Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => MultiRepositoryProvider(
+      routeDouce(
+        MultiRepositoryProvider(
           providers: [
             RepositoryProvider<AppDatabase>.value(value: database),
             RepositoryProvider<ServiceTempsEcran>(
@@ -116,13 +118,12 @@ abstract final class AppRouter {
   ///
   /// La [AppDatabase] est transmise explicitement (nouveau sous-arbre de
   /// route), comme `versJournal`. `push` (pas `pushReplacement`). Pas de
-  /// GoRouter
-  /// (DEC-FND-07 / DEC-CO-12).
+  /// GoRouter (DEC-FND-07 / DEC-CO-12).
   static Future<void> versConseils(BuildContext context) {
     final database = context.read<AppDatabase>();
     return Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => RepositoryProvider<AppDatabase>.value(
+      routeDouce(
+        RepositoryProvider<AppDatabase>.value(
           value: database,
           child: const ConseilsPage(),
         ),
@@ -135,7 +136,7 @@ abstract final class AppRouter {
   /// Tutoriel statique OS-aware (RÉVISION 2026-06-06) : aucune dépendance à
   /// transmettre, aucun service natif. `push`. Pas de GoRouter (DEC-FND-07).
   static Future<void> versTutoNotifs(BuildContext context) {
-    return Navigator.of(context).push(TutoNotifsPage.route());
+    return Navigator.of(context).push(routeDouce(const TutoNotifsPage()));
   }
 
   /// Ouvre l'écran « Paramètres » (empilé, retour possible).
@@ -144,6 +145,6 @@ abstract final class AppRouter {
   /// rien à transmettre à travers la frontière de route. `push`.
   /// Pas de GoRouter (DEC-FND-07, DEC-PARAM-11).
   static Future<void> versParametres(BuildContext context) {
-    return Navigator.of(context).push(ParametresPage.route());
+    return Navigator.of(context).push(routeDouce(const ParametresPage()));
   }
 }

@@ -1,4 +1,5 @@
 import 'package:digiharmony_app/app/routing/app_router.dart';
+import 'package:digiharmony_app/common/anim/entree_douce.dart';
 import 'package:digiharmony_app/common/placeholder_screen.dart';
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
@@ -57,87 +58,102 @@ class AccueilView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header : logo + wordmark + bouton réglages.
-                  _Header(l10n: l10n),
+                  // index 0 — Header : logo + wordmark + bouton réglages.
+                  EntreeDouce(child: _Header(l10n: l10n)),
                   const SizedBox(height: AppSpacing.lg),
-                  // Greeting fixe (DEC-HOME-04).
-                  _Greeting(l10n: l10n),
+                  // index 1 — Greeting fixe (DEC-HOME-04).
+                  EntreeDouce(index: 1, child: _Greeting(l10n: l10n)),
                   const SizedBox(height: AppSpacing.lg),
-                  // HeroCard états A/B pilotés par le Bloc.
-                  BlocBuilder<AccueilBloc, AccueilState>(
-                    builder: (context, state) {
-                      if (state is AccueilChargement) {
-                        return const _SkeletonHeroCard();
-                      }
-                      if (state is AccueilPret) {
-                        return CarteHumeur(
-                          humeur: state.humeurDuJour,
-                          conseil: state.conseil,
+                  // index 2 — HeroCard états A/B pilotés par le Bloc.
+                  EntreeDouce(
+                    index: 2,
+                    child: BlocBuilder<AccueilBloc, AccueilState>(
+                      builder: (context, state) {
+                        if (state is AccueilChargement) {
+                          return const _SkeletonHeroCard();
+                        }
+                        if (state is AccueilPret) {
+                          return CarteHumeur(
+                            humeur: state.humeurDuJour,
+                            conseil: state.conseil,
+                          );
+                        }
+                        // AccueilErreur → fallback État A (AC7).
+                        return const CarteHumeur(
+                          conseil: ConseilDuJourVue(cle: 'tipDay01'),
+                          erreur: true,
                         );
-                      }
-                      // AccueilErreur → fallback État A (AC7).
-                      return const CarteHumeur(
-                        conseil: ConseilDuJourVue(cle: 'tipDay01'),
-                        erreur: true,
-                      );
-                    },
+                      },
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  // Grille 2 tuiles.
-                  BlocBuilder<AccueilBloc, AccueilState>(
-                    builder: (context, state) {
-                      final tipKey = state is AccueilPret
-                          ? state.conseil.cle
-                          : 'tipDay01';
-                      final tipTexte = _resoudreConseil(context, tipKey);
-                      return IntrinsicHeight(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            TuileOutil(
-                              label: l10n.homeToolBubble,
-                              icone: Icons.auto_awesome,
-                              onTap: () => ouvrirPlaceholder(
-                                context,
-                                l10n.placeholderBulle,
+                  // index 3 — Grille 2 tuiles.
+                  EntreeDouce(
+                    index: 3,
+                    child: BlocBuilder<AccueilBloc, AccueilState>(
+                      builder: (context, state) {
+                        final tipKey = state is AccueilPret
+                            ? state.conseil.cle
+                            : 'tipDay01';
+                        final tipTexte = _resoudreConseil(context, tipKey);
+                        return IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              TuileOutil(
+                                label: l10n.homeToolBubble,
+                                icone: Icons.auto_awesome,
+                                onTap: () => ouvrirPlaceholder(
+                                  context,
+                                  l10n.placeholderBulle,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: AppSpacing.md),
-                            TuileOutil(
-                              label: l10n.homeToolDailyTip,
-                              icone: Icons.lightbulb_outline,
-                              description: tipTexte,
-                              onTap: () => AppRouter.versConseils(context),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                              const SizedBox(width: AppSpacing.md),
+                              TuileOutil(
+                                label: l10n.homeToolDailyTip,
+                                icone: Icons.lightbulb_outline,
+                                description: tipTexte,
+                                onTap: () => AppRouter.versConseils(context),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  // Pilule « Faire une pause ».
-                  Center(
-                    child: PiluleAction(
-                      label: l10n.homePauseCta,
-                      icone: Icons.eco,
-                      onTap: () =>
-                          ouvrirPlaceholder(context, l10n.placeholderPause),
+                  // index 4 — Pilule « Faire une pause ».
+                  // PiluleAction gère son propre breathing (boucle infinie) —
+                  // on enrobe juste l'entrée, sans doubler ses animations.
+                  EntreeDouce(
+                    index: 4,
+                    child: Center(
+                      child: PiluleAction(
+                        label: l10n.homePauseCta,
+                        icone: Icons.eco,
+                        onTap: () =>
+                            ouvrirPlaceholder(context, l10n.placeholderPause),
+                      ),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  // Lien tertiaire « Mon temps d'écran ».
-                  Center(
-                    child: TextButton.icon(
-                      onPressed: () => AppRouter.versTempsEcran(context),
-                      icon: const Icon(
-                        Icons.timer_outlined,
-                        size: 18,
-                        color: AppColors.textMuted,
-                      ),
-                      label: Text(
-                        l10n.homeScreenTime,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  // index 5 — Lien tertiaire « Mon temps d'écran ».
+                  EntreeDouce(
+                    index: 5,
+                    child: Center(
+                      child: TextButton.icon(
+                        onPressed: () => AppRouter.versTempsEcran(context),
+                        icon: const Icon(
+                          Icons.timer_outlined,
+                          size: 18,
                           color: AppColors.textMuted,
+                        ),
+                        label: Text(
+                          l10n.homeScreenTime,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(color: AppColors.textMuted),
                         ),
                       ),
                     ),

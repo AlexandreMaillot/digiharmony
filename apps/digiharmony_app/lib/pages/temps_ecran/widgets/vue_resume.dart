@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:digiharmony_app/app/routing/app_router.dart';
+import 'package:digiharmony_app/common/anim/compteur_anime.dart';
 import 'package:digiharmony_app/common/placeholder_screen.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/temps_ecran/bloc/temps_ecran_bloc.dart';
@@ -273,7 +274,7 @@ class _JaugePainter extends CustomPainter {
   bool shouldRepaint(_JaugePainter old) => old.fraction != fraction;
 }
 
-/// Contenu centré à l'intérieur de la jauge : durée + label.
+/// Contenu centré à l'intérieur de la jauge : durée animée + label.
 class _CentreJauge extends StatelessWidget {
   const _CentreJauge({required this.total});
 
@@ -288,9 +289,13 @@ class _CentreJauge extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            formaterDuree(l10n, total),
-            style: theme.textTheme.headlineMedium,
+          // Durée animée en count-up (no-op en reduced-motion).
+          CompteurAnimeDuree(
+            duree: total,
+            builder: (context, dureeCourante) => Text(
+              formaterDuree(l10n, dureeCourante),
+              style: theme.textTheme.headlineMedium,
+            ),
           ),
           Text(
             l10n.tempsEcranAujourdhui,

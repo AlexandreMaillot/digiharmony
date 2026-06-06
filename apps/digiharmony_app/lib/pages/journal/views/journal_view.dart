@@ -1,3 +1,4 @@
+import 'package:digiharmony_app/common/anim/anim_constants.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/journal/bloc/journal_bloc/journal_bloc.dart';
 import 'package:digiharmony_app/pages/journal/widgets/journal_segmented_control.dart';
@@ -42,11 +43,29 @@ class JournalView extends StatelessWidget {
           ),
         ),
       ),
-      body: switch (vueActive) {
-        JournalVue.jour => const JournalVueJour(),
-        JournalVue.semaine => const JournalVueSemaine(),
-        JournalVue.mois => const JournalVueMois(),
-      },
+      body: Builder(
+        builder: (context) {
+          final disableAnimations =
+              MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+
+          final vue = switch (vueActive) {
+            JournalVue.jour => const JournalVueJour(),
+            JournalVue.semaine => const JournalVueSemaine(),
+            JournalVue.mois => const JournalVueMois(),
+          };
+
+          // Crossfade entre vues du journal.
+          // En reduced-motion : switch direct sans fondu.
+          if (disableAnimations) return vue;
+
+          return AnimatedSwitcher(
+            duration: dureeEntree,
+            switchInCurve: curveEntree,
+            switchOutCurve: Curves.easeIn,
+            child: KeyedSubtree(key: ValueKey(vueActive), child: vue),
+          );
+        },
+      ),
     );
   }
 }
