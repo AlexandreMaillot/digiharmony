@@ -164,6 +164,17 @@
     "conseilsTagRappel": "Rappel",
     "conseilsTagConseilPratique": "Conseil pratique",
     "conseilsTagEmotion": "Émotion",
+    "conseilsTagRespiration": "Respiration",
+    "conseilsTagEnergie": "Énergie",
+    "conseilsTagGratitude": "Gratitude",
+    "conseilsTagGrandAir": "Grand air",
+    "conseilsTagDeconnexion": "Déconnexion",
+    "conseilsTagLien": "Lien",
+    "conseilsTagBienveillance": "Bienveillance",
+    "conseilsTagPresence": "Présence",
+    "conseilsTagEstimeDeSoi": "Estime de soi",
+    "conseilsTagRelations": "Relations",
+    "conseilsTagEspace": "Espace",
     "conseilsEmotionHeadline": "Quand tu te sens {emotion}…",
     "@conseilsEmotionHeadline": {
         "placeholders": {
