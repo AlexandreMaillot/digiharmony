@@ -9,10 +9,11 @@ import 'package:flutter/material.dart';
 /// Structure :
 ///   - Streak accent 4 px en haut
 ///   - Tag (icône + libellé)
-///   - Citation 2 lignes (ligne 2 en accent)
-///   - Sous-texte atténué
+///   - Citation 2 lignes (ligne 2 en accent) + sous-texte atténué
+///   - Do's (3 puces ✓, accent) + Don'ts (2 puces ✗, gris)
 ///
-/// Clés ARB : `<cle>Tag`, `<cle>Citation1`, `<cle>Citation2`, `<cle>SousTexte`.
+/// Clés ARB : `<cle>Tag`, `<cle>Citation1`, `<cle>Citation2`,
+///            `<cle>SousTexte`, `<cle>Do1..3`, `<cle>Dont1..2`.
 class CarteRappelWidget extends StatelessWidget {
   /// Crée la carte rappel.
   const CarteRappelWidget({
@@ -36,17 +37,18 @@ class CarteRappelWidget extends StatelessWidget {
     final citation2 = resoudreCleCorpus(l10n, '${cle}Citation2');
     final sousTexte = resoudreCleCorpus(l10n, '${cle}SousTexte');
     final tag = resoudreCleCorpus(l10n, '${cle}Tag');
+    final dos = resoudreLignes(l10n, cle, 'Do', 3);
+    final donts = resoudreLignes(l10n, cle, 'Dont', 2);
 
-    // Citation (28 px de base ; agrandie à 40 px quand la carte n'a qu'une
-    // seule ligne — tipDay01..07 sans Citation2/SousTexte — pour occuper
-    // visiblement la carte pleine hauteur, conforme maquette new_screen13).
-    final citationSeule = citation2.isEmpty && sousTexte.isEmpty;
-    final tailleCitation = citationSeule ? 40.0 : 28.0;
+    // Citation (26 px) — taille réduite pour cohabiter avec les Do's/Don'ts
+    // dans la carte pleine hauteur sans écraser les listes.
+    // Conforme maquette new_screen13.
+    const tailleCitation = 26.0;
 
-    // Maquette : Column `justify-between` en 3 zones (tag / citation /
-    // sous-texte). Quand Citation2 et SousTexte sont vides (rappels-citation),
-    // la citation reste centrée verticalement dans la carte pleine hauteur
-    // grâce à `spaceBetween` (carte intentionnelle, jamais « cassée »).
+    // Maquette : Column `justify-between` en 3 zones :
+    //   1. Tag
+    //   2. Citation + sous-texte
+    //   3. Do's + Don'ts
     return ContenuCarte(
       accent: accent,
       child: Column(
@@ -59,7 +61,7 @@ class CarteRappelWidget extends StatelessWidget {
             accent: accent,
             icone: Icons.wb_sunny_outlined,
           ),
-          // Zone médiane : citation (centrée verticalement)
+          // Zone médiane : citation + sous-texte
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -83,23 +85,33 @@ class CarteRappelWidget extends StatelessWidget {
                     height: 1.15,
                   ),
                 ),
+              if (sousTexte.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.xs),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 260),
+                  child: Text(
+                    sousTexte,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: AppColors.textMuted,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
-          // Zone basse : sous-texte (SizedBox vide si absent → garde la
-          // distribution `spaceBetween`).
-          if (sousTexte.isNotEmpty)
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 260),
-              child: Text(
-                sousTexte,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.textMuted,
-                  fontSize: 13,
-                ),
-              ),
-            )
-          else
-            const SizedBox.shrink(),
+          // Zone basse : Do's + Don'ts
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (dos.isNotEmpty) ...[
+                ...dos.map((d) => PuceDo(texte: d, accent: accent)),
+                const SizedBox(height: AppSpacing.xs),
+              ],
+              if (donts.isNotEmpty) ...donts.map((d) => PuceDont(texte: d)),
+            ],
+          ),
         ],
       ),
     );
