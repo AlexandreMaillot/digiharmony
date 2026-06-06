@@ -83,5 +83,6 @@
     "soutienPlusTard": "Plus tard",
     "soutienAucuneRelance": "Aucune relance — à ton rythme",
     "soutienConfianceTitre": "Parler à quelqu'un de confiance",
-    "soutienConfianceParagraphe": "Tu peux en parler à un parent, un·e prof, un·e ami·e ou un adulte en qui tu as confiance. Tu n'as pas à tout porter seul·e."
+    "soutienConfianceParagraphe": "Tu peux en parler à un parent, un·e prof, un·e ami·e ou un adulte en qui tu as confiance. Tu n'as pas à tout porter seul·e.",
+    "soutienErreurLien": "Impossible d'ouvrir ce lien."
 }

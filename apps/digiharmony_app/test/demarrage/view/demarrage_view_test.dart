@@ -6,6 +6,7 @@ import 'package:digiharmony_app/pages/demarrage/views/demarrage_page.dart';
 import 'package:digiharmony_app/pages/demarrage/views/demarrage_view.dart';
 import 'package:digiharmony_app/pages/demarrage/widgets/barre_signature.dart';
 import 'package:digiharmony_app/pages/demarrage/widgets/points_chargement.dart';
+import 'package:digiharmony_app/pages/soutien/bloc/soutien_bloc.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -172,16 +173,21 @@ void main() {
         // ignore: unnecessary_lambdas closure requise par mocktail when()
         () => db.observerDerniereHumeurDuJour(),
       ).thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
+      // Compteur à 0 pour éviter le déclenchement du soutien.
+      when(db.compterSaisiesNegativesConsecutives).thenAnswer((_) async => 0);
 
       await tester.pumpWidget(
         RepositoryProvider<AppDatabase>.value(
           value: db,
-          child: const MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: MediaQuery(
-              data: MediaQueryData(disableAnimations: true),
-              child: DemarragePage(),
+          child: BlocProvider<SoutienBloc>(
+            create: (_) => SoutienBloc(),
+            child: const MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: MediaQuery(
+                data: MediaQueryData(disableAnimations: true),
+                child: DemarragePage(),
+              ),
             ),
           ),
         ),

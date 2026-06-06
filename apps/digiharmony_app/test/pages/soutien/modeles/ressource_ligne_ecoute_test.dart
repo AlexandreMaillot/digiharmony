@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:digiharmony_app/pages/soutien/modeles/ressource_ligne_ecoute.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,17 +16,61 @@ void main() {
       expect(tableRessources, isEmpty);
     });
 
-    // Garde-fou : aucun numero reel (ex. 3114) dans le code source.
-    // Ce test verifie que la table est bien vide.
-    test('SO-RES-3 : garde-fou — aucun numero de crise hardcode', () {
-      for (final ressource in tableRessources.values) {
-        expect(
-          ressource.cible,
-          isNot(contains('3114')),
-          reason: 'Aucun numero de ligne de crise reel ne doit etre hardcode',
-        );
-      }
-    });
+    // Garde-fou : aucun numéro de crise réel dans les ARBs soutien*.
+    // Ce test lit les fichiers source fr + en et vérifie que les valeurs
+    // des clés « soutien* » ne contiennent aucune séquence de 3+ chiffres
+    // consécutifs (pattern d'un numéro de ligne d'écoute) ni aucune valeur
+    // de la liste noire connue.
+    test(
+      'SO-RES-3 : garde-fou — aucun numero reel dans les ARB soutien*',
+      () {
+        const arbDir = 'lib/l10n/arb';
+        const listeNoire = <String>['3114', '116111', '0800'];
+        // Regex : 3 chiffres consécutifs ou plus
+        final regexpChiffres = RegExp(r'\d{3,}');
+
+        for (final lang in ['fr', 'en']) {
+          final fichier = File('$arbDir/app_$lang.arb');
+          expect(
+            fichier.existsSync(),
+            isTrue,
+            reason: 'ARB introuvable : $fichier',
+          );
+
+          final contenu = fichier.readAsStringSync();
+          final arb = jsonDecode(contenu) as Map<String, dynamic>;
+
+          for (final entry in arb.entries) {
+            final cle = entry.key;
+            final valeur = entry.value;
+
+            // Ne tester que les clés soutien* (valeurs string uniquement).
+            if (!cle.startsWith('soutien')) continue;
+            if (valeur is! String) continue;
+
+            // Aucun numéro de liste noire.
+            for (final interdit in listeNoire) {
+              expect(
+                valeur,
+                isNot(contains(interdit)),
+                reason:
+                    'Numéro de crise interdit "$interdit" trouvé dans la '
+                    'clé "$cle" ($lang) : "$valeur"',
+              );
+            }
+
+            // Aucune séquence de 3+ chiffres consécutifs.
+            expect(
+              regexpChiffres.hasMatch(valeur),
+              isFalse,
+              reason:
+                  'Séquence numérique suspecte dans la clé "$cle" ($lang) '
+                  ': "$valeur"',
+            );
+          }
+        }
+      },
+    );
   });
 
   group('RessourceLigneEcoute', () {

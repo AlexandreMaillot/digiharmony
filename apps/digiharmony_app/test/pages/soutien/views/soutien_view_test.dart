@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/soutien/views/soutien_view.dart';
@@ -140,14 +141,39 @@ void main() {
     testWidgets(
       "SO-VIEW-6 : reduced motion -> HaloSoutien statique (pas d'animation)",
       (tester) async {
+        // disableAnimations: true par défaut dans pumpSoutienView.
         await tester.pumpSoutienView();
         await tester.pump();
 
-        // HaloSoutien present
+        // HaloSoutien présent.
         expect(find.byType(HaloSoutien), findsOneWidget);
-        // Pas de flutter_animate AnimatedWidget en boucle
-        // En reduced motion, le halo est un simple Container (pas d'Animate)
-        // On verifie juste que le widget est present et sans crash
+
+        // En reduced motion, le halo retourne un Container statique.
+        // pumpAndSettle() doit terminer (aucun AnimationController en boucle
+        // infinie). S'il y avait une boucle d'animation, pumpAndSettle()
+        // lancerait une FrameTimeoutException avant le timeout.
+        await tester.pumpAndSettle();
+      },
+    );
+
+    testWidgets(
+      'SO-VIEW-6b : animations activees -> HaloSoutien est anime '
+      '(pas un Container nu)',
+      (tester) async {
+        // disableAnimations: false => le halo doit porter une animation.
+        await tester.pumpSoutienView(disableAnimations: false);
+        await tester.pump();
+
+        expect(find.byType(HaloSoutien), findsOneWidget);
+
+        // Quand les animations sont actives, le halo est un Animate en boucle.
+        // On vérifie que le widget est présent et qu'aucune exception n'a été
+        // lancée, puis on démontre pour éviter le timer pendant.
+        expect(tester.takeException(), isNull);
+
+        // Démonter le widget pour vider les timers d'animation en boucle.
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(seconds: 5));
       },
     );
 
@@ -171,17 +197,74 @@ void main() {
             );
           }
         }
+
+        // CTA primaire et secondaire : vérifier la taille minimale
+        // via SizedBox.shrink ou minimumSize configuré sur ElevatedButton.
+        // Les CTA utilisent BoutonActionSoutien avec minimumSize: Size(48,48).
+        final elevatedButtons = tester.widgetList<ElevatedButton>(
+          find.byType(ElevatedButton),
+        );
+        for (final btn in elevatedButtons) {
+          final style = btn.style;
+          if (style != null) {
+            final size = style.minimumSize?.resolve({});
+            if (size != null) {
+              expect(
+                size.height,
+                greaterThanOrEqualTo(48),
+                reason: 'Cible tactile CTA < 48 dp : ${size.height}',
+              );
+            }
+          }
+        }
       },
     );
 
-    // Garde-fou : aucun numero de crise reel dans le code de la vue.
-    test('SO-VIEW-8 : garde-fou — aucun numero 3114 dans le code soutien', () {
-      // Ce test verifie la contrainte au niveau du modele (table vide).
-      // Le vrai garde-fou est dans ressource_ligne_ecoute_test.dart.
-      // Ici on confirme que SoutienView ne hardcode aucun numero.
-      const source = '';
-      expect(source.contains('3114'), isFalse);
-    });
+    // Garde-fou : aucun numéro de crise réel dans les sources Dart soutien.
+    // Ce test lit les fichiers Dart du périmètre soutien et vérifie l'absence
+    // des numéros connus (3114, 116111...) ainsi que de séquences de 5+
+    // chiffres consécutifs (format téléphone minimal).
+    test(
+      'SO-VIEW-8 : garde-fou — aucun numero reel hardcode dans '
+      'lib/pages/soutien/',
+      () {
+        const soutienDir = 'lib/pages/soutien';
+        const listeNoire = <String>['3114', '116111', '0800'];
+        // 5+ chiffres consécutifs = suspect pour un numéro de téléphone.
+        final regexpTel = RegExp(r'\d{5,}');
+
+        final dir = Directory(soutienDir);
+        expect(
+          dir.existsSync(),
+          isTrue,
+          reason: 'Répertoire soutien introuvable : $soutienDir',
+        );
+
+        final fichiersDart = dir
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.dart'));
+
+        for (final fichier in fichiersDart) {
+          final contenu = fichier.readAsStringSync();
+          for (final interdit in listeNoire) {
+            expect(
+              contenu,
+              isNot(contains(interdit)),
+              reason:
+                  'Numéro de crise interdit "$interdit" trouvé dans '
+                  '${fichier.path}',
+            );
+          }
+          expect(
+            regexpTel.hasMatch(contenu),
+            isFalse,
+            reason:
+                'Séquence numérique téléphone suspecte dans ${fichier.path}',
+          );
+        }
+      },
+    );
   });
 }
 

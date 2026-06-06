@@ -111,9 +111,10 @@ class BlocLigneEcoute extends StatelessWidget {
     }
 
     if (!succes && context.mounted) {
+      final l10n = context.l10n;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Impossible d'ouvrir ce lien."),
+        SnackBar(
+          content: Text(l10n.soutienErreurLien),
           behavior: SnackBarBehavior.floating,
         ),
       );

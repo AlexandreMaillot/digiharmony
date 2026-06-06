@@ -81,5 +81,6 @@
     "soutienPlusTard": "Later",
     "soutienAucuneRelance": "No reminders — at your own pace",
     "soutienConfianceTitre": "Talk to someone you trust",
-    "soutienConfianceParagraphe": "You can talk to a parent, a teacher, a friend or a trusted adult. You don't have to carry it all alone."
+    "soutienConfianceParagraphe": "You can talk to a parent, a teacher, a friend or a trusted adult. You don't have to carry it all alone.",
+    "soutienErreurLien": "Unable to open this link."
 }
