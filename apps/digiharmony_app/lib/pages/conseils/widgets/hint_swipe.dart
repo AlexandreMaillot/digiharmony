@@ -69,16 +69,36 @@ class HintSwipe extends StatelessWidget {
               onPressed: aPrecedent ? onPrecedent : null,
             ),
           ),
-          // Hint textuel central (masqué en reduced-motion)
+          // Libellés centraux TAPPABLES « précédent | suivant »
+          // (masqués en reduced-motion ; les flèches restent actives).
           if (!disableAnimations)
             Expanded(
-              child: Text(
-                '${l10n.conseilsHintPrecedent}  |  ${l10n.conseilsHintSuivant}',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.textMuted.withValues(alpha: 0.45),
-                  fontSize: 13,
-                ),
-                textAlign: TextAlign.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _LienNav(
+                    libelle: l10n.conseilsHintPrecedent,
+                    actif: aPrecedent,
+                    onTap: onPrecedent,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xs,
+                    ),
+                    child: Text(
+                      '|',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.textMuted.withValues(alpha: 0.30),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                  _LienNav(
+                    libelle: l10n.conseilsHintSuivant,
+                    actif: aSuivant,
+                    onTap: onSuivant,
+                  ),
+                ],
               ),
             )
           else
@@ -97,6 +117,45 @@ class HintSwipe extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Libellé de navigation tappable (« précédent » / « suivant »).
+///
+/// Atténué et non-cliquable lorsque [actif] est faux (bout de deck).
+class _LienNav extends StatelessWidget {
+  const _LienNav({
+    required this.libelle,
+    required this.actif,
+    required this.onTap,
+  });
+
+  final String libelle;
+  final bool actif;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final couleur = AppColors.textMuted.withValues(
+      alpha: actif ? 0.55 : 0.25,
+    );
+    return InkWell(
+      onTap: actif ? onTap : null,
+      borderRadius: AppRadii.buttonRadius,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.sm,
+        ),
+        child: Text(
+          libelle,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            color: couleur,
+            fontSize: 13,
+          ),
+        ),
       ),
     );
   }
