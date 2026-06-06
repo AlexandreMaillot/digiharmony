@@ -86,14 +86,53 @@ class TempsEcranBloc extends Bloc<TempsEcranEvent, TempsEcranState> {
       } on Object {
         // L'affichage reste prioritaire ; l'historique est best-effort.
       }
+      // Lit l'historique des 7 derniers jours depuis Drift.
+      // Toujours 7 entrées : jours manquants = Duration.zero.
+      final historiqueRaw = await _database.observerHistoriqueUsage().first;
+      final historique = _construireHistorique(
+        historiqueRaw,
+        totalAujourdhui: resume.total,
+      );
       emit(
         TempsEcranState(
           status: TempsEcranStatus.pret,
           resume: resume,
+          historique: historique,
         ),
       );
     } on Object {
       emit(state.copierAvec(status: TempsEcranStatus.erreur));
     }
+  }
+
+  /// Construit une liste de 7 [EntreeHistorique] couvrant les 7 derniers jours.
+  ///
+  /// Fusionne les entrées Drift (passé) avec le total natif du jour courant.
+  /// Les jours sans donnée reçoivent [Duration.zero] (pas de crash).
+  static List<EntreeHistorique> _construireHistorique(
+    List<UsageEcranJournalier> drift, {
+    required Duration totalAujourdhui,
+  }) {
+    final now = DateTime.now();
+    final aujourdhui = DateTime(now.year, now.month, now.day);
+
+    // Index par jour normalisé → secondes Drift.
+    final index = <DateTime, int>{
+      for (final e in drift) e.jour: e.totalSecondes,
+    };
+    // Le jour courant est remplacé par le total natif (plus précis).
+    index[aujourdhui] = totalAujourdhui.inSeconds;
+
+    return [
+      for (var i = 6; i >= 0; i--)
+        () {
+          final jour = aujourdhui.subtract(Duration(days: i));
+          final secondes = index[jour] ?? 0;
+          return EntreeHistorique(
+            jour: jour,
+            total: Duration(seconds: secondes),
+          );
+        }(),
+    ];
   }
 }

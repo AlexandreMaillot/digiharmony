@@ -7,7 +7,6 @@ import 'package:digiharmony_app/pages/accueil/views/accueil_view.dart';
 import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_view.dart';
 import 'package:digiharmony_app/pages/temps_ecran/views/temps_ecran_view.dart';
-import 'package:digiharmony_app/pages/tuto_notifs/views/tuto_notifs_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -216,22 +215,17 @@ void main() {
       },
     );
 
-    // HN-8 : lien sœur « Reduce my notifications » → TutoNotifsView.
+    // HN-8 : le lien « Reduce my notifications » a été retiré de l'Accueil
+    // (réalignement maquette Banani). La navigation vers TutoNotifsView se
+    // fait désormais depuis l'écran temps d'écran (carte action).
     testWidgets(
-      'HN-8 : Reduce my notifications → TutoNotifsView',
+      'HN-8 : Reduce my notifications absent de lAccueil',
       (tester) async {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
         await tester.pumpNavTest(bloc, db: mockDb);
-        await tester.scrollUntilVisible(
-          find.text('Reduce my notifications'),
-          100,
-        );
-        await tester.tap(find.text('Reduce my notifications'));
-        await tester.pump();
-        await tester.pump();
-        expect(find.byType(TutoNotifsView), findsOneWidget);
+        expect(find.text('Reduce my notifications'), findsNothing);
       },
     );
   });

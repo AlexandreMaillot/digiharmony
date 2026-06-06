@@ -404,6 +404,38 @@
     "@soutienLigneDispo": {
         "description": "Generic availability label for the helpline card in the soutien screen."
     },
+    "tempsEcranIntro": "Here is your screen time today",
+    "@tempsEcranIntro": {
+        "description": "Intro line on the nominal screen time view."
+    },
+    "tempsEcranAujourdhui": "today",
+    "@tempsEcranAujourdhui": {
+        "description": "Label under the circular gauge (below the day total)."
+    },
+    "tempsEcranCetteSemaine": "this week",
+    "@tempsEcranCetteSemaine": {
+        "description": "Label under the weekly total (next to the 7-day chart)."
+    },
+    "tempsEcranEtMaintenant": "WHAT NOW?",
+    "@tempsEcranEtMaintenant": {
+        "description": "Section header (uppercase) for the action cards."
+    },
+    "tempsEcranFairePause": "Take a break",
+    "@tempsEcranFairePause": {
+        "description": "Action card title — stub for the Detox session."
+    },
+    "tempsEcranFairePauseSousTitre": "Start a Detox session now",
+    "@tempsEcranFairePauseSousTitre": {
+        "description": "Action card subtitle — stub for the Detox session."
+    },
+    "tempsEcranCouperNotifs": "Silence my notifications",
+    "@tempsEcranCouperNotifs": {
+        "description": "Action card title — opens the notifications tutorial."
+    },
+    "tempsEcranCouperNotifsSousTitre": "Quick guide to reduce interruptions",
+    "@tempsEcranCouperNotifsSousTitre": {
+        "description": "Action card subtitle — opens the notifications tutorial."
+    },
     "tempsEcranPermissionTitre": "To see your screen time",
     "@tempsEcranPermissionTitre": {
         "description": "Title of the permission explanation screen (before native access)."
@@ -506,10 +538,6 @@
     "tutoNotifsRassurance": "DigiHarmony never sends you notifications. This is about your other apps.",
     "@tutoNotifsRassurance": {
         "description": "Footer reassurance: the app emits no notifications."
-    },
-    "tutoNotifsAccueilLien": "Reduce my notifications",
-    "@tutoNotifsAccueilLien": {
-        "description": "Home tertiary link label opening the notifications tutorial."
     },
     "tutoNotifsIosEtape1Titre": "Open Settings",
     "@tutoNotifsIosEtape1Titre": { "description": "iOS step 1 title. TODO validation partenaires" },

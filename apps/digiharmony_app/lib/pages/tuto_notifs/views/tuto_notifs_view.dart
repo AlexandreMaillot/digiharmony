@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:digiharmony_app/common/placeholder_screen.dart';
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/tuto_notifs/modeles/etape_tuto_modele.dart';
@@ -130,14 +129,8 @@ class _TutoNotifsViewState extends State<TutoNotifsView> {
           height: 32,
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.menu, color: AppColors.textMuted),
-            tooltip: l10n.reglagesTooltip,
-            onPressed: () =>
-                ouvrirPlaceholder(context, l10n.placeholderReglages),
-          ),
-        ],
+        // SizedBox symétrique pour centrer le logo (pas de burger).
+        actions: const [SizedBox(width: 48)],
       ),
       body: Stack(
         children: [

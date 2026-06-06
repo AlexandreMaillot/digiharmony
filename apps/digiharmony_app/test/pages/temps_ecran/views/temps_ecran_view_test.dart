@@ -54,18 +54,13 @@ void main() {
     expect(find.text('Enable access in settings'), findsOneWidget);
   });
 
-  testWidgets('AC4 : pret → total + section apps', (tester) async {
+  testWidgets('AC4 : pret → jauge + intro + actions (maquette Banani)', (
+    tester,
+  ) async {
     const resume = ResumeTempsEcran(
       total: Duration(minutes: 40),
-      topApps: [
-        UsageAppVue(
-          nomApp: 'Instagram',
-          packageName: 'com.instagram.android',
-          duree: Duration(minutes: 30),
-          fractionDuTotal: 0.75,
-        ),
-      ],
-      autres: Duration(minutes: 10),
+      topApps: [],
+      autres: Duration.zero,
     );
     stub(
       const TempsEcranState(
@@ -75,11 +70,18 @@ void main() {
     );
     await tester.pumpVue(bloc);
     await tester.pump();
-    expect(find.text('Today'), findsOneWidget);
-    expect(find.text('Your apps'), findsOneWidget);
-    expect(find.text('Instagram'), findsOneWidget);
-    // Bucket « autres ».
-    expect(find.text('Others'), findsOneWidget);
+    // Intro.
+    expect(find.text('Here is your screen time today'), findsOneWidget);
+    // Label sous la jauge.
+    expect(find.text('today'), findsOneWidget);
+    // Label semaine.
+    expect(find.text('this week'), findsOneWidget);
+    // Section actions.
+    expect(find.text('WHAT NOW?'), findsOneWidget);
+    expect(find.text('Take a break'), findsOneWidget);
+    expect(find.text('Silence my notifications'), findsOneWidget);
+    // Top-apps ne s'affichent plus.
+    expect(find.text('Your apps'), findsNothing);
   });
 
   testWidgets('AC5 : vide → message bienveillant', (tester) async {
@@ -109,8 +111,20 @@ void main() {
     expect(find.text('Try again'), findsOneWidget);
   });
 
-  testWidgets('AC9 : footer « données locales » présent', (tester) async {
-    stub(const TempsEcranState(status: TempsEcranStatus.vide));
+  testWidgets(
+      'AC9 : carte confidentialité « données locales » présente en état pret',
+      (tester) async {
+    const resume = ResumeTempsEcran(
+      total: Duration(minutes: 40),
+      topApps: [],
+      autres: Duration.zero,
+    );
+    stub(
+      const TempsEcranState(
+        status: TempsEcranStatus.pret,
+        resume: resume,
+      ),
+    );
     await tester.pumpVue(bloc);
     await tester.pump();
     expect(

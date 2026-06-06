@@ -1,4 +1,3 @@
-import 'package:digiharmony_app/common/placeholder_screen.dart';
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/temps_ecran/bloc/temps_ecran_bloc.dart';
@@ -11,10 +10,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Vue de l'écran « Mon temps d'écran ».
 ///
-/// Toolbar (chevron + logo + menu placeholder) ; halo de fond a11y-aware ;
-/// switch d'états piloté par [TempsEcranBloc]. Observe le cycle de vie pour
-/// basculer `permissionRequise → pret/vide` au retour des réglages système
-/// (DEC-TE-07) — le Bloc ne porte pas de listener (testabilité).
+/// Toolbar : chevron · titre texte · SizedBox(48) pour centrage symétrique.
+/// Halo de fond a11y-aware. Switch d'états piloté par [TempsEcranBloc].
+/// Observe le cycle de vie pour basculer `permissionRequise → pret/vide`
+/// au retour des réglages système (DEC-TE-07) — le Bloc ne porte pas de
+/// listener (testabilité).
 class TempsEcranView extends StatefulWidget {
   /// Crée la vue.
   const TempsEcranView({super.key});
@@ -56,19 +56,13 @@ class _TempsEcranViewState extends State<TempsEcranView>
           constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Image.asset(
-          'assets/images/logo_digiharmony_square.png',
-          height: 32,
+        title: Text(
+          l10n.homeScreenTime,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.menu, color: AppColors.textMuted),
-            tooltip: l10n.reglagesTooltip,
-            onPressed: () =>
-                ouvrirPlaceholder(context, l10n.placeholderReglages),
-          ),
-        ],
+        // SizedBox symétrique pour centrer le titre (pas de burger).
+        actions: const [SizedBox(width: 48)],
       ),
       body: Stack(
         children: [
@@ -80,19 +74,7 @@ class _TempsEcranViewState extends State<TempsEcranView>
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                children: [
-                  Expanded(child: _Contenu()),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    l10n.tempsEcranDonneesLocales,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textMuted,
-                    ),
-                  ),
-                ],
-              ),
+              child: _Contenu(),
             ),
           ),
         ],
@@ -128,8 +110,9 @@ class _Contenu extends StatelessWidget {
           case TempsEcranStatus.permissionRequise:
             return const Center(child: VuePermission());
           case TempsEcranStatus.pret:
-            return SingleChildScrollView(
-              child: VueResume(resume: state.resume!),
+            return VueResume(
+              resume: state.resume!,
+              historique: state.historique,
             );
           case TempsEcranStatus.vide:
             return VueEtatMessage(
