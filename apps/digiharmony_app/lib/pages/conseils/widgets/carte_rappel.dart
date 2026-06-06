@@ -59,7 +59,7 @@ class CarteRappelWidget extends StatelessWidget {
           TagCarte(
             label: tag,
             accent: accent,
-            icone: Icons.wb_sunny_outlined,
+            icone: iconeTagPourCle(cle),
           ),
           // Zone médiane : citation + sous-texte
           Column(

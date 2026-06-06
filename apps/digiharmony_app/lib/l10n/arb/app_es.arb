@@ -162,6 +162,17 @@
     "conseilsTagRappel": "Reminder",
     "conseilsTagConseilPratique": "Practical tip",
     "conseilsTagEmotion": "Emotion",
+    "conseilsTagRespiration": "Breathing",
+    "conseilsTagEnergie": "Energy",
+    "conseilsTagGratitude": "Gratitude",
+    "conseilsTagGrandAir": "Fresh air",
+    "conseilsTagDeconnexion": "Unplug",
+    "conseilsTagLien": "Connection",
+    "conseilsTagBienveillance": "Self-kindness",
+    "conseilsTagPresence": "Presence",
+    "conseilsTagEstimeDeSoi": "Self-worth",
+    "conseilsTagRelations": "Relationships",
+    "conseilsTagEspace": "Space",
     "conseilsEmotionHeadline": "When you feel {emotion}",
     "@conseilsEmotionHeadline": {
         "placeholders": {

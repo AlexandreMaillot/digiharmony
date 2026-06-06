@@ -240,6 +240,29 @@ String resoudreCleCorpus(AppLocalizations l10n, String cle) {
   return _clesCorp[cle]?.call(l10n) ?? '';
 }
 
+/// Renvoie l'icône Material associée à la clé de carte [cle].
+///
+/// Chaque carte possède son propre tag visuel (icône + libellé). Le défaut
+/// est [Icons.lightbulb_outline] pour toute clé inconnue.
+IconData iconeTagPourCle(String cle) {
+  return _iconesTag[cle] ?? Icons.lightbulb_outline;
+}
+
+// Table icône → clé de carte. Une entrée par carte ayant un tag spécifique.
+const Map<String, IconData> _iconesTag = {
+  'tipDay01': Icons.air,
+  'tipDay02': Icons.bolt,
+  'tipDay03': Icons.volunteer_activism_outlined,
+  'tipDay04': Icons.park_outlined,
+  'tipDay05': Icons.do_not_disturb_on_outlined,
+  'tipDay06': Icons.sentiment_satisfied_alt,
+  'tipDay07': Icons.spa_outlined,
+  'conseilRappelPresent': Icons.center_focus_strong_outlined,
+  'conseilRappelLikes': Icons.star_outline,
+  'conseilPratiqueInteractions': Icons.groups_outlined,
+  'conseilPratiqueEspace': Icons.crop_free,
+};
+
 /// Résout une liste de lignes (Do's ou Don'ts) depuis les ARB.
 ///
 /// [nb] = nombre de lignes attendues (3 Do's ou 2 Don'ts).
@@ -260,7 +283,7 @@ List<String> resoudreLignes(
 // PLACEHOLDER — contenu à valider partenaires Erasmus+ (DEC-CO-10).
 final Map<String, String Function(AppLocalizations)> _clesCorp = {
   // ── tipDay01..07 (rappels) ────────────────────────────────────────────
-  'tipDay01Tag': (l) => l.conseilsTagRappel,
+  'tipDay01Tag': (l) => l.conseilsTagRespiration,
   'tipDay01Citation1': (l) => l.tipDay01,
   'tipDay01Citation2': (_) => '',
   'tipDay01SousTexte': (_) => '',
@@ -269,7 +292,7 @@ final Map<String, String Function(AppLocalizations)> _clesCorp = {
   'tipDay01Do3': (l) => l.tipDay01Do3,
   'tipDay01Dont1': (l) => l.tipDay01Dont1,
   'tipDay01Dont2': (l) => l.tipDay01Dont2,
-  'tipDay02Tag': (l) => l.conseilsTagRappel,
+  'tipDay02Tag': (l) => l.conseilsTagEnergie,
   'tipDay02Citation1': (l) => l.tipDay02,
   'tipDay02Citation2': (_) => '',
   'tipDay02SousTexte': (_) => '',
@@ -278,7 +301,7 @@ final Map<String, String Function(AppLocalizations)> _clesCorp = {
   'tipDay02Do3': (l) => l.tipDay02Do3,
   'tipDay02Dont1': (l) => l.tipDay02Dont1,
   'tipDay02Dont2': (l) => l.tipDay02Dont2,
-  'tipDay03Tag': (l) => l.conseilsTagRappel,
+  'tipDay03Tag': (l) => l.conseilsTagGratitude,
   'tipDay03Citation1': (l) => l.tipDay03,
   'tipDay03Citation2': (_) => '',
   'tipDay03SousTexte': (_) => '',
@@ -287,7 +310,7 @@ final Map<String, String Function(AppLocalizations)> _clesCorp = {
   'tipDay03Do3': (l) => l.tipDay03Do3,
   'tipDay03Dont1': (l) => l.tipDay03Dont1,
   'tipDay03Dont2': (l) => l.tipDay03Dont2,
-  'tipDay04Tag': (l) => l.conseilsTagRappel,
+  'tipDay04Tag': (l) => l.conseilsTagGrandAir,
   'tipDay04Citation1': (l) => l.tipDay04,
   'tipDay04Citation2': (_) => '',
   'tipDay04SousTexte': (_) => '',
@@ -296,7 +319,7 @@ final Map<String, String Function(AppLocalizations)> _clesCorp = {
   'tipDay04Do3': (l) => l.tipDay04Do3,
   'tipDay04Dont1': (l) => l.tipDay04Dont1,
   'tipDay04Dont2': (l) => l.tipDay04Dont2,
-  'tipDay05Tag': (l) => l.conseilsTagRappel,
+  'tipDay05Tag': (l) => l.conseilsTagDeconnexion,
   'tipDay05Citation1': (l) => l.tipDay05,
   'tipDay05Citation2': (_) => '',
   'tipDay05SousTexte': (_) => '',
@@ -305,7 +328,7 @@ final Map<String, String Function(AppLocalizations)> _clesCorp = {
   'tipDay05Do3': (l) => l.tipDay05Do3,
   'tipDay05Dont1': (l) => l.tipDay05Dont1,
   'tipDay05Dont2': (l) => l.tipDay05Dont2,
-  'tipDay06Tag': (l) => l.conseilsTagRappel,
+  'tipDay06Tag': (l) => l.conseilsTagLien,
   'tipDay06Citation1': (l) => l.tipDay06,
   'tipDay06Citation2': (_) => '',
   'tipDay06SousTexte': (_) => '',
@@ -314,7 +337,7 @@ final Map<String, String Function(AppLocalizations)> _clesCorp = {
   'tipDay06Do3': (l) => l.tipDay06Do3,
   'tipDay06Dont1': (l) => l.tipDay06Dont1,
   'tipDay06Dont2': (l) => l.tipDay06Dont2,
-  'tipDay07Tag': (l) => l.conseilsTagRappel,
+  'tipDay07Tag': (l) => l.conseilsTagBienveillance,
   'tipDay07Citation1': (l) => l.tipDay07,
   'tipDay07Citation2': (_) => '',
   'tipDay07SousTexte': (_) => '',
@@ -324,7 +347,7 @@ final Map<String, String Function(AppLocalizations)> _clesCorp = {
   'tipDay07Dont1': (l) => l.tipDay07Dont1,
   'tipDay07Dont2': (l) => l.tipDay07Dont2,
   // ── conseilRappelPresent ──────────────────────────────────────────────
-  'conseilRappelPresentTag': (l) => l.conseilsTagEquilibre,
+  'conseilRappelPresentTag': (l) => l.conseilsTagPresence,
   'conseilRappelPresentCitation1': (l) => l.conseilRappelPresentCitation1,
   'conseilRappelPresentCitation2': (l) => l.conseilRappelPresentCitation2,
   'conseilRappelPresentSousTexte': (l) => l.conseilRappelPresentSousTexte,
@@ -334,7 +357,7 @@ final Map<String, String Function(AppLocalizations)> _clesCorp = {
   'conseilRappelPresentDont1': (l) => l.conseilRappelPresentDont1,
   'conseilRappelPresentDont2': (l) => l.conseilRappelPresentDont2,
   // ── conseilRappelLikes ────────────────────────────────────────────────
-  'conseilRappelLikesTag': (l) => l.conseilsTagEquilibre,
+  'conseilRappelLikesTag': (l) => l.conseilsTagEstimeDeSoi,
   'conseilRappelLikesCitation1': (l) => l.conseilRappelLikesCitation1,
   'conseilRappelLikesCitation2': (l) => l.conseilRappelLikesCitation2,
   'conseilRappelLikesSousTexte': (l) => l.conseilRappelLikesSousTexte,
@@ -344,7 +367,7 @@ final Map<String, String Function(AppLocalizations)> _clesCorp = {
   'conseilRappelLikesDont1': (l) => l.conseilRappelLikesDont1,
   'conseilRappelLikesDont2': (l) => l.conseilRappelLikesDont2,
   // ── conseilPratiqueInteractions ───────────────────────────────────────
-  'conseilPratiqueInteractionsTag': (l) => l.conseilsTagConseilPratique,
+  'conseilPratiqueInteractionsTag': (l) => l.conseilsTagRelations,
   'conseilPratiqueInteractionsHeadline': (l) =>
       l.conseilPratiqueInteractionsHeadline,
   'conseilPratiqueInteractionsDo1': (l) => l.conseilPratiqueInteractionsDo1,
@@ -355,7 +378,7 @@ final Map<String, String Function(AppLocalizations)> _clesCorp = {
   'conseilPratiqueInteractionsDont2': (l) =>
       l.conseilPratiqueInteractionsDont2,
   // ── conseilPratiqueEspace ─────────────────────────────────────────────
-  'conseilPratiqueEspaceTag': (l) => l.conseilsTagConseilPratique,
+  'conseilPratiqueEspaceTag': (l) => l.conseilsTagEspace,
   'conseilPratiqueEspaceHeadline': (l) => l.conseilPratiqueEspaceHeadline,
   'conseilPratiqueEspaceDo1': (l) => l.conseilPratiqueEspaceDo1,
   'conseilPratiqueEspaceDo2': (l) => l.conseilPratiqueEspaceDo2,

@@ -50,7 +50,7 @@ class CarteConseilPratiqueWidget extends StatelessWidget {
           TagCarte(
             label: tag.isEmpty ? l10n.conseilsTagConseilPratique : tag,
             accent: accent,
-            icone: Icons.bolt,
+            icone: iconeTagPourCle(cle),
           ),
           // Zone basse : headline + Do's + Don'ts
           Column(
