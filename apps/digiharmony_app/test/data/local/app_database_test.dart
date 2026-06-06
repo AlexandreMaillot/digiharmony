@@ -27,14 +27,14 @@ void main() {
       expect(a.cleConseil, b.cleConseil);
     });
 
-    test('TIP-3 : index = joursDepuisEpoch % n', () async {
-      final all = await (db.select(
-        db.conseils,
-      )..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+    test('TIP-3 : index = joursDepuisEpoch % n (génériques)', () async {
+      // conseilDuJour tourne sur les génériques (type_carte != 'emotion')
+      // ordonnés par ordre/id — même ensemble que composerDeck (DEC-CO-11).
+      final generiques = await db.cartesGeneriquesOrdonnees();
       final day = DateTime(2026, 6, 5);
       final jour = DateTime(day.year, day.month, day.day);
       final jours = jour.difference(DateTime(1970)).inDays;
-      final attendu = all[jours % all.length];
+      final attendu = generiques[jours % generiques.length];
       final tip = await db.conseilDuJour(day);
       expect(tip.cleConseil, attendu.cleConseil);
     });
@@ -47,10 +47,13 @@ void main() {
     });
 
     test('TIP-5 : cycle modulo n (d et d+n identiques)', () async {
-      final all = await db.conseils.count().getSingle();
+      // Le cycle est basé sur le nombre de génériques, pas le total.
+      final generiques = await db.cartesGeneriquesOrdonnees();
       final day = DateTime(2026, 6, 5);
       final t1 = await db.conseilDuJour(day);
-      final t2 = await db.conseilDuJour(day.add(Duration(days: all)));
+      final t2 = await db.conseilDuJour(
+        day.add(Duration(days: generiques.length)),
+      );
       expect(t1.cleConseil, t2.cleConseil);
     });
 

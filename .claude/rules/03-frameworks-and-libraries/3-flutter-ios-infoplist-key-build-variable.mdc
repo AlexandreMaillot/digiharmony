@@ -1,0 +1,43 @@
+---
+description: iOS — pour une valeur d'Info.plist qui varie par flavor (ex. launch storyboard), passer par une variable de build, pas INFOPLIST_KEY_*
+globs: apps/*/ios/**
+alwaysApply: true
+---
+
+Principe:
+- Quand une clé existe **déjà dans `Info.plist`** (fichier explicite via `INFOPLIST_FILE`), le réglage de
+  build `INFOPLIST_KEY_<Clé>` est **ignoré** : la valeur du fichier l'emporte (Xcode peut émettre un
+  avertissement). On ne peut donc PAS surcharger une clé déjà présente par config/flavor via
+  `INFOPLIST_KEY_*`.
+- Pour une valeur **qui varie par flavor** (ex. `UILaunchStoryboardName` production-only), faire pointer
+  l'`Info.plist` vers une **variable de build avec défaut**, puis ne définir cette variable que sur les
+  configs concernées.
+
+Règles:
+- `Info.plist` : `<key>UILaunchStoryboardName</key><string>$(LAUNCH_STORYBOARD_NAME:default=LaunchScreen)</string>`.
+- Dans `project.pbxproj`, ajouter `LAUNCH_STORYBOARD_NAME = LaunchScreenProduction;` **uniquement** dans les
+  `buildSettings` des configs ciblées (ex. `Debug/Release/Profile-production`). Les autres configs retombent
+  sur le défaut → isolement réel par flavor (dev/staging inchangés).
+- Un **storyboard/asset référencé par cette variable doit être ajouté au projet Xcode** : `PBXFileReference`
+  + `PBXBuildFile` + entrée dans la phase **Resources** (calquer sur `LaunchScreen.storyboard`), sinon il est
+  introuvable au runtime même si la variable pointe dessus.
+- Après édition manuelle du `pbxproj` : valider avec `plutil -lint ios/Runner.xcodeproj/project.pbxproj`,
+  puis un build du/des flavors concernés (`flutter build ios --flavor <f> --no-codesign`).
+
+Anti-pattern (surcharge silencieusement ignorée):
+```
+// project.pbxproj, config production — Info.plist a déjà UILaunchStoryboardName
+INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreenProduction; // ignoré → reste LaunchScreen
+```
+
+Correct:
+```
+// Info.plist
+<key>UILaunchStoryboardName</key>
+<string>$(LAUNCH_STORYBOARD_NAME:default=LaunchScreen)</string>
+// project.pbxproj — SEULEMENT sur les configs production
+LAUNCH_STORYBOARD_NAME = LaunchScreenProduction;
+```
+
+Contexte projet : DEC-007 (identité d'app production-only). Idem logique applicable à d'autres clés
+plist variant par flavor.

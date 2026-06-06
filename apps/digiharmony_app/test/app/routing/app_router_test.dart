@@ -22,7 +22,13 @@ void main() {
     database = _MockAppDatabase();
     when(
       () => database.conseilDuJour(any()),
-    ).thenAnswer((_) async => const Conseil(id: 1, cleConseil: 'tipDay01'));
+    ).thenAnswer((_) async => const Conseil(
+        id: 1,
+        cleConseil: 'tipDay01',
+        typeCarte: 'rappel',
+        accentChrome: 'primary',
+        ordre: 1,
+      ));
     when(
       () => database.observerDerniereHumeurDuJour(),
     ).thenAnswer((_) => const Stream<EntreeHumeur?>.empty());

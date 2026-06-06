@@ -42,9 +42,10 @@ flowchart TD
     Pages --> TempsEcran["temps_ecran/ (Android natif app_usage + Drift v3 ; iOS Screen Time DEC-006)"]
     Pages --> TutoNotifs["tuto_notifs/ (tuto statique OS-aware, 0 natif/0 perm)"]
     Pages --> Parametres["parametres/ (langue live LocaleBloc + confidentialité + liens projet)"]
+    Pages --> Conseils["conseils/ (deck swipable rappel/conseil/emotion, composerDeck pur, Do's/Don'ts + tags par carte)"]
 
-    Data --> Tables["EntreesHumeur · Conseils · UsagesEcranJournaliers (historique, schéma v3)"]
-    Data --> Reads["observerDerniereHumeurDuJour · ...DeLaSemaine · ...DuMois · compterSaisiesNegativesConsecutives"]
+    Data --> Tables["EntreesHumeur · Conseils (étendue v4: type_carte/code_emotion/accent/ordre) · UsagesEcranJournaliers (v3)"]
+    Data --> Reads["observerDerniereHumeurDuJour · ...DeLaSemaine · ...DuMois · compterSaisiesNegativesConsecutives · conseilDuJour · cartesGeneriquesOrdonnees"]
     L10n --> Arb["arb/ (8 langues: en,fr,el,it,ro,tr,es,mk)"]
     L10n --> Gen["gen/ (app_localizations*.dart généré)"]
 
@@ -55,7 +56,7 @@ flowchart TD
     Pkgs --> Core["core_package/ (lib/src · test · .github)"]
 
     Docs --> Mem["memory/ (project-overview · codebase-map · internal · external)"]
-    Docs --> Dec["internal/decisions/ (ADR · 0001..0006)"]
+    Docs --> Dec["internal/decisions/ (ADR · 0001..0007)"]
     Docs --> Rules["rules/ (melos7-pub-workspace · android-gradle-minify-off · permissions-zero-collecte)"]
 ```
 
@@ -77,5 +78,15 @@ flowchart TD
   **dynamique** via `package_info_plus` ; liens projet via `url_launcher` **sans gate `canLaunchUrl`**
   (sur Android 11+ il renvoie false « component name null » alors que `launchUrl` réussit ; on appelle
   `launchUrl` directement en try/catch).
+- **Conseils** (`pages/conseils/`) : deck de cartes swipables (rappel / conseil / emotion), composition
+  **déterministe par jour** via helper PUR `composerDeck` (carte émotion en tête selon l'humeur **du jour**
+  + N génériques en rotation `% n`). Corpus = table `Conseils` **étendue v4** (clés ARB seulement, contenu
+  placeholder à valider partenaires). **Lecture seule, aucune écriture.** Chaque carte a des **Do's/Don'ts**
+  et un **tag thématique + icône** propres. `conseilDuJour` et `composerDeck` partagent
+  `cartesGeneriquesOrdonnees()` (filtre `≠ emotion`, ordre `ordre`/`id`) → la tuile Accueil = carte 0 du
+  deck (DEC-CO-11). Pas de CTA « J'applique ». Migration v3→v4 idempotente. Voir `tasks/conseils.md`.
+- **Identité d'app (production-only)** : icône **adaptative** Android + splash via `flutter_launcher_icons`
+  / `flutter_native_splash` (configs flavor → `android/app/src/production/`), iOS appiconset + storyboard
+  `LaunchScreenProduction` câblé par config (DEC-007). dev/staging inchangés. Nom « Digiharmony ».
 - Le dossier `counter/` du template very_good_cli a été retiré.
 

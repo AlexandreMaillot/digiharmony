@@ -404,8 +404,60 @@ class $ConseilsTable extends Conseils with TableInfo<$ConseilsTable, Conseil> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _typeCarteMeta = const VerificationMeta(
+    'typeCarte',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, cleConseil];
+  late final GeneratedColumn<String> typeCarte = GeneratedColumn<String>(
+    'type_carte',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('conseil'),
+  );
+  static const VerificationMeta _codeEmotionMeta = const VerificationMeta(
+    'codeEmotion',
+  );
+  @override
+  late final GeneratedColumn<String> codeEmotion = GeneratedColumn<String>(
+    'code_emotion',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _accentChromeMeta = const VerificationMeta(
+    'accentChrome',
+  );
+  @override
+  late final GeneratedColumn<String> accentChrome = GeneratedColumn<String>(
+    'accent_chrome',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('primary'),
+  );
+  static const VerificationMeta _ordreMeta = const VerificationMeta('ordre');
+  @override
+  late final GeneratedColumn<int> ordre = GeneratedColumn<int>(
+    'ordre',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    cleConseil,
+    typeCarte,
+    codeEmotion,
+    accentChrome,
+    ordre,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -429,6 +481,36 @@ class $ConseilsTable extends Conseils with TableInfo<$ConseilsTable, Conseil> {
     } else if (isInserting) {
       context.missing(_cleConseilMeta);
     }
+    if (data.containsKey('type_carte')) {
+      context.handle(
+        _typeCarteMeta,
+        typeCarte.isAcceptableOrUnknown(data['type_carte']!, _typeCarteMeta),
+      );
+    }
+    if (data.containsKey('code_emotion')) {
+      context.handle(
+        _codeEmotionMeta,
+        codeEmotion.isAcceptableOrUnknown(
+          data['code_emotion']!,
+          _codeEmotionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('accent_chrome')) {
+      context.handle(
+        _accentChromeMeta,
+        accentChrome.isAcceptableOrUnknown(
+          data['accent_chrome']!,
+          _accentChromeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('ordre')) {
+      context.handle(
+        _ordreMeta,
+        ordre.isAcceptableOrUnknown(data['ordre']!, _ordreMeta),
+      );
+    }
     return context;
   }
 
@@ -446,6 +528,22 @@ class $ConseilsTable extends Conseils with TableInfo<$ConseilsTable, Conseil> {
         DriftSqlType.string,
         data['${effectivePrefix}cle_conseil'],
       )!,
+      typeCarte: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type_carte'],
+      )!,
+      codeEmotion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code_emotion'],
+      ),
+      accentChrome: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}accent_chrome'],
+      )!,
+      ordre: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}ordre'],
+      )!,
     );
   }
 
@@ -461,17 +559,57 @@ class Conseil extends DataClass implements Insertable<Conseil> {
 
   /// Clé i18n du conseil (le texte traduit vit dans les ARB).
   final String cleConseil;
-  const Conseil({required this.id, required this.cleConseil});
+
+  /// Type de carte : 'rappel' | 'conseil' | 'emotion'.
+  final String typeCarte;
+
+  /// Code émotion canonique si typeCarte == 'emotion' (sinon null).
+  ///
+  /// ∈ emotionsCanoniques ('happy','calm','dynamic','sad','angry','nervous',
+  /// 'tired'). Couleur résolue via MoodColors.byKey à l'affichage.
+  final String? codeEmotion;
+
+  /// Jeton d'accent CHROME pour les cartes rappel/conseil.
+  ///
+  /// Valeurs : 'primary' | 'lime' | 'or'. Ignoré pour 'emotion' (couleur
+  /// dérivée de MoodColors). JAMAIS un hex (DEC-CO-07).
+  final String accentChrome;
+
+  /// Ordre stable dans le corpus (rotation déterministe). Défaut = id.
+  final int ordre;
+  const Conseil({
+    required this.id,
+    required this.cleConseil,
+    required this.typeCarte,
+    this.codeEmotion,
+    required this.accentChrome,
+    required this.ordre,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['cle_conseil'] = Variable<String>(cleConseil);
+    map['type_carte'] = Variable<String>(typeCarte);
+    if (!nullToAbsent || codeEmotion != null) {
+      map['code_emotion'] = Variable<String>(codeEmotion);
+    }
+    map['accent_chrome'] = Variable<String>(accentChrome);
+    map['ordre'] = Variable<int>(ordre);
     return map;
   }
 
   ConseilsCompanion toCompanion(bool nullToAbsent) {
-    return ConseilsCompanion(id: Value(id), cleConseil: Value(cleConseil));
+    return ConseilsCompanion(
+      id: Value(id),
+      cleConseil: Value(cleConseil),
+      typeCarte: Value(typeCarte),
+      codeEmotion: codeEmotion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(codeEmotion),
+      accentChrome: Value(accentChrome),
+      ordre: Value(ordre),
+    );
   }
 
   factory Conseil.fromJson(
@@ -482,6 +620,10 @@ class Conseil extends DataClass implements Insertable<Conseil> {
     return Conseil(
       id: serializer.fromJson<int>(json['id']),
       cleConseil: serializer.fromJson<String>(json['cleConseil']),
+      typeCarte: serializer.fromJson<String>(json['typeCarte']),
+      codeEmotion: serializer.fromJson<String?>(json['codeEmotion']),
+      accentChrome: serializer.fromJson<String>(json['accentChrome']),
+      ordre: serializer.fromJson<int>(json['ordre']),
     );
   }
   @override
@@ -490,17 +632,42 @@ class Conseil extends DataClass implements Insertable<Conseil> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'cleConseil': serializer.toJson<String>(cleConseil),
+      'typeCarte': serializer.toJson<String>(typeCarte),
+      'codeEmotion': serializer.toJson<String?>(codeEmotion),
+      'accentChrome': serializer.toJson<String>(accentChrome),
+      'ordre': serializer.toJson<int>(ordre),
     };
   }
 
-  Conseil copyWith({int? id, String? cleConseil}) =>
-      Conseil(id: id ?? this.id, cleConseil: cleConseil ?? this.cleConseil);
+  Conseil copyWith({
+    int? id,
+    String? cleConseil,
+    String? typeCarte,
+    Value<String?> codeEmotion = const Value.absent(),
+    String? accentChrome,
+    int? ordre,
+  }) => Conseil(
+    id: id ?? this.id,
+    cleConseil: cleConseil ?? this.cleConseil,
+    typeCarte: typeCarte ?? this.typeCarte,
+    codeEmotion: codeEmotion.present ? codeEmotion.value : this.codeEmotion,
+    accentChrome: accentChrome ?? this.accentChrome,
+    ordre: ordre ?? this.ordre,
+  );
   Conseil copyWithCompanion(ConseilsCompanion data) {
     return Conseil(
       id: data.id.present ? data.id.value : this.id,
       cleConseil: data.cleConseil.present
           ? data.cleConseil.value
           : this.cleConseil,
+      typeCarte: data.typeCarte.present ? data.typeCarte.value : this.typeCarte,
+      codeEmotion: data.codeEmotion.present
+          ? data.codeEmotion.value
+          : this.codeEmotion,
+      accentChrome: data.accentChrome.present
+          ? data.accentChrome.value
+          : this.accentChrome,
+      ordre: data.ordre.present ? data.ordre.value : this.ordre,
     );
   }
 
@@ -508,46 +675,86 @@ class Conseil extends DataClass implements Insertable<Conseil> {
   String toString() {
     return (StringBuffer('Conseil(')
           ..write('id: $id, ')
-          ..write('cleConseil: $cleConseil')
+          ..write('cleConseil: $cleConseil, ')
+          ..write('typeCarte: $typeCarte, ')
+          ..write('codeEmotion: $codeEmotion, ')
+          ..write('accentChrome: $accentChrome, ')
+          ..write('ordre: $ordre')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, cleConseil);
+  int get hashCode =>
+      Object.hash(id, cleConseil, typeCarte, codeEmotion, accentChrome, ordre);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Conseil &&
           other.id == this.id &&
-          other.cleConseil == this.cleConseil);
+          other.cleConseil == this.cleConseil &&
+          other.typeCarte == this.typeCarte &&
+          other.codeEmotion == this.codeEmotion &&
+          other.accentChrome == this.accentChrome &&
+          other.ordre == this.ordre);
 }
 
 class ConseilsCompanion extends UpdateCompanion<Conseil> {
   final Value<int> id;
   final Value<String> cleConseil;
+  final Value<String> typeCarte;
+  final Value<String?> codeEmotion;
+  final Value<String> accentChrome;
+  final Value<int> ordre;
   const ConseilsCompanion({
     this.id = const Value.absent(),
     this.cleConseil = const Value.absent(),
+    this.typeCarte = const Value.absent(),
+    this.codeEmotion = const Value.absent(),
+    this.accentChrome = const Value.absent(),
+    this.ordre = const Value.absent(),
   });
   ConseilsCompanion.insert({
     this.id = const Value.absent(),
     required String cleConseil,
+    this.typeCarte = const Value.absent(),
+    this.codeEmotion = const Value.absent(),
+    this.accentChrome = const Value.absent(),
+    this.ordre = const Value.absent(),
   }) : cleConseil = Value(cleConseil);
   static Insertable<Conseil> custom({
     Expression<int>? id,
     Expression<String>? cleConseil,
+    Expression<String>? typeCarte,
+    Expression<String>? codeEmotion,
+    Expression<String>? accentChrome,
+    Expression<int>? ordre,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (cleConseil != null) 'cle_conseil': cleConseil,
+      if (typeCarte != null) 'type_carte': typeCarte,
+      if (codeEmotion != null) 'code_emotion': codeEmotion,
+      if (accentChrome != null) 'accent_chrome': accentChrome,
+      if (ordre != null) 'ordre': ordre,
     });
   }
 
-  ConseilsCompanion copyWith({Value<int>? id, Value<String>? cleConseil}) {
+  ConseilsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? cleConseil,
+    Value<String>? typeCarte,
+    Value<String?>? codeEmotion,
+    Value<String>? accentChrome,
+    Value<int>? ordre,
+  }) {
     return ConseilsCompanion(
       id: id ?? this.id,
       cleConseil: cleConseil ?? this.cleConseil,
+      typeCarte: typeCarte ?? this.typeCarte,
+      codeEmotion: codeEmotion ?? this.codeEmotion,
+      accentChrome: accentChrome ?? this.accentChrome,
+      ordre: ordre ?? this.ordre,
     );
   }
 
@@ -560,6 +767,18 @@ class ConseilsCompanion extends UpdateCompanion<Conseil> {
     if (cleConseil.present) {
       map['cle_conseil'] = Variable<String>(cleConseil.value);
     }
+    if (typeCarte.present) {
+      map['type_carte'] = Variable<String>(typeCarte.value);
+    }
+    if (codeEmotion.present) {
+      map['code_emotion'] = Variable<String>(codeEmotion.value);
+    }
+    if (accentChrome.present) {
+      map['accent_chrome'] = Variable<String>(accentChrome.value);
+    }
+    if (ordre.present) {
+      map['ordre'] = Variable<int>(ordre.value);
+    }
     return map;
   }
 
@@ -567,7 +786,11 @@ class ConseilsCompanion extends UpdateCompanion<Conseil> {
   String toString() {
     return (StringBuffer('ConseilsCompanion(')
           ..write('id: $id, ')
-          ..write('cleConseil: $cleConseil')
+          ..write('cleConseil: $cleConseil, ')
+          ..write('typeCarte: $typeCarte, ')
+          ..write('codeEmotion: $codeEmotion, ')
+          ..write('accentChrome: $accentChrome, ')
+          ..write('ordre: $ordre')
           ..write(')'))
         .toString();
   }
@@ -1105,9 +1328,23 @@ typedef $$EntreesHumeurTableProcessedTableManager =
       PrefetchHooks Function()
     >;
 typedef $$ConseilsTableCreateCompanionBuilder =
-    ConseilsCompanion Function({Value<int> id, required String cleConseil});
+    ConseilsCompanion Function({
+      Value<int> id,
+      required String cleConseil,
+      Value<String> typeCarte,
+      Value<String?> codeEmotion,
+      Value<String> accentChrome,
+      Value<int> ordre,
+    });
 typedef $$ConseilsTableUpdateCompanionBuilder =
-    ConseilsCompanion Function({Value<int> id, Value<String> cleConseil});
+    ConseilsCompanion Function({
+      Value<int> id,
+      Value<String> cleConseil,
+      Value<String> typeCarte,
+      Value<String?> codeEmotion,
+      Value<String> accentChrome,
+      Value<int> ordre,
+    });
 
 class $$ConseilsTableFilterComposer
     extends Composer<_$AppDatabase, $ConseilsTable> {
@@ -1125,6 +1362,26 @@ class $$ConseilsTableFilterComposer
 
   ColumnFilters<String> get cleConseil => $composableBuilder(
     column: $table.cleConseil,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get typeCarte => $composableBuilder(
+    column: $table.typeCarte,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get codeEmotion => $composableBuilder(
+    column: $table.codeEmotion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get accentChrome => $composableBuilder(
+    column: $table.accentChrome,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get ordre => $composableBuilder(
+    column: $table.ordre,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1147,6 +1404,26 @@ class $$ConseilsTableOrderingComposer
     column: $table.cleConseil,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get typeCarte => $composableBuilder(
+    column: $table.typeCarte,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get codeEmotion => $composableBuilder(
+    column: $table.codeEmotion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get accentChrome => $composableBuilder(
+    column: $table.accentChrome,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get ordre => $composableBuilder(
+    column: $table.ordre,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ConseilsTableAnnotationComposer
@@ -1165,6 +1442,22 @@ class $$ConseilsTableAnnotationComposer
     column: $table.cleConseil,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get typeCarte =>
+      $composableBuilder(column: $table.typeCarte, builder: (column) => column);
+
+  GeneratedColumn<String> get codeEmotion => $composableBuilder(
+    column: $table.codeEmotion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get accentChrome => $composableBuilder(
+    column: $table.accentChrome,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get ordre =>
+      $composableBuilder(column: $table.ordre, builder: (column) => column);
 }
 
 class $$ConseilsTableTableManager
@@ -1197,12 +1490,34 @@ class $$ConseilsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> cleConseil = const Value.absent(),
-              }) => ConseilsCompanion(id: id, cleConseil: cleConseil),
+                Value<String> typeCarte = const Value.absent(),
+                Value<String?> codeEmotion = const Value.absent(),
+                Value<String> accentChrome = const Value.absent(),
+                Value<int> ordre = const Value.absent(),
+              }) => ConseilsCompanion(
+                id: id,
+                cleConseil: cleConseil,
+                typeCarte: typeCarte,
+                codeEmotion: codeEmotion,
+                accentChrome: accentChrome,
+                ordre: ordre,
+              ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required String cleConseil,
-              }) => ConseilsCompanion.insert(id: id, cleConseil: cleConseil),
+                Value<String> typeCarte = const Value.absent(),
+                Value<String?> codeEmotion = const Value.absent(),
+                Value<String> accentChrome = const Value.absent(),
+                Value<int> ordre = const Value.absent(),
+              }) => ConseilsCompanion.insert(
+                id: id,
+                cleConseil: cleConseil,
+                typeCarte: typeCarte,
+                codeEmotion: codeEmotion,
+                accentChrome: accentChrome,
+                ordre: ordre,
+              ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),

@@ -167,7 +167,13 @@ void main() {
       // Warm-up immédiat. En reduced motion, la durée minimale est 800 ms.
       // On ne pompe qu'une frame initiale : DemarrageView doit être présente.
       when(() => db.conseilDuJour(any())).thenAnswer(
-        (_) async => const Conseil(id: 1, cleConseil: 'tip'),
+        (_) async => const Conseil(
+        id: 1,
+        cleConseil: 'tip',
+        typeCarte: 'rappel',
+        accentChrome: 'primary',
+        ordre: 1,
+      ),
       );
       when(
         // ignore: unnecessary_lambdas closure requise par mocktail when()
