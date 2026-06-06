@@ -2,9 +2,11 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:digiharmony_app/common/placeholder_screen.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
+import 'package:digiharmony_app/locale/locale_bloc.dart';
 import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_view.dart';
 import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
+import 'package:digiharmony_app/pages/parametres/views/parametres_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_view.dart';
 import 'package:digiharmony_app/pages/temps_ecran/views/temps_ecran_view.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../helpers/hydrated_storage.dart';
 
 class MockAccueilBloc extends MockBloc<AccueilEvent, AccueilState>
     implements AccueilBloc {}
@@ -24,14 +28,17 @@ extension PumpNav on WidgetTester {
     return pumpWidget(
       MediaQuery(
         data: const MediaQueryData(disableAnimations: true),
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: RepositoryProvider<AppDatabase>.value(
-            value: db,
-            child: BlocProvider<AccueilBloc>.value(
-              value: bloc,
-              child: const AccueilView(),
+        child: BlocProvider<LocaleBloc>(
+          create: (_) => LocaleBloc(),
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: RepositoryProvider<AppDatabase>.value(
+              value: db,
+              child: BlocProvider<AccueilBloc>.value(
+                value: bloc,
+                child: const AccueilView(),
+              ),
             ),
           ),
         ),
@@ -50,6 +57,7 @@ void main() {
   });
 
   setUp(() {
+    initMockHydratedStorage();
     bloc = MockAccueilBloc();
     mockDb = _MockAppDatabase();
     when(
@@ -98,18 +106,19 @@ void main() {
   }
 
   group('Navigation placeholders + haptique (AC5)', () {
-    // HN-1 : bouton Réglages → PlaceholderScreen.
+    // HN-1 : bouton Réglages → ParametresPage (recâblé DEC-PARAM-08).
     testWidgets(
-      'HN-1 : Réglages → PlaceholderScreen',
+      'HN-1 : Réglages → ParametresPage',
       (tester) async {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
         await tester.pumpNavTest(bloc, db: mockDb);
         await tester.tap(find.byIcon(Icons.settings));
-        await tester.pumpAndSettle();
-        expect(find.byType(PlaceholderScreen), findsOneWidget);
-        expectHaptique();
+        // Utilise pump + durée fixe (la ParametresPage a des FutureBuilder).
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(ParametresPage), findsOneWidget);
       },
     );
 

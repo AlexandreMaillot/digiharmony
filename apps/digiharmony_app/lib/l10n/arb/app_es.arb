@@ -142,5 +142,18 @@
     "tutoNotifsAndroidEtape4Titre": "Notifications → Turn off",
     "tutoNotifsAndroidEtape4Corps": "Tap \"Notifications\" in the app's settings, then turn off the non-essential categories.",
     "tutoNotifsAndroidEtape5Titre": "Do Not Disturb mode",
-    "tutoNotifsAndroidEtape5Corps": "Turn on \"Do Not Disturb\" from the quick settings to create calm, interruption-free windows."
+    "tutoNotifsAndroidEtape5Corps": "Turn on \"Do Not Disturb\" from the quick settings to create calm, interruption-free windows.",
+    "parametresTitre": "Settings",
+    "parametresSectionLangue": "Language",
+    "parametresSectionConfidentialite": "Privacy",
+    "parametresConfidentialiteCorps": "No personal data is stored or shared. No account, no identification.",
+    "parametresSectionProjet": "The project",
+    "parametresOpenSourceTitre": "Open source code",
+    "parametresOpenSourceSousTitre": "GitHub · GNU GPL license",
+    "parametresSiteTitre": "digiharmony.org",
+    "parametresSiteSousTitre": "Official project website",
+    "parametresErasmusCorps": "Erasmus+ project — free app, no ads.",
+    "parametresVersion": "DIGIHARMONY v{version}",
+    "parametresLienIndisponible": "Couldn't open the link. You can find it in your browser.",
+    "parametresLangueActiveSemantique": "Active language"
 }

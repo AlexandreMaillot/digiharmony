@@ -26,6 +26,7 @@ dependencies:
   intl: ^0.20.2
   just_audio: ^0.10.5
   just_audio_background: ^0.0.1-beta.17
+  package_info_plus: ^8.3.0
   path: ^1.9.1
   path_provider: ^2.1.5
   shared_preferences: ^2.5.5
@@ -43,7 +44,9 @@ dev_dependencies:
     sdk: flutter
   json_serializable: ^6.14.0
   mocktail: ^1.0.5
+  plugin_platform_interface: any
   sqlite3: any
+  url_launcher_platform_interface: any
   very_good_analysis: ^10.2.0
 
 flutter:

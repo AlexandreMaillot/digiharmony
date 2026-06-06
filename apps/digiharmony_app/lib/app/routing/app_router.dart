@@ -4,6 +4,7 @@ import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_page.dart';
 import 'package:digiharmony_app/pages/bienvenue/views/bienvenue_page.dart';
 import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
+import 'package:digiharmony_app/pages/parametres/views/parametres_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_page.dart';
 import 'package:digiharmony_app/pages/soutien/views/soutien_page.dart';
 import 'package:digiharmony_app/pages/temps_ecran/services/service_temps_ecran.dart';
@@ -116,5 +117,14 @@ abstract final class AppRouter {
   /// transmettre, aucun service natif. `push`. Pas de GoRouter (DEC-FND-07).
   static Future<void> versTutoNotifs(BuildContext context) {
     return Navigator.of(context).push(TutoNotifsPage.route());
+  }
+
+  /// Ouvre l'écran « Paramètres » (empilé, retour possible).
+  ///
+  /// LocaleBloc est déjà fourni au-dessus de MaterialApp (bootstrap) :
+  /// rien à transmettre à travers la frontière de route. `push`.
+  /// Pas de GoRouter (DEC-FND-07, DEC-PARAM-11).
+  static Future<void> versParametres(BuildContext context) {
+    return Navigator.of(context).push(ParametresPage.route());
   }
 }
