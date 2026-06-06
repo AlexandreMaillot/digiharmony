@@ -228,6 +228,44 @@ class AppDatabase extends _$AppDatabase {
     return all[index];
   }
 
+  // ─── Soutien ──────────────────────────────────────────────────────────────
+
+  /// Seuil de déclenchement du soutien : 7 saisies négatives consécutives.
+  ///
+  /// Source unique du seuil (DEC-SOP-005) ; partagé avec
+  /// [EvaluateurSoutien.seuil] qui y fait référence.
+  static const int seuilSoutien = 7;
+
+  /// Compte les saisies négatives consécutives EN PARTANT DE LA PLUS RÉCENTE.
+  ///
+  /// Lit le journal trié par date décroissante et additionne tant que la valence
+  /// est < 0 ; s'arrête à la première saisie positive/neutre. Les jours sans
+  /// saisie n'apparaissent pas dans le journal → naturellement ignorés.
+  /// Dérivé de Drift (DEC-001), jamais dupliqué dans HydratedBloc.
+  Future<int> compterSaisiesNegativesConsecutives() async {
+    final entrees =
+        await (select(entreesHumeur)
+              ..orderBy([(t) => OrderingTerm.desc(t.creeLe)]))
+            .get();
+
+    var compteur = 0;
+    for (final entree in entrees) {
+      if (entree.valence < 0) {
+        compteur++;
+      } else {
+        break;
+      }
+    }
+    return compteur;
+  }
+
+  /// Sucre : déclenchement potentiel du soutien (compteur >= [seuilSoutien]).
+  ///
+  /// N'inclut PAS l'anti-relance (portée par [SoutienBloc]).
+  Future<bool> aDeclencherSoutien() async {
+    return await compterSaisiesNegativesConsecutives() >= seuilSoutien;
+  }
+
   // ─── Écriture ─────────────────────────────────────────────────────────────
 
   /// UPSERT de l'humeur du jour courant (DEC-SH-001/003).
