@@ -53,11 +53,44 @@ class Conseils extends Table {
   TextColumn get cleConseil => text().named('cle_conseil')();
 }
 
+/// Agrégat journalier du temps d'écran — historique multi-jours (DEC-TE-04
+/// révisé, Q-TE-5).
+///
+/// **1 ligne par jour, 100 % LOCALE, jamais transmise** (zéro-collecte = pas de
+/// collecte externe). Seul l'**agrégat** est persisté pour permettre une
+/// tendance ; le détail par app du jour courant reste calculé à la volée et
+/// **n'est jamais** stocké ici.
+@DataClassName('UsageEcranJournalier')
+class UsagesEcranJournaliers extends Table {
+  @override
+  String get tableName => 'usages_ecran_journaliers';
+
+  /// Identifiant auto-incrémenté.
+  IntColumn get id => integer().autoIncrement()();
+
+  /// Jour normalisé (minuit local) — clé d'unicité quotidienne.
+  ///
+  /// Stocké comme DateTime à 00:00:00 local. Index UNIQUE via [uniqueKeys]
+  /// pour garantir un agrégat max par jour (UPSERT).
+  DateTimeColumn get jour => dateTime().named('jour')();
+
+  /// Total agrégé du jour, en **secondes** (somme des usages des apps).
+  IntColumn get totalSecondes => integer().named('total_secondes')();
+
+  /// Horodatage local de la dernière mise à jour de l'agrégat.
+  DateTimeColumn get majLe => dateTime().named('maj_le')();
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {jour},
+  ];
+}
+
 /// Base de données locale unique de l'application (SQLite via Drift).
 ///
 /// Persistance 100 % locale, zéro réseau. Le journal d'humeur vit
 /// **uniquement** ici (DEC-001/002) ; l'état A/B est dérivé via `watch()`.
-@DriftDatabase(tables: [EntreesHumeur, Conseils])
+@DriftDatabase(tables: [EntreesHumeur, Conseils, UsagesEcranJournaliers])
 class AppDatabase extends _$AppDatabase {
   /// Ouvre la base de production (fichier dans le dossier documents).
   AppDatabase() : super(_openConnection());
@@ -66,7 +99,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   /// Référence Unix epoch pour la rotation déterministe des conseils.
   static final DateTime _epoch = DateTime(1970);
@@ -114,6 +147,23 @@ class AppDatabase extends _$AppDatabase {
         await customStatement(
           'CREATE UNIQUE INDEX IF NOT EXISTS ux_entrees_humeur_jour '
           'ON entrees_humeur(jour)',
+        );
+      }
+      if (from < 3) {
+        // Crée la table d'historique du temps d'écran seulement si absente
+        // (idempotence : sur une base semi-migrée, `createTable` lèverait
+        // "table already exists"). On vérifie via `sqlite_master`.
+        final tables = await customSelect(
+          "SELECT name FROM sqlite_master WHERE type='table' "
+          "AND name='usages_ecran_journaliers'",
+        ).get();
+        if (tables.isEmpty) {
+          await m.createTable(usagesEcranJournaliers);
+        }
+        // Index unique sur `jour` (idempotent).
+        await customStatement(
+          'CREATE UNIQUE INDEX IF NOT EXISTS ux_usages_ecran_journaliers_jour '
+          'ON usages_ecran_journaliers(jour)',
         );
       }
     },
@@ -264,6 +314,44 @@ class AppDatabase extends _$AppDatabase {
   /// N'inclut PAS l'anti-relance (portée par SoutienBloc).
   Future<bool> aDeclencherSoutien() async {
     return await compterSaisiesNegativesConsecutives() >= seuilSoutien;
+  }
+
+  // ─── Temps d'écran (historique journalier, DEC-TE-04 révisé) ──────────────
+
+  /// UPSERT de l'agrégat de temps d'écran du jour courant.
+  ///
+  /// 1 ligne par jour (index unique `jour`). Persiste **uniquement le total**
+  /// (en secondes), jamais le détail par app. 100 % local, jamais transmis.
+  Future<void> enregistrerUsageDuJour(Duration total, {DateTime? maintenant}) {
+    final now = maintenant ?? DateTime.now();
+    final jourNormalise = DateTime(now.year, now.month, now.day);
+    final companion = UsagesEcranJournaliersCompanion.insert(
+      jour: jourNormalise,
+      totalSecondes: total.inSeconds,
+      majLe: now,
+    );
+    return into(usagesEcranJournaliers).insert(
+      companion,
+      onConflict: DoUpdate(
+        (_) => companion,
+        target: [usagesEcranJournaliers.jour],
+      ),
+    );
+  }
+
+  /// Historique du temps d'écran sur les [nbJours] derniers jours, réactif.
+  ///
+  /// Trié par `jour` croissant. Lecture 100 % locale.
+  Stream<List<UsageEcranJournalier>> observerHistoriqueUsage({
+    int nbJours = 7,
+  }) {
+    final now = DateTime.now();
+    final aujourdhui = DateTime(now.year, now.month, now.day);
+    final debut = aujourdhui.subtract(Duration(days: nbJours - 1));
+    return (select(usagesEcranJournaliers)
+          ..where((t) => t.jour.isBiggerOrEqualValue(debut))
+          ..orderBy([(t) => OrderingTerm.asc(t.jour)]))
+        .watch();
   }
 
   // ─── Écriture ─────────────────────────────────────────────────────────────

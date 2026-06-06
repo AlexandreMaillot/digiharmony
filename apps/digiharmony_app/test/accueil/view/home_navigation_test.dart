@@ -6,6 +6,8 @@ import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_view.dart';
 import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_view.dart';
+import 'package:digiharmony_app/pages/temps_ecran/views/temps_ecran_view.dart';
+import 'package:digiharmony_app/pages/tuto_notifs/views/tuto_notifs_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -194,23 +196,42 @@ void main() {
       },
     );
 
-    // HN-7 : lien « My screen time » → PlaceholderScreen.
+    // HN-7 : lien « My screen time » → TempsEcranView (plus de placeholder).
     testWidgets(
-      'HN-7 : My screen time → PlaceholderScreen',
+      'HN-7 : My screen time → TempsEcranView',
       (tester) async {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
         await tester.pumpNavTest(bloc, db: mockDb);
-        // Scroll pour rendre le widget visible.
         await tester.scrollUntilVisible(
           find.text('My screen time'),
           100,
         );
         await tester.tap(find.text('My screen time'));
-        await tester.pumpAndSettle();
-        expect(find.byType(PlaceholderScreen), findsOneWidget);
-        expectHaptique();
+        // Pas de pumpAndSettle (halo respirant) — pump séquentiel.
+        await tester.pump();
+        await tester.pump();
+        expect(find.byType(TempsEcranView), findsOneWidget);
+      },
+    );
+
+    // HN-8 : lien sœur « Reduce my notifications » → TutoNotifsView.
+    testWidgets(
+      'HN-8 : Reduce my notifications → TutoNotifsView',
+      (tester) async {
+        when(() => bloc.state).thenReturn(
+          const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
+        );
+        await tester.pumpNavTest(bloc, db: mockDb);
+        await tester.scrollUntilVisible(
+          find.text('Reduce my notifications'),
+          100,
+        );
+        await tester.tap(find.text('Reduce my notifications'));
+        await tester.pump();
+        await tester.pump();
+        expect(find.byType(TutoNotifsView), findsOneWidget);
       },
     );
   });

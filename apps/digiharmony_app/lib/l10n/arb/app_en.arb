@@ -403,5 +403,160 @@
     "soutienLigneDispo": "Available 24/7",
     "@soutienLigneDispo": {
         "description": "Generic availability label for the helpline card in the soutien screen."
-    }
+    },
+    "tempsEcranTitre": "My screen time",
+    "@tempsEcranTitre": {
+        "description": "Screen time page in-app title (gentle, non-judgemental)."
+    },
+    "tempsEcranSousTitre": "A gentle look at your phone use.",
+    "@tempsEcranSousTitre": {
+        "description": "Screen time page subtitle."
+    },
+    "tempsEcranPermissionTitre": "To see your screen time",
+    "@tempsEcranPermissionTitre": {
+        "description": "Title of the permission explanation screen (before native access)."
+    },
+    "tempsEcranPermissionExplication": "DigiHarmony needs access to your phone's usage statistics. This data is read only on your device and is never sent anywhere.",
+    "@tempsEcranPermissionExplication": {
+        "description": "Permission explanation, reassuring about privacy."
+    },
+    "tempsEcranPermissionCta": "Enable access in settings",
+    "@tempsEcranPermissionCta": {
+        "description": "CTA opening the system usage access settings."
+    },
+    "tempsEcranPermissionRassurance": "You can revoke this access anytime in settings.",
+    "@tempsEcranPermissionRassurance": {
+        "description": "Reassurance line under the permission CTA."
+    },
+    "tempsEcranChargement": "Reading…",
+    "@tempsEcranChargement": {
+        "description": "Loading label while reading native usage data."
+    },
+    "tempsEcranTotalAujourdhui": "Today",
+    "@tempsEcranTotalAujourdhui": {
+        "description": "Header label for today's total screen time."
+    },
+    "tempsEcranAucuneDonnee": "No data for today yet",
+    "@tempsEcranAucuneDonnee": {
+        "description": "Empty state title (access granted but no usage data)."
+    },
+    "tempsEcranAucuneDonneeAide": "Check back a little later today.",
+    "@tempsEcranAucuneDonneeAide": {
+        "description": "Empty state help text."
+    },
+    "tempsEcranTopApps": "Your apps",
+    "@tempsEcranTopApps": {
+        "description": "Section title for the per-app breakdown."
+    },
+    "tempsEcranAppAutres": "Others",
+    "@tempsEcranAppAutres": {
+        "description": "Label for the residual bucket of apps beyond the top N."
+    },
+    "tempsEcranErreur": "Can't read screen time right now.",
+    "@tempsEcranErreur": {
+        "description": "Error state message (no crash, no network)."
+    },
+    "tempsEcranReessayer": "Try again",
+    "@tempsEcranReessayer": {
+        "description": "Retry button (error / empty state)."
+    },
+    "tempsEcranIndisponiblePlateforme": "Screen time is only available on Android for now.",
+    "@tempsEcranIndisponiblePlateforme": {
+        "description": "Unsupported platform (iOS) — graceful degraded state."
+    },
+    "tempsEcranMessageBienveillant": "Noticing your screen time is already taking care of yourself.",
+    "@tempsEcranMessageBienveillant": {
+        "description": "Caring, non-judgemental message on the results screen."
+    },
+    "tempsEcranDonneesLocales": "This data stays on your device and is never sent.",
+    "@tempsEcranDonneesLocales": {
+        "description": "Footer reassurance: data stays local."
+    },
+    "tempsEcranDureeHeuresMinutes": "{heures} h {minutes} min",
+    "@tempsEcranDureeHeuresMinutes": {
+        "description": "Duration format with hours and minutes.",
+        "placeholders": {
+            "heures": { "type": "int" },
+            "minutes": { "type": "int" }
+        }
+    },
+    "tempsEcranDureeMinutes": "{minutes} min",
+    "@tempsEcranDureeMinutes": {
+        "description": "Duration format with minutes only.",
+        "placeholders": {
+            "minutes": { "type": "int" }
+        }
+    },
+    "tempsEcranAppSemantique": "{app}: {duree}",
+    "@tempsEcranAppSemantique": {
+        "description": "Accessibility label for an app row (name + duration).",
+        "placeholders": {
+            "app": { "type": "String" },
+            "duree": { "type": "String" }
+        }
+    },
+    "tutoNotifsTitre": "Reduce my notifications",
+    "@tutoNotifsTitre": {
+        "description": "Notifications tutorial in-app title."
+    },
+    "tutoNotifsIntro": "Fewer notifications, more calm.",
+    "@tutoNotifsIntro": {
+        "description": "Intro line of the notifications tutorial."
+    },
+    "tutoNotifsAutreTelephone": "See for another phone",
+    "@tutoNotifsAutreTelephone": {
+        "description": "Link toggling the steps to the other OS (iOS <-> Android)."
+    },
+    "tutoNotifsEncouragement": "Every notification you turn off is one less interruption. Take your time.",
+    "@tutoNotifsEncouragement": {
+        "description": "Encouragement card text (caring, non-judgemental). TODO validation partenaires"
+    },
+    "tutoNotifsRassurance": "DigiHarmony never sends you notifications. This is about your other apps.",
+    "@tutoNotifsRassurance": {
+        "description": "Footer reassurance: the app emits no notifications."
+    },
+    "tutoNotifsAccueilLien": "Reduce my notifications",
+    "@tutoNotifsAccueilLien": {
+        "description": "Home tertiary link label opening the notifications tutorial."
+    },
+    "tutoNotifsIosEtape1Titre": "Open Settings",
+    "@tutoNotifsIosEtape1Titre": { "description": "iOS step 1 title. TODO validation partenaires" },
+    "tutoNotifsIosEtape1Corps": "Find the gear icon on your home screen or in your app library.",
+    "@tutoNotifsIosEtape1Corps": { "description": "iOS step 1 body. TODO validation partenaires" },
+    "tutoNotifsIosEtape2Titre": "Tap \"Notifications\"",
+    "@tutoNotifsIosEtape2Titre": { "description": "iOS step 2 title. TODO validation partenaires" },
+    "tutoNotifsIosEtape2Corps": "Scroll down to the \"Notifications\" section and tap it.",
+    "@tutoNotifsIosEtape2Corps": { "description": "iOS step 2 body. TODO validation partenaires" },
+    "tutoNotifsIosEtape3Titre": "Pick a distracting app",
+    "@tutoNotifsIosEtape3Titre": { "description": "iOS step 3 title. TODO validation partenaires" },
+    "tutoNotifsIosEtape3Corps": "Choose an app that interrupts you often — social media, messaging, games.",
+    "@tutoNotifsIosEtape3Corps": { "description": "iOS step 3 body. TODO validation partenaires" },
+    "tutoNotifsIosEtape4Titre": "Turn off or group",
+    "@tutoNotifsIosEtape4Titre": { "description": "iOS step 4 title. TODO validation partenaires" },
+    "tutoNotifsIosEtape4Corps": "Turn notifications off, or enable \"Scheduled Summary\" to get them once a day.",
+    "@tutoNotifsIosEtape4Corps": { "description": "iOS step 4 body. TODO validation partenaires" },
+    "tutoNotifsIosEtape5Titre": "Repeat for each app",
+    "@tutoNotifsIosEtape5Titre": { "description": "iOS step 5 title. TODO validation partenaires" },
+    "tutoNotifsIosEtape5Corps": "Take 2–3 minutes to go through your apps one by one. Every bit of quiet counts.",
+    "@tutoNotifsIosEtape5Corps": { "description": "iOS step 5 body. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape1Titre": "Open Settings",
+    "@tutoNotifsAndroidEtape1Titre": { "description": "Android step 1 title. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape1Corps": "Find the gear icon in your app drawer or by swiping down from the top of the screen.",
+    "@tutoNotifsAndroidEtape1Corps": { "description": "Android step 1 body. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape2Titre": "Go to Apps",
+    "@tutoNotifsAndroidEtape2Titre": { "description": "Android step 2 title. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape2Corps": "Look for \"Apps\", \"App management\" or \"Installed apps\" depending on your phone.",
+    "@tutoNotifsAndroidEtape2Corps": { "description": "Android step 2 body. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape3Titre": "Select an app",
+    "@tutoNotifsAndroidEtape3Titre": { "description": "Android step 3 title. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape3Corps": "Choose a distracting app and open its settings from the list.",
+    "@tutoNotifsAndroidEtape3Corps": { "description": "Android step 3 body. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape4Titre": "Notifications → Turn off",
+    "@tutoNotifsAndroidEtape4Titre": { "description": "Android step 4 title. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape4Corps": "Tap \"Notifications\" in the app's settings, then turn off the non-essential categories.",
+    "@tutoNotifsAndroidEtape4Corps": { "description": "Android step 4 body. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape5Titre": "Do Not Disturb mode",
+    "@tutoNotifsAndroidEtape5Titre": { "description": "Android step 5 title. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape5Corps": "Turn on \"Do Not Disturb\" from the quick settings to create calm, interruption-free windows.",
+    "@tutoNotifsAndroidEtape5Corps": { "description": "Android step 5 body. TODO validation partenaires" }
 }

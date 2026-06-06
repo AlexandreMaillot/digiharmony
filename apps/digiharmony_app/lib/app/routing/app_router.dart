@@ -4,6 +4,9 @@ import 'package:digiharmony_app/pages/bienvenue/views/bienvenue_page.dart';
 import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_page.dart';
 import 'package:digiharmony_app/pages/soutien/views/soutien_page.dart';
+import 'package:digiharmony_app/pages/temps_ecran/services/service_temps_ecran.dart';
+import 'package:digiharmony_app/pages/temps_ecran/views/temps_ecran_page.dart';
+import 'package:digiharmony_app/pages/tuto_notifs/views/tuto_notifs_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -74,5 +77,36 @@ abstract final class AppRouter {
         builder: (_) => const SoutienPage(),
       ),
     );
+  }
+
+  /// Ouvre l'écran « Mon temps d'écran » (empilé, retour possible).
+  ///
+  /// Le [ServiceTempsEcran] (façade plateforme) et l'[AppDatabase] (historique
+  /// journalier local) sont fournis au sous-arbre pour traverser la frontière
+  /// de route. `push` (pas `pushReplacement`) : le chevron permet de revenir.
+  /// Pas de GoRouter (DEC-FND-07).
+  static Future<void> versTempsEcran(BuildContext context) {
+    final database = context.read<AppDatabase>();
+    return Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider<AppDatabase>.value(value: database),
+            RepositoryProvider<ServiceTempsEcran>(
+              create: (_) => ServiceTempsEcranImpl(),
+            ),
+          ],
+          child: const TempsEcranPage(),
+        ),
+      ),
+    );
+  }
+
+  /// Ouvre le tutoriel « Réduire mes notifications » (empilé, retour possible).
+  ///
+  /// Tutoriel statique OS-aware (RÉVISION 2026-06-06) : aucune dépendance à
+  /// transmettre, aucun service natif. `push`. Pas de GoRouter (DEC-FND-07).
+  static Future<void> versTutoNotifs(BuildContext context) {
+    return Navigator.of(context).push(TutoNotifsPage.route());
   }
 }

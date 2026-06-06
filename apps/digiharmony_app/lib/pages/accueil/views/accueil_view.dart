@@ -131,10 +131,7 @@ class AccueilView extends StatelessWidget {
                   // Lien tertiaire « Mon temps d'écran ».
                   Center(
                     child: TextButton.icon(
-                      onPressed: () => ouvrirPlaceholder(
-                        context,
-                        l10n.placeholderTempsEcran,
-                      ),
+                      onPressed: () => AppRouter.versTempsEcran(context),
                       icon: const Icon(
                         Icons.timer_outlined,
                         size: 18,
@@ -142,6 +139,23 @@ class AccueilView extends StatelessWidget {
                       ),
                       label: Text(
                         l10n.homeScreenTime,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Lien tertiaire sœur « Réduire mes notifications ».
+                  Center(
+                    child: TextButton.icon(
+                      onPressed: () => AppRouter.versTutoNotifs(context),
+                      icon: const Icon(
+                        Icons.notifications_off_outlined,
+                        size: 18,
+                        color: AppColors.textMuted,
+                      ),
+                      label: Text(
+                        l10n.tutoNotifsAccueilLien,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: AppColors.textMuted,
                         ),
