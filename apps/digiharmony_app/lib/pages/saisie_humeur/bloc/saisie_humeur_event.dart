@@ -1,8 +1,11 @@
 part of 'saisie_humeur_bloc.dart';
 
 /// Événements du bloc de saisie d'humeur.
-sealed class SaisieHumeurEvent {
+sealed class SaisieHumeurEvent extends Equatable {
   const SaisieHumeurEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
 /// Ouverture de l'écran — pré-sélectionne l'humeur déjà notée aujourd'hui
@@ -18,6 +21,9 @@ final class EmotionSelectionnee extends SaisieHumeurEvent {
 
   /// Code stable de l'émotion sélectionnée.
   final String codeEmotion;
+
+  @override
+  List<Object?> get props => [codeEmotion];
 }
 
 /// L'utilisateur a pressé « Valider » — déclenche l'UPSERT Drift puis le

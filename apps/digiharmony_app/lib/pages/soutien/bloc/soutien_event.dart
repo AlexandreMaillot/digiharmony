@@ -1,8 +1,11 @@
 part of 'soutien_bloc.dart';
 
 /// Événements du [SoutienBloc].
-sealed class SoutienEvent {
+sealed class SoutienEvent extends Equatable {
   const SoutienEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
 /// Marque l'écran de soutien comme affiché pour l'épisode en cours.
