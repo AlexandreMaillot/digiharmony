@@ -121,8 +121,15 @@ updated: 2026-06-06
   spéciale `PACKAGE_USAGE_STATS`. L'octroi passe par l'écran système `Settings.ACTION_USAGE_ACCESS_SETTINGS`.
 - **iOS** : l'API Screen Time (FamilyControls / DeviceActivity) exige un **entitlement Apple spécial**
   (`com.apple.developer.family-controls`) **et** ne donne pas un accès équivalent (pas de lecture
-  arbitraire app-par-app sans contexte parental). → **Hors V1.** Sur iOS, la page affiche un **état
-  vide bienveillant** « indisponible sur cette plateforme » (DEC-TE-03).
+  arbitraire app-par-app sans contexte parental). → **Hors V1 Android.** Sur iOS, la page affiche un
+  **état vide bienveillant** « indisponible sur cette plateforme » (DEC-TE-03) **par défaut**.
+  > 🆕 **iOS = chantier séparé (2026-06-06).** Le support iOS « rapport Screen Time » fait l'objet
+  > d'un **plan dédié** : `aidd_docs/plans/temps-ecran-ios-screentime.plan.md`. Il fait passer iOS
+  > de `indisponible` à un **`DeviceActivityReport`** embarqué (vue **rendue par le système** dans une
+  > App Extension `DeviceActivityReportExtension` ; **les chiffres ne sont JAMAIS lisibles par
+  > l'app** → pas d'historique Drift iOS, pas de top-apps custom iOS). **Bloquant racine : accès
+  > spécial Apple `com.apple.developer.family-controls`, validé au cas par cas (hors code).**
+  > Voir **DEC-TE-03 (révisée)** ci-dessous (§14). **Faisabilité : incertaine** (approbation Apple).
 
 ### 2.2 Choix d'implémentation native (DEC-TE-01) — comparatif
 
@@ -638,7 +645,7 @@ static Future<void> versTempsEcran(BuildContext context) {
 |---|---|
 | DEC-TE-01 | Implémentation native via **`app_usage: ^4.1.0`** (déjà au pubspec, acté architecture.md). Pas de MethodChannel maison pour la **lecture** d'usage, pas d'autre package. Zéro réseau/tracking. |
 | DEC-TE-02 | Détection de permission + ouverture des réglages **non fournies** par `app_usage` → **option (A)** : MethodChannel maison minimal `digiharmony/usage_access` (`aLAcces`, `ouvrirReglagesAcces`), **sans** dépendance ni permission supplémentaire. (Option B heuristique documentée mais rejetée.) ✅ **Tranché (2026-06-06)** : option (A) acceptée + écran d'explication préalable au CTA d'accès natif. |
-| DEC-TE-03 | **V1 Android-first** ; iOS (Screen Time = entitlement spécial, accès non équivalent) = **état dégradé bienveillant** `indisponible`, pas de crash. |
+| DEC-TE-03 | ✅ **RÉVISÉE (2026-06-06)** : **V1 Android-first** ; iOS = **état dégradé bienveillant** `indisponible` **par défaut** (pas de crash). **MAIS** un **chantier iOS séparé** (`aidd_docs/plans/temps-ecran-ios-screentime.plan.md`) ajoute le support Apple Screen Time : **avec** l'entitlement `com.apple.developer.family-controls` accordé, iOS affiche un **`DeviceActivityReport`** (rendu **système**, vue dans une App Extension ; chiffres **illisibles** par l'app → **pas de Drift iOS**, pas de top-apps custom) via PlatformView ; **sans** entitlement / en simulateur → retombe sur `indisponible`. **Bloquant : approbation Apple de l'entitlement (faisabilité incertaine).** Voir le plan dédié pour les prérequis humains Apple, milestones M1–M4 et DEC iOS (DEC-TE-12 à DEC-TE-16). |
 | DEC-TE-04 | ✅ **Révisé (2026-06-06, Q-TE-5)** : **historique multi-jours** → persistance **LOCALE** d'un **agrégat journalier** (total + éventuellement top apps) dans **Drift** (nouvelle table `UsagesEcranJournaliers` ou équivalent, 1 ligne/jour). Reste **100 % local, jamais transmis** (compatible zéro-collecte = pas de collecte externe). Le détail par app du jour courant reste calculé à la volée ; seul l'agrégat est persisté pour la tendance. (Supersede l'ancien « éphémère, pas de Drift ».) |
 | DEC-TE-05 | ✅ **Tranché (2026-06-06, Q-TE-4)** : **pas de flag onboarding** en HydratedBloc — la permission est re-vérifiée à chaque ouverture (source de vérité = OS). |
 | DEC-TE-06 | ✅ **Tranché (2026-06-06, Q-TE-3)** : répartition = **top N apps** avec libellé **best-effort depuis le package name** (sans icône en V1) + barres de proportion + bucket « Autres ». Icône/libellé exacts = hors V1. |
