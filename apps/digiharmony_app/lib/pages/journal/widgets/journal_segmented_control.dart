@@ -45,8 +45,9 @@ class JournalSegmentedControl extends StatelessWidget {
           // Indicateur glissant (largeur = 1 segment).
           AnimatedAlign(
             alignment: Alignment(alignementX, 0),
-            duration:
-                reduced ? Duration.zero : const Duration(milliseconds: 260),
+            duration: reduced
+                ? Duration.zero
+                : const Duration(milliseconds: 260),
             curve: Curves.easeOutCubic,
             child: FractionallySizedBox(
               widthFactor: 1 / items.length,
@@ -104,9 +105,9 @@ class _Segment extends StatelessWidget {
           child: Text(
             libelle,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: actif ? AppColors.backgroundDeep : AppColors.textMuted,
-                  fontWeight: actif ? FontWeight.w700 : FontWeight.w500,
-                ),
+              color: actif ? AppColors.backgroundDeep : AppColors.textMuted,
+              fontWeight: actif ? FontWeight.w700 : FontWeight.w500,
+            ),
           ),
         ),
       ),

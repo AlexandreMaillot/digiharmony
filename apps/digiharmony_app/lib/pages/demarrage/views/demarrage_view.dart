@@ -107,8 +107,7 @@ class _DemarrageViewState extends State<DemarrageView> {
 
     final db = context.read<AppDatabase>();
     final soutienBloc = context.read<SoutienBloc>();
-    final dejaMontre =
-        soutienBloc.state.dejaMontrePourEpisodeEnCours;
+    final dejaMontre = soutienBloc.state.dejaMontrePourEpisodeEnCours;
 
     final compteur = await db.compterSaisiesNegativesConsecutives();
 

@@ -12,14 +12,16 @@ Future<void> _insererHumeur(
 }) async {
   final base = DateTime(2026, 3, 15);
   final jour = base.add(Duration(days: decalageJours));
-  await db.into(db.entreesHumeur).insert(
-    EntreesHumeurCompanion.insert(
-      codeEmotion: codeEmotion,
-      valence: valencePour(codeEmotion),
-      creeLe: jour.add(const Duration(hours: 10)),
-      jour: jour,
-    ),
-  );
+  await db
+      .into(db.entreesHumeur)
+      .insert(
+        EntreesHumeurCompanion.insert(
+          codeEmotion: codeEmotion,
+          valence: valencePour(codeEmotion),
+          creeLe: jour.add(const Duration(hours: 10)),
+          jour: jour,
+        ),
+      );
 }
 
 void main() {
@@ -55,20 +57,19 @@ void main() {
     });
 
     test(
-        'SO-CNT-4 : série négative interrompue par une positive plus ancienne',
-        () async {
-      // j0=positive, j1-j3=négatives (la série en tête = 3)
-      await _insererHumeur(db, 'calm');
-      for (var i = 1; i <= 3; i++) {
-        await _insererHumeur(db, 'nervous', decalageJours: i);
-      }
-      expect(await db.compterSaisiesNegativesConsecutives(), 3);
-    });
+      'SO-CNT-4 : série négative interrompue par une positive plus ancienne',
+      () async {
+        // j0=positive, j1-j3=négatives (la série en tête = 3)
+        await _insererHumeur(db, 'calm');
+        for (var i = 1; i <= 3; i++) {
+          await _insererHumeur(db, 'nervous', decalageJours: i);
+        }
+        expect(await db.compterSaisiesNegativesConsecutives(), 3);
+      },
+    );
 
-    test(
-        'SO-CNT-5 : 7 négatives sur jours non consécutifs (jours vides entre)'
-        ' → 7',
-        () async {
+    test('SO-CNT-5 : 7 négatives sur jours non consécutifs (jours vides entre)'
+        ' → 7', () async {
       // Jours 0, 2, 4, 6, 8, 10, 12 (jours impairs vides)
       for (var i = 0; i < 7; i++) {
         await _insererHumeur(db, 'tired', decalageJours: i * 2);
@@ -76,10 +77,8 @@ void main() {
       expect(await db.compterSaisiesNegativesConsecutives(), 7);
     });
 
-    test(
-        'SO-CNT-6 : variantes emotions negatives'
-        ' (sad/angry/nervous/tired)',
-        () async {
+    test('SO-CNT-6 : variantes emotions negatives'
+        ' (sad/angry/nervous/tired)', () async {
       final emotions = [
         'sad',
         'angry',
