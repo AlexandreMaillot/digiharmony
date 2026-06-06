@@ -1,0 +1,46 @@
+---
+description: Pour notifier un chauffeur (FCM) ou lire ses fcm_tokens depuis le backend, NE JAMAIS faire chauffeurs/{chauffeur_uid} — le doc.id chauffeur n'est PAS l'uid Auth (dette US #916). Résoudre par requête chauffeurs where uid == chauffeur_uid.
+globs:
+  - "apps/athena_api/lib/notifications/**/*.dart"
+  - "apps/athena_api/lib/push/**/*.dart"
+alwaysApply: false
+---
+
+# FCM — résoudre le doc.id chauffeur par `uid` (pas d'accès direct)
+
+## Pourquoi
+
+Le token FCM d'un chauffeur est écrit sur **`chauffeurs/{docId}.fcm_tokens`**,
+où `docId` est l'identifiant Firestore auto du document — **différent** de
+l'uid Firebase Auth (`ChauffeurMoi` documente explicitement `id` (doc.id) ≠
+`uid` ; dette US #916, rattrapage de liaison au login).
+
+Or les documents `courses/{}` et `reservations_navettes`/`lignes_navette`
+portent le **`chauffeur_uid`** (uid Auth dénormalisé), pas le doc.id.
+
+Anti-pattern vécu (PR #938) : le routing faisait
+`servicePush.envoyer(collection: 'chauffeurs', docId: chauffeur_uid)` →
+`chauffeurs/{uid}` n'existe pas → **0 token → aucun push chauffeur**, en
+silence (best-effort).
+
+## Règle
+
+Avant tout push/lecture de tokens chauffeur côté backend, **résoudre le doc.id** :
+
+```dart
+final snap = await firestore
+    .collection('chauffeurs')
+    .where('uid', WhereFilter.equal, chauffeurUid)
+    .limit(1)
+    .get();
+if (snap.docs.isEmpty) return; // skip non bloquant
+final docId = snap.docs.first.id; // → chauffeurs/{docId}.fcm_tokens
+```
+
+## Exceptions
+
+- **Client** : `courses.id_client` / `reservations_navettes.id_client` SONT
+  l'uid Auth, et `utilisateurs/{uid}` est clé par uid → push direct
+  `utilisateurs/{id_client}`, pas de résolution.
+- Si un jour `chauffeurs.doc.id == uid` est garanti (US #916 close), cette
+  règle devient un no-op mais reste correcte (la requête renvoie le doc).

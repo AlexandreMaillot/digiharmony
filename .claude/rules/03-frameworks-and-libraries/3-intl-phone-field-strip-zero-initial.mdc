@@ -1,0 +1,83 @@
+---
+description: "`IntlPhoneField` (package `intl_phone_field`) concatène naïvement `countryCode` + `number` sans normaliser. Un utilisateur français qui saisit `0692123456` avec `+262` sélectionné produit `+2620692…` invalide → Firebase Auth rejette. Fix : strip le `0` initial dans `onChanged` AVANT d'envoyer à Firebase, **sans toucher au champ visible** (placeholder UX reste `Ex. 06 92 12 34 56`)."
+globs:
+  - "apps/athena_app/lib/**/etape_saisie_telephone.dart"
+  - "apps/athena_app/lib/**/*phone*.dart"
+  - "apps/athena_app/lib/**/*telephone*.dart"
+alwaysApply: false
+---
+
+# IntlPhoneField — strip `0` initial pour saisie FR avec `+262` sélectionné
+
+## Symptôme
+
+Le placeholder du champ téléphone affiche `Ex. 06 92 12 34 56` (format local FR/Réunion habituel) pour guider l'UX. Le préfixe pays `+262` est déjà sélectionné via le drapeau `IntlPhoneField`.
+
+Si l'utilisateur saisit `06 92 12 34 56` (par habitude format local), `IntlPhoneField` retourne :
+- `phone.number = '0692123456'`
+- `phone.completeNumber = '+2620692123456'`  ← **invalide** (`+262` + `0` parasite)
+
+Firebase Auth rejette ce numéro avec `firebase_auth/invalid-phone-number` ou silencieusement (selon les versions).
+
+Vécu 2026-05-18 — `EtapeSaisieTelephone` modal signin OTP. PR #873.
+
+## Règle
+
+Dans `onChanged` du `IntlPhoneField`, strip le `0` initial sur le **numéro envoyé en aval** (Firebase Auth / bloc) SANS toucher au champ visible :
+
+```dart
+IntlPhoneField(
+  ...
+  onChanged: (phone) {
+    // L'utilisateur français saisit « 06 92 12 34 56 » par habitude alors
+    // que le `+262` est déjà sélectionné — IntlPhoneField concatène alors
+    // `+262` + `0692…` → `+2620692…` invalide. On strip le `0` initial
+    // dans la valeur envoyée à Firebase Auth SANS toucher au champ visible
+    // (placeholder « Ex. 06 92 12 34 56 » reste pertinent UX-wise).
+    final numeroBrut = phone.number;
+    final numeroSansZeroInitial = numeroBrut.startsWith('0')
+        ? numeroBrut.substring(1)
+        : numeroBrut;
+    final numeroE164Corrige =
+        '${phone.countryCode}$numeroSansZeroInitial';
+
+    context.read<MonBloc>().add(ChangerNumero(
+      numero: numeroBrut,          // ← brut pour validation longueur
+      numeroE164: numeroE164Corrige, // ← corrigé pour Firebase Auth
+      numeroValide: ...,
+    ));
+  },
+)
+```
+
+**Pourquoi ne pas modifier le champ visible** (décision user 2026-05-18) :
+> « Garde visuellement le 0 car sinon les utilisateurs non habitués ne vont pas comprendre. »
+
+Le placeholder format local FR reste pertinent UX. Le strip est silencieux côté backend.
+
+## Variantes de pays
+
+Le strip `0` initial est spécifique au format **FR/Réunion** (et plusieurs pays européens où le `0` est le préfixe national). Pour un projet multi-pays, vérifier que `phone.countryCode` correspond à un pays où cette règle s'applique :
+
+```dart
+const stripLeadingZeroCountries = {'+33', '+262', '+44', '+49', '+39', '+31', '+32'};
+final shouldStrip = stripLeadingZeroCountries.contains(phone.countryCode);
+final numeroFinal = (shouldStrip && phone.number.startsWith('0'))
+    ? phone.number.substring(1)
+    : phone.number;
+```
+
+Pour Athéna (Réunion only V1), pas besoin de la whitelist — un simple `startsWith('0')` suffit.
+
+## Anti-patterns
+
+- ❌ Changer le placeholder à `Ex. 692 12 34 56` (sans 0) → désoriente les utilisateurs non habitués au format international
+- ❌ Ajouter un `inputFormatters` qui strip le `0` à la frappe → l'utilisateur tape `0` et le voit disparaître → confusion
+- ❌ Strip côté backend uniquement (ex. dans `normaliserTelephoneCanonique`) → trop tard, Firebase Auth REST a déjà reçu et rejeté le numéro invalide
+- ❌ Validation regex avant submit (« le numéro ne doit pas commencer par 0 ») → message d'erreur déroutant pour l'utilisateur FR
+
+## Référence
+
+- PR #873 — fix `EtapeSaisieTelephone` modal signin OTP mobile
+- Helper backend `normaliserTelephoneCanonique` (`apps/athena_app/lib/core/auth/services/normaliser_telephone.dart`) accepte déjà les 2 formats (`0692…` et `+262692…`) mais c'est la sécurité défensive, pas le 1er rempart
+- Référence FR : <https://www.arcep.fr/la-regulation/grands-dossiers-thematiques-transverses/la-numerotation/le-plan-de-numerotation-francais.html>

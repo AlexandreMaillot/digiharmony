@@ -29,4 +29,7 @@ Thumbs.db
 
 # === Session logs (ne jamais committer) ===
 .specstory/
-.claude/
+# Tooling local Claude ignoré, SAUF les règles de code du projet (versionnées,
+# référencées par CLAUDE.md).
+.claude/*
+!.claude/rules/

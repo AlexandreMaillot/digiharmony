@@ -1,0 +1,47 @@
+---
+description: APPLIQUER un nommage FR 100% pour le code Dart LORS de l'écriture de nouveau code ou plans côté frontend
+globs: apps/*/lib/**/*.dart, apps/*/test/**/*.dart, aidd_docs/tasks/**/*.md
+alwaysApply: true
+---
+
+Principe:
+- Tout le code Dart côté apps (`athena_admin`, `athena_app`, `athena_chauffeur`) utilise des noms **français** : classes, events, states, enums, variables, fichiers, dossiers
+- La BDD Firestore utilise des **collections en français snake_case** (ex: `demandes`, `horaires_navettes`, `reservations_navettes`, `paiements`, `alertes`, `courses`) — décision 2026-04-20 pour cohérence FR 100% du projet. Les **champs** à l'intérieur des documents restent en snake_case (ex: `heure_creation`, `nom_client`, `paiement_statut`). Mapping snake_case → camelCase dans `core/modeles/*.fromFirestore()` via `String.enCamelCase` + `Enum.values.byName()`.
+- Les termes techniques transverses qui n'ont pas d'équivalent français courant peuvent rester en anglais (`Bloc`, `Event`, `State`, `Widget`, `Repository`) — uniquement comme suffixes
+
+Conventions de nommage:
+- **Classes** : `ConnexionPage`, `TableauDeBordView`, `NavigationBloc`, `CerbereDroitsEtat`
+- **Events** (suffixe en français) : `ConnexionEmailChange`, `AppUtilisateurChange`, `NavigationPageDemandee`
+- **States** (suffixe `Etat`) : `AppEtat`, `ConnexionPageEtat`, `NavigationEtat`
+- **Enums** : `StatutAuth { inconnu, deconnecte, connecte }`, `PageAdmin { tableauDeBord, planning, ... }`, `RoleUtilisateur { admin, standardiste, inconnu }`
+- **Erreurs** (sealed) : `ErreurConnexion`, `ErreurResetMdp`, `ErreurEmail`
+- **Repositories / "Repository"** : `DepotAuth`, `DepotCourses`, `DepotVehicules` (préfixe `Depot` au lieu de suffixe `Repository`)
+- **Fichiers** : `snake_case` FR — `connexion_page_bloc.dart`, `role_utilisateur.dart`, `depot_auth.dart`, `erreur_connexion.dart`
+- **Dossiers** : `pages/connexion/`, `core/navigation/`, `pages/accueil_admin/widgets/`
+- **Clés i18n** : camelCase FR — `connexionTitre`, `sidebarDeconnexion`, `erreurConnexionIdentifiantsInvalides`
+
+Mapping technique → FR (référence):
+- `Login` → `Connexion`
+- `Logout` → `Deconnexion`
+- `Password` → `MotDePasse` ou `Mdp` (abréviation tolérée dans les noms de fichiers/classes)
+- `Role` → `Role`
+- `User` → `Utilisateur`
+- `Settings` → `Parametres`
+- `Dashboard` → `TableauDeBord`
+- `Shell` → `AccueilAdmin` (pour l'admin) ou `Structure` (plus générique)
+- `Loading` → `Chargement`
+- `Drawer/Sidebar` → `MenuLateral`
+
+Exceptions explicites:
+- Package Flutter : `MaterialPage`, `Scaffold`, `TextField`, etc. — inchangés
+- Classes officielles Firebase : `FirebaseAuth`, `User`, `FirebaseAuthException` — inchangées (mappées vers nos sealed classes FR `ErreurConnexion` dans le depot)
+- Suffixes techniques : `Bloc`, `Event`, `State` (même s'ils sont mappés FR à `Evenement`/`Etat` dans certains cas selon cohérence)
+
+Plans (fichiers `aidd_docs/tasks/**/*.md`):
+- Les noms de classes/events/states proposés doivent être en français
+- Si un plan est généré depuis une maquette Banani avec des labels EN, traduire avant de les nommer côté Dart
+
+Interdictions:
+- `class LoginPage`, `class UserBloc`, `class DashboardState`, `enum UserRole` — tous en anglais
+- `login_page.dart`, `user_bloc.dart`, `dashboard_state.dart` — tous en anglais
+- Variables anglaises dans le corps (`final user = ...`, préférer `final utilisateur = ...`)
