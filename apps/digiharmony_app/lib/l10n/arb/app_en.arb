@@ -335,5 +335,49 @@
     "journalLocalDataNote": "Your data stays on this device.",
     "@journalLocalDataNote": {
         "description": "JournalPage — reassurance note about local-only storage (zero collection)"
+    },
+    "soutienTitre": "The last few days seem hard.",
+    "@soutienTitre": {
+        "description": "SoutienPage — main title. TODO validation partenaires (public mineur, Erasmus+)"
+    },
+    "soutienAccroche": "You're not alone.",
+    "@soutienAccroche": {
+        "description": "SoutienPage — accroche (cyan accent). TODO validation partenaires"
+    },
+    "soutienParagraphe": "What you feel is real, and it's okay to go through hard times. Taking care of yourself starts with one small step.",
+    "@soutienParagraphe": {
+        "description": "SoutienPage — reassuring paragraph. TODO validation partenaires"
+    },
+    "soutienCtaConfiance": "Talk to someone you trust",
+    "@soutienCtaConfiance": {
+        "description": "SoutienPage — primary CTA (ConfiancePage). TODO validation partenaires"
+    },
+    "soutienCtaRespiration": "Try a guided breathing",
+    "@soutienCtaRespiration": {
+        "description": "SoutienPage — secondary CTA (STUB V1). TODO validation partenaires"
+    },
+    "soutienLignePrefix": "Helpline: ",
+    "@soutienLignePrefix": {
+        "description": "SoutienPage — prefix before helpline name. TODO validation partenaires"
+    },
+    "soutienLigneDispoPrefix": "Available: ",
+    "@soutienLigneDispoPrefix": {
+        "description": "SoutienPage — prefix before helpline availability. TODO validation partenaires"
+    },
+    "soutienPlusTard": "Later",
+    "@soutienPlusTard": {
+        "description": "SoutienPage — 'Later' button (Navigator.pop). TODO validation partenaires"
+    },
+    "soutienAucuneRelance": "No reminders — at your own pace",
+    "@soutienAucuneRelance": {
+        "description": "SoutienPage — reassurance footer: no push notifications, no reminders. TODO validation partenaires"
+    },
+    "soutienConfianceTitre": "Talk to someone you trust",
+    "@soutienConfianceTitre": {
+        "description": "ConfiancePage — title. TODO validation partenaires"
+    },
+    "soutienConfianceParagraphe": "You can talk to a parent, a teacher, a friend or a trusted adult. You don't have to carry it all alone.",
+    "@soutienConfianceParagraphe": {
+        "description": "ConfiancePage — paragraph (gentle guidance, no form, no data). TODO validation partenaires"
     }
 }

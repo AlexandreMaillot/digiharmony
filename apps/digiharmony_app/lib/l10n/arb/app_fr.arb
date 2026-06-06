@@ -72,5 +72,16 @@
     "journalCalendarDaySemantics": "Jour {day}",
     "journalCalendarDayMoodSemantics": "Jour {day} : {mood}",
     "journalExerciseComingSoon": "Cet exercice arrive bientôt.",
-    "journalLocalDataNote": "Tes données restent sur cet appareil."
+    "journalLocalDataNote": "Tes données restent sur cet appareil.",
+    "soutienTitre": "Ces derniers jours ont l'air difficiles.",
+    "soutienAccroche": "Tu n'es pas seul·e.",
+    "soutienParagraphe": "Ce que tu ressens est réel, et il est normal de traverser des moments difficiles. Prendre soin de soi commence par un tout petit pas.",
+    "soutienCtaConfiance": "Parler à quelqu'un de confiance",
+    "soutienCtaRespiration": "Faire une respiration guidée",
+    "soutienLignePrefix": "Ligne d'écoute : ",
+    "soutienLigneDispoPrefix": "Disponible : ",
+    "soutienPlusTard": "Plus tard",
+    "soutienAucuneRelance": "Aucune relance — à ton rythme",
+    "soutienConfianceTitre": "Parler à quelqu'un de confiance",
+    "soutienConfianceParagraphe": "Tu peux en parler à un parent, un·e prof, un·e ami·e ou un adulte en qui tu as confiance. Tu n'as pas à tout porter seul·e."
 }
