@@ -19,39 +19,21 @@ enum CibleOs {
 
 /// Vue du tutoriel « Réduire mes notifications » (statique, OS-aware).
 ///
-/// Aucun Bloc, aucun code natif (RÉVISION 2026-06-06) : le seul état dynamique
-/// est la bascule OS, portée localement (`StatefulWidget`).
-class TutoNotifsView extends StatefulWidget {
+/// Aucun Bloc, aucun code natif. L'OS est **détecté automatiquement**
+/// (`Platform.isIOS`) et les étapes correspondantes sont affichées — pas de
+/// bascule manuelle (on ne montre que le téléphone de l'utilisateur).
+class TutoNotifsView extends StatelessWidget {
   /// Crée la vue.
   ///
-  /// [osInitial] permet de forcer la plateforme en test ; en prod elle est
+  /// [osForce] permet de fixer la plateforme en test ; en prod elle est
   /// détectée via `Platform.isIOS`.
-  const TutoNotifsView({this.osInitial, super.key});
+  const TutoNotifsView({this.osForce, super.key});
 
-  /// OS initial (override de test). Si `null`, détecté à l'`initState`.
-  final CibleOs? osInitial;
+  /// OS forcé (override de test). Si `null`, détecté via `Platform.isIOS`.
+  final CibleOs? osForce;
 
-  @override
-  State<TutoNotifsView> createState() => _TutoNotifsViewState();
-}
-
-class _TutoNotifsViewState extends State<TutoNotifsView> {
-  late CibleOs _os;
-
-  @override
-  void initState() {
-    super.initState();
-    _os = widget.osInitial ?? (Platform.isIOS ? CibleOs.ios : CibleOs.android);
-  }
-
-  void _basculerOs() {
-    setState(() {
-      _os = _os == CibleOs.ios ? CibleOs.android : CibleOs.ios;
-    });
-  }
-
-  List<EtapeTutoModele> _etapes(AppLocalizations l10n) {
-    if (_os == CibleOs.ios) {
+  List<EtapeTutoModele> _etapes(AppLocalizations l10n, CibleOs os) {
+    if (os == CibleOs.ios) {
       return [
         EtapeTutoModele(
           icone: Icons.settings,
@@ -113,7 +95,8 @@ class _TutoNotifsViewState extends State<TutoNotifsView> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    final etapes = _etapes(l10n);
+    final os = osForce ?? (Platform.isIOS ? CibleOs.ios : CibleOs.android);
+    final etapes = _etapes(l10n, os);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -162,13 +145,6 @@ class _TutoNotifsViewState extends State<TutoNotifsView> {
                   const SizedBox(height: AppSpacing.sm),
                   const CarteEncouragement(),
                   const SizedBox(height: AppSpacing.lg),
-                  Center(
-                    child: TextButton(
-                      onPressed: _basculerOs,
-                      child: Text(l10n.tutoNotifsAutreTelephone),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
                   Text(
                     l10n.tutoNotifsRassurance,
                     textAlign: TextAlign.center,

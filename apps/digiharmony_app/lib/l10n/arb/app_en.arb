@@ -527,10 +527,6 @@
     "@tutoNotifsIntro": {
         "description": "Intro line of the notifications tutorial."
     },
-    "tutoNotifsAutreTelephone": "See for another phone",
-    "@tutoNotifsAutreTelephone": {
-        "description": "Link toggling the steps to the other OS (iOS <-> Android)."
-    },
     "tutoNotifsEncouragement": "Every notification you turn off is one less interruption. Take your time.",
     "@tutoNotifsEncouragement": {
         "description": "Encouragement card text (caring, non-judgemental). TODO validation partenaires"

@@ -16,7 +16,7 @@ extension on WidgetTester {
           locale: const Locale('en'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: TutoNotifsView(osInitial: os),
+          home: TutoNotifsView(osForce: os),
         ),
       ),
     );
@@ -45,21 +45,6 @@ void main() {
     expect(find.text('Repeat for each app'), findsOneWidget);
     // L'étape Android spécifique ne doit pas apparaître.
     expect(find.text('Do Not Disturb mode'), findsNothing);
-  });
-
-  testWidgets("TN-3 : lien « autre téléphone » bascule l'OS", (tester) async {
-    await tester.pumpTuto();
-    await tester.pump();
-    expect(find.text('Do Not Disturb mode'), findsOneWidget);
-
-    await tester.ensureVisible(find.text('See for another phone'));
-    await tester.pump();
-    await tester.tap(find.text('See for another phone'));
-    await tester.pump();
-
-    // Bascule vers iOS.
-    expect(find.text('Do Not Disturb mode'), findsNothing);
-    expect(find.text('Repeat for each app'), findsOneWidget);
   });
 
   testWidgets("AC7 : footer rassurance (l'app n'émet pas de notifs)", (
