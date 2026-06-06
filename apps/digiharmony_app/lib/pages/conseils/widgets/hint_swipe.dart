@@ -144,16 +144,20 @@ class _LienNav extends StatelessWidget {
     return InkWell(
       onTap: actif ? onTap : null,
       borderRadius: AppRadii.buttonRadius,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: AppSpacing.sm,
-        ),
-        child: Text(
-          libelle,
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: couleur,
-            fontSize: 13,
+      child: ConstrainedBox(
+        // Cible tactile a11y >= 48 dp (le texte 13px ne suffit pas seul).
+        constraints: const BoxConstraints(minHeight: 48),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+          child: Center(
+            widthFactor: 1,
+            child: Text(
+              libelle,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: couleur,
+                fontSize: 13,
+              ),
+            ),
           ),
         ),
       ),
