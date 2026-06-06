@@ -28,16 +28,20 @@ void main() {
       when(() => database.conseilDuJour(any())).thenAnswer(
         (_) async => const Conseil(id: 1, cleConseil: 'tipDay01'),
       );
-      when(() => database.observerDerniereHumeurDuJour())
-          .thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
-      TestWidgetsFlutterBinding.instance.platformDispatcher
-              .accessibilityFeaturesTestValue =
-          const FakeAccessibilityFeatures(disableAnimations: true);
+      when(
+        () => database.observerDerniereHumeurDuJour(),
+      ).thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
+      TestWidgetsFlutterBinding
+          .instance
+          .platformDispatcher
+          .accessibilityFeaturesTestValue = const FakeAccessibilityFeatures(
+        disableAnimations: true,
+      );
     });
 
     tearDown(() {
-      TestWidgetsFlutterBinding
-          .instance.platformDispatcher.clearAccessibilityFeaturesTestValue();
+      TestWidgetsFlutterBinding.instance.platformDispatcher
+          .clearAccessibilityFeaturesTestValue();
     });
 
     testWidgets('APP-1/APP-2 : thème foncé câblé (AppTheme.dark, dark mode)', (
@@ -77,27 +81,28 @@ void main() {
     testWidgets(
       'APP-5 : LocaleBloc(LocaleChange(fr)) -> MaterialApp.locale == fr',
       (tester) async {
-      final bloc = LocaleBloc()..add(const LocaleChange(Locale('fr')));
-      await tester.pumpWidget(
-        MultiRepositoryProvider(
-          providers: [
-            RepositoryProvider<AppDatabase>.value(value: database),
-          ],
-          child: MultiBlocProvider(
+        final bloc = LocaleBloc()..add(const LocaleChange(Locale('fr')));
+        await tester.pumpWidget(
+          MultiRepositoryProvider(
             providers: [
-              BlocProvider<LocaleBloc>.value(value: bloc),
-              BlocProvider<BienvenueBloc>(create: (_) => BienvenueBloc()),
+              RepositoryProvider<AppDatabase>.value(value: database),
             ],
-            child: const AppView(),
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider<LocaleBloc>.value(value: bloc),
+                BlocProvider<BienvenueBloc>(create: (_) => BienvenueBloc()),
+              ],
+              child: const AppView(),
+            ),
           ),
-        ),
-      );
-      await tester.pump();
-      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
-      expect(app.locale, const Locale('fr'));
-      // Vide le timer du délai minimal (DemarragePage est le home).
-      await tester.pump(const Duration(seconds: 3));
-    });
+        );
+        await tester.pump();
+        final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+        expect(app.locale, const Locale('fr'));
+        // Vide le timer du délai minimal (DemarragePage est le home).
+        await tester.pump(const Duration(seconds: 3));
+      },
+    );
 
     testWidgets('APP-6 : délégués i18n + 8 langues supportées', (tester) async {
       await tester.pumpWidget(App(database: database));

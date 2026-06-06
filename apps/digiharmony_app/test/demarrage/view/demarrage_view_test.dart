@@ -168,9 +168,10 @@ void main() {
       when(() => db.conseilDuJour(any())).thenAnswer(
         (_) async => const Conseil(id: 1, cleConseil: 'tip'),
       );
-      // ignore: unnecessary_lambdas closure requise par mocktail when()
-      when(() => db.observerDerniereHumeurDuJour())
-          .thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
+      when(
+        // ignore: unnecessary_lambdas closure requise par mocktail when()
+        () => db.observerDerniereHumeurDuJour(),
+      ).thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
 
       await tester.pumpWidget(
         RepositoryProvider<AppDatabase>.value(

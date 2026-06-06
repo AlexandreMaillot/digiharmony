@@ -60,10 +60,12 @@ void main() {
 
   setUp(() {
     database = _MockAppDatabase();
-    when(() => database.conseilDuJour(any()))
-        .thenAnswer((_) async => const Conseil(id: 1, cleConseil: 'tipDay01'));
-    when(() => database.observerDerniereHumeurDuJour())
-        .thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
+    when(
+      () => database.conseilDuJour(any()),
+    ).thenAnswer((_) async => const Conseil(id: 1, cleConseil: 'tipDay01'));
+    when(
+      () => database.observerDerniereHumeurDuJour(),
+    ).thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
   });
 
   group('DemarrageView — navigation (NAV-1->NAV-4) —', () {

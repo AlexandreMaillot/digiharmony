@@ -47,7 +47,9 @@ void main() {
       final hier = DateTime.now().subtract(const Duration(days: 1));
       final jourHier = DateTime(hier.year, hier.month, hier.day);
 
-      await db.into(db.entreesHumeur).insert(
+      await db
+          .into(db.entreesHumeur)
+          .insert(
             EntreesHumeurCompanion.insert(
               codeEmotion: 'sad',
               valence: -1,
@@ -75,8 +77,11 @@ void main() {
         expect(entree, isNotNull);
 
         final maintenant = DateTime.now();
-        final minuitLocal =
-            DateTime(maintenant.year, maintenant.month, maintenant.day);
+        final minuitLocal = DateTime(
+          maintenant.year,
+          maintenant.month,
+          maintenant.day,
+        );
 
         expect(entree!.jour.hour, 0);
         expect(entree.jour.minute, 0);
@@ -107,13 +112,11 @@ void main() {
         final infos = await db
             .customSelect("PRAGMA table_info('entrees_humeur')")
             .get();
-        final colonnes =
-            infos.map((r) => r.read<String>('name')).toList();
+        final colonnes = infos.map((r) => r.read<String>('name')).toList();
         expect(colonnes, contains('jour'));
 
         // Simule le guard : aDejaJour == true → addColumn non exécuté.
-        final aDejaJour =
-            infos.any((r) => r.read<String>('name') == 'jour');
+        final aDejaJour = infos.any((r) => r.read<String>('name') == 'jour');
         expect(aDejaJour, isTrue);
 
         // Sans guard, ce double ALTER crasherait avec
