@@ -48,13 +48,15 @@ class SectionProjet extends StatelessWidget {
     // HapticFeedback est fire-and-forget (DEC-PARAM-05).
     unawaited(HapticFeedback.selectionClick());
     final uri = Uri.parse(url);
+    // On NE gate PAS sur canLaunchUrl : sur Android 11+ il renvoie false
+    // (« component name is null ») meme quand launchUrl reussit. On tente
+    // l'ouverture directe et on ne signale l'echec que si launchUrl jette
+    // ou renvoie false. (DEC-PARAM-05)
     var succes = true;
     try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        succes = false;
-      }
+      succes = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } on PlatformException {
+      succes = false;
     } on Exception {
       succes = false;
     }

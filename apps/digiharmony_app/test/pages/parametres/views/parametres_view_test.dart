@@ -220,12 +220,16 @@ void main() {
     );
 
     testWidgets(
-      'PM-VIEW-8 : AC8 — canLaunchUrl == false → SnackBar lienIndisponible',
+      'PM-VIEW-8 : AC8 — launchUrl échoue → SnackBar lienIndisponible',
       (tester) async {
         _mockHapticFeedback();
+        // On ne gate plus sur canLaunchUrl : l'echec se manifeste par
+        // launchUrl qui jette (Android 11+ « component name is null »).
         when(
-          () => mockUrlLauncher.canLaunch(any()),
-        ).thenAnswer((_) async => false);
+          () => mockUrlLauncher.launchUrl(any(), any()),
+        ).thenThrow(
+          PlatformException(code: 'CHANNEL_ERROR', message: 'no handler'),
+        );
 
         await tester.pumpParametresView();
         await tester.pump();

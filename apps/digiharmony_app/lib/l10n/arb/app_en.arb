@@ -531,10 +531,6 @@
     "@tempsEcranIosAutorisationCta": {
         "description": "iOS FamilyControls authorization CTA button."
     },
-    "tempsEcranIosRefuse": "Access not allowed. You can enable it in Settings.",
-    "@tempsEcranIosRefuse": {
-        "description": "iOS FamilyControls denied state — graceful, bienveillant."
-    },
     "tempsEcranIosDonneesSysteme": "This data stays in your iPhone; the app can't see it.",
     "@tempsEcranIosDonneesSysteme": {
         "description": "iOS report footer — zero-collection reassurance."
@@ -609,10 +605,6 @@
     "@parametresOpenSourceTitre": { "description": "ParametresPage — open source link title" },
     "parametresOpenSourceSousTitre": "GitHub · GNU GPL license",
     "@parametresOpenSourceSousTitre": { "description": "ParametresPage — open source link subtitle" },
-    "parametresSiteTitre": "digiharmony.org",
-    "@parametresSiteTitre": { "description": "ParametresPage — official website link title (domain name, identical in all locales)" },
-    "parametresSiteSousTitre": "Official project website",
-    "@parametresSiteSousTitre": { "description": "ParametresPage — official website link subtitle" },
     "parametresErasmusCorps": "Erasmus+ project — free app, no ads.",
     "@parametresErasmusCorps": { "description": "ParametresPage — Erasmus+ mention card body text" },
     "parametresVersion": "DIGIHARMONY v{version}",
