@@ -161,5 +161,418 @@
     "reglagesTooltip": "Settings",
     "@reglagesTooltip": {
         "description": "Tooltip for the settings icon button in the home screen header"
-    }
+    },
+    "saisieHumeurTitre": "How are you feeling today?",
+    "@saisieHumeurTitre": {
+        "description": "SaisieHumeur screen — main title"
+    },
+    "saisieHumeurSousTitre": "Pick how you feel, then confirm.",
+    "@saisieHumeurSousTitre": {
+        "description": "SaisieHumeur screen — subtitle below the title"
+    },
+    "saisieHumeurValider": "Confirm",
+    "@saisieHumeurValider": {
+        "description": "SaisieHumeur — primary button label to save the selected mood and return home"
+    },
+    "saisieHumeurErreur": "Oops, saving didn't work. Please try again.",
+    "@saisieHumeurErreur": {
+        "description": "SaisieHumeur — friendly error message shown when saving the mood fails"
+    },
+    "saisieHumeurSelectionne": "You selected: {emotion}",
+    "@saisieHumeurSelectionne": {
+        "description": "SaisieHumeur — feedback card showing selected emotion",
+        "placeholders": {
+            "emotion": {
+                "type": "String",
+                "description": "Localised label of the selected emotion"
+            }
+        }
+    },
+    "saisieHumeurEnregistrementEnCours": "Saving…",
+    "@saisieHumeurEnregistrementEnCours": {
+        "description": "SaisieHumeur — shown while the UPSERT is in flight"
+    },
+    "saisieHumeurEnregistree": "Mood saved",
+    "@saisieHumeurEnregistree": {
+        "description": "SaisieHumeur — snackbar message after successful save"
+    },
+    "saisieHumeurAnnuler": "Undo",
+    "@saisieHumeurAnnuler": {
+        "description": "SaisieHumeur — snackbar action label to cancel the save"
+    },
+    "saisieHumeurDonneesLocales": "Your data stays on your device",
+    "@saisieHumeurDonneesLocales": {
+        "description": "SaisieHumeur — reassurance footer about local storage"
+    },
+    "journalTitle": "My journal",
+    "@journalTitle": {
+        "description": "JournalPage — Toolbar title"
+    },
+    "journalSegmentDay": "Day",
+    "@journalSegmentDay": {
+        "description": "JournalPage — SegmentedControl segment label for day view"
+    },
+    "journalSegmentWeek": "Week",
+    "@journalSegmentWeek": {
+        "description": "JournalPage — SegmentedControl segment label for week view"
+    },
+    "journalSegmentMonth": "Month",
+    "@journalSegmentMonth": {
+        "description": "JournalPage — SegmentedControl segment label for month view"
+    },
+    "journalDayMoodPrefix": "Today you are feeling",
+    "@journalDayMoodPrefix": {
+        "description": "JournalPage Day view — prefix before mood label when mood is logged"
+    },
+    "journalDayTipLabel": "Tip of the day",
+    "@journalDayTipLabel": {
+        "description": "JournalPage Day view — label before the daily tip text"
+    },
+    "journalDayDoExerciseCta": "Do the exercise",
+    "@journalDayDoExerciseCta": {
+        "description": "JournalPage Day view — CTA button for the exercise (stub V1)"
+    },
+    "journalDayEditMoodLink": "Edit my mood",
+    "@journalDayEditMoodLink": {
+        "description": "JournalPage Day view — link to SaisieHumeur to edit today's mood"
+    },
+    "journalDayEmptyTitle": "No mood logged yet today",
+    "@journalDayEmptyTitle": {
+        "description": "JournalPage Day view — empty state title (benevolent)"
+    },
+    "journalDayEmptyBody": "Whenever you feel ready, you can note how you feel.",
+    "@journalDayEmptyBody": {
+        "description": "JournalPage Day view — empty state body text (gentle, no FOMO)"
+    },
+    "journalDayEmptyCta": "Log my mood",
+    "@journalDayEmptyCta": {
+        "description": "JournalPage Day view — empty state CTA to SaisieHumeur"
+    },
+    "journalWeekTitle": "This week",
+    "@journalWeekTitle": {
+        "description": "JournalPage Week view — section title"
+    },
+    "journalWeekNoEntry": "·",
+    "@journalWeekNoEntry": {
+        "description": "JournalPage Week view — neutral marker for days with no mood logged"
+    },
+    "journalWeekSummary": "You logged your mood on {count} of 7 days.",
+    "@journalWeekSummary": {
+        "description": "JournalPage Week view — descriptive summary when at least 1 mood is logged",
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "description": "Number of days with a mood logged this week"
+            }
+        }
+    },
+    "journalWeekSummaryEmpty": "No mood logged this week yet.",
+    "@journalWeekSummaryEmpty": {
+        "description": "JournalPage Week view — summary when no mood logged this week"
+    },
+    "journalMonthPrevTooltip": "Previous month",
+    "@journalMonthPrevTooltip": {
+        "description": "JournalPage Month view — previous month arrow tooltip"
+    },
+    "journalMonthNextTooltip": "Next month",
+    "@journalMonthNextTooltip": {
+        "description": "JournalPage Month view — next month arrow tooltip (disabled when current month)"
+    },
+    "journalMonthSectionTitle": "This month at a glance",
+    "@journalMonthSectionTitle": {
+        "description": "JournalPage Month view — synthesis section title"
+    },
+    "journalMonthSummary": "A gentle look back over your month.",
+    "@journalMonthSummary": {
+        "description": "JournalPage Month view — descriptive summary when at least 1 mood logged (no comparison)"
+    },
+    "journalMonthSummaryEmpty": "No mood logged this month yet.",
+    "@journalMonthSummaryEmpty": {
+        "description": "JournalPage Month view — summary when no mood logged this month"
+    },
+    "journalMonthFrequencyLine": "{label}: {count, plural, =1{1 day} other{{count} days}}",
+    "@journalMonthFrequencyLine": {
+        "description": "JournalPage Month view — one line per emotion with occurrences (neutral count, no ranking)",
+        "placeholders": {
+            "label": {
+                "type": "String",
+                "description": "Localised mood label (mood* key)"
+            },
+            "count": {
+                "type": "int",
+                "description": "Number of days with this emotion logged"
+            }
+        }
+    },
+    "journalCalendarDaySemantics": "Day {day}",
+    "@journalCalendarDaySemantics": {
+        "description": "JournalPage Month view — accessibility label for a calendar day with no mood",
+        "placeholders": {
+            "day": {
+                "type": "int",
+                "description": "Day number in the month"
+            }
+        }
+    },
+    "journalCalendarDayMoodSemantics": "Day {day}: {mood}",
+    "@journalCalendarDayMoodSemantics": {
+        "description": "JournalPage Month view — accessibility label for a calendar day with a mood logged",
+        "placeholders": {
+            "day": {
+                "type": "int",
+                "description": "Day number in the month"
+            },
+            "mood": {
+                "type": "String",
+                "description": "Localised mood label (mood* key)"
+            }
+        }
+    },
+    "journalExerciseComingSoon": "This exercise is coming soon.",
+    "@journalExerciseComingSoon": {
+        "description": "JournalPage Day view — SnackBar message for the exercise stub (V1)"
+    },
+    "journalLocalDataNote": "Your data stays on this device.",
+    "@journalLocalDataNote": {
+        "description": "JournalPage — reassurance note about local-only storage (zero collection)"
+    },
+    "soutienTitre": "The last few days seem hard.",
+    "@soutienTitre": {
+        "description": "SoutienPage — main title. TODO validation partenaires (public mineur, Erasmus+)"
+    },
+    "soutienAccroche": "You're not alone.",
+    "@soutienAccroche": {
+        "description": "SoutienPage — accroche (cyan accent). TODO validation partenaires"
+    },
+    "soutienParagraphe": "What you feel is real, and it's okay to go through hard times. Taking care of yourself starts with one small step.",
+    "@soutienParagraphe": {
+        "description": "SoutienPage — reassuring paragraph. TODO validation partenaires"
+    },
+    "soutienCtaConfiance": "Talk to someone you trust",
+    "@soutienCtaConfiance": {
+        "description": "SoutienPage — primary CTA (ConfiancePage). TODO validation partenaires"
+    },
+    "soutienCtaRespiration": "Try a guided breathing",
+    "@soutienCtaRespiration": {
+        "description": "SoutienPage — secondary CTA (STUB V1). TODO validation partenaires"
+    },
+    "soutienPlusTard": "Later",
+    "@soutienPlusTard": {
+        "description": "SoutienPage — 'Later' button (Navigator.pop). TODO validation partenaires"
+    },
+    "soutienAucuneRelance": "No reminders — at your own pace",
+    "@soutienAucuneRelance": {
+        "description": "SoutienPage — reassurance footer: no push notifications, no reminders. TODO validation partenaires"
+    },
+    "soutienConfianceTitre": "Talk to someone you trust",
+    "@soutienConfianceTitre": {
+        "description": "ConfiancePage — title. TODO validation partenaires"
+    },
+    "soutienConfianceParagraphe": "You can talk to a parent, a teacher, a friend or a trusted adult. You don't have to carry it all alone.",
+    "@soutienConfianceParagraphe": {
+        "description": "ConfiancePage — paragraph (gentle guidance, no form, no data). TODO validation partenaires"
+    },
+    "soutienConfiancePiste01": "Talk to a close friend you trust",
+    "@soutienConfiancePiste01": {
+        "description": "ConfiancePage — gentle suggestion 1. TODO validation partenaires"
+    },
+    "soutienConfiancePiste02": "Talk to a family member",
+    "@soutienConfiancePiste02": {
+        "description": "ConfiancePage — gentle suggestion 2. TODO validation partenaires"
+    },
+    "soutienConfiancePiste03": "Reach out to a trusted adult at school (counsellor, school nurse)",
+    "@soutienConfiancePiste03": {
+        "description": "ConfiancePage — gentle suggestion 3. TODO validation partenaires"
+    },
+    "soutienConfiancePiste04": "Write down what you feel before talking about it",
+    "@soutienConfiancePiste04": {
+        "description": "ConfiancePage — gentle suggestion 4. TODO validation partenaires"
+    },
+    "soutienConfiancePiste05": "Choose a calm moment to bring it up",
+    "@soutienConfiancePiste05": {
+        "description": "ConfiancePage — gentle suggestion 5. TODO validation partenaires"
+    },
+    "soutienErreurLien": "Unable to open this link.",
+    "@soutienErreurLien": {
+        "description": "Error snackbar when url_launcher fails to open a helpline resource."
+    },
+    "soutienLigneTitre": "Helpline",
+    "@soutienLigneTitre": {
+        "description": "Generic title for the helpline card in the soutien screen."
+    },
+    "soutienLigneDispo": "Available 24/7",
+    "@soutienLigneDispo": {
+        "description": "Generic availability label for the helpline card in the soutien screen."
+    },
+    "tempsEcranIntro": "Here is your screen time today",
+    "@tempsEcranIntro": {
+        "description": "Intro line on the nominal screen time view."
+    },
+    "tempsEcranAujourdhui": "today",
+    "@tempsEcranAujourdhui": {
+        "description": "Label under the circular gauge (below the day total)."
+    },
+    "tempsEcranCetteSemaine": "this week",
+    "@tempsEcranCetteSemaine": {
+        "description": "Label under the weekly total (next to the 7-day chart)."
+    },
+    "tempsEcranEtMaintenant": "WHAT NOW?",
+    "@tempsEcranEtMaintenant": {
+        "description": "Section header (uppercase) for the action cards."
+    },
+    "tempsEcranFairePause": "Take a break",
+    "@tempsEcranFairePause": {
+        "description": "Action card title — stub for the Detox session."
+    },
+    "tempsEcranFairePauseSousTitre": "Start a Detox session now",
+    "@tempsEcranFairePauseSousTitre": {
+        "description": "Action card subtitle — stub for the Detox session."
+    },
+    "tempsEcranCouperNotifs": "Silence my notifications",
+    "@tempsEcranCouperNotifs": {
+        "description": "Action card title — opens the notifications tutorial."
+    },
+    "tempsEcranCouperNotifsSousTitre": "Quick guide to reduce interruptions",
+    "@tempsEcranCouperNotifsSousTitre": {
+        "description": "Action card subtitle — opens the notifications tutorial."
+    },
+    "tempsEcranPermissionTitre": "To see your screen time",
+    "@tempsEcranPermissionTitre": {
+        "description": "Title of the permission explanation screen (before native access)."
+    },
+    "tempsEcranPermissionExplication": "DigiHarmony needs access to your phone's usage statistics. This data is read only on your device and is never sent anywhere.",
+    "@tempsEcranPermissionExplication": {
+        "description": "Permission explanation, reassuring about privacy."
+    },
+    "tempsEcranPermissionCta": "Enable access in settings",
+    "@tempsEcranPermissionCta": {
+        "description": "CTA opening the system usage access settings."
+    },
+    "tempsEcranPermissionRassurance": "You can revoke this access anytime in settings.",
+    "@tempsEcranPermissionRassurance": {
+        "description": "Reassurance line under the permission CTA."
+    },
+    "tempsEcranChargement": "Reading…",
+    "@tempsEcranChargement": {
+        "description": "Loading label while reading native usage data."
+    },
+    "tempsEcranTotalAujourdhui": "Today",
+    "@tempsEcranTotalAujourdhui": {
+        "description": "Header label for today's total screen time."
+    },
+    "tempsEcranAucuneDonnee": "No data for today yet",
+    "@tempsEcranAucuneDonnee": {
+        "description": "Empty state title (access granted but no usage data)."
+    },
+    "tempsEcranAucuneDonneeAide": "Check back a little later today.",
+    "@tempsEcranAucuneDonneeAide": {
+        "description": "Empty state help text."
+    },
+    "tempsEcranTopApps": "Your apps",
+    "@tempsEcranTopApps": {
+        "description": "Section title for the per-app breakdown."
+    },
+    "tempsEcranAppAutres": "Others",
+    "@tempsEcranAppAutres": {
+        "description": "Label for the residual bucket of apps beyond the top N."
+    },
+    "tempsEcranErreur": "Can't read screen time right now.",
+    "@tempsEcranErreur": {
+        "description": "Error state message (no crash, no network)."
+    },
+    "tempsEcranReessayer": "Try again",
+    "@tempsEcranReessayer": {
+        "description": "Retry button (error / empty state)."
+    },
+    "tempsEcranIndisponiblePlateforme": "Screen time is only available on Android for now.",
+    "@tempsEcranIndisponiblePlateforme": {
+        "description": "Unsupported platform (iOS) — graceful degraded state."
+    },
+    "tempsEcranMessageBienveillant": "Noticing your screen time is already taking care of yourself.",
+    "@tempsEcranMessageBienveillant": {
+        "description": "Caring, non-judgemental message on the results screen."
+    },
+    "tempsEcranDonneesLocales": "This data stays on your device and is never sent.",
+    "@tempsEcranDonneesLocales": {
+        "description": "Footer reassurance: data stays local."
+    },
+    "tempsEcranDureeHeuresMinutes": "{heures} h {minutes} min",
+    "@tempsEcranDureeHeuresMinutes": {
+        "description": "Duration format with hours and minutes.",
+        "placeholders": {
+            "heures": { "type": "int" },
+            "minutes": { "type": "int" }
+        }
+    },
+    "tempsEcranDureeMinutes": "{minutes} min",
+    "@tempsEcranDureeMinutes": {
+        "description": "Duration format with minutes only.",
+        "placeholders": {
+            "minutes": { "type": "int" }
+        }
+    },
+    "tempsEcranAppSemantique": "{app}: {duree}",
+    "@tempsEcranAppSemantique": {
+        "description": "Accessibility label for an app row (name + duration).",
+        "placeholders": {
+            "app": { "type": "String" },
+            "duree": { "type": "String" }
+        }
+    },
+    "tutoNotifsTitre": "Reduce my notifications",
+    "@tutoNotifsTitre": {
+        "description": "Notifications tutorial in-app title."
+    },
+    "tutoNotifsIntro": "Fewer notifications, more calm.",
+    "@tutoNotifsIntro": {
+        "description": "Intro line of the notifications tutorial."
+    },
+    "tutoNotifsEncouragement": "Every notification you turn off is one less interruption. Take your time.",
+    "@tutoNotifsEncouragement": {
+        "description": "Encouragement card text (caring, non-judgemental). TODO validation partenaires"
+    },
+    "tutoNotifsRassurance": "DigiHarmony never sends you notifications. This is about your other apps.",
+    "@tutoNotifsRassurance": {
+        "description": "Footer reassurance: the app emits no notifications."
+    },
+    "tutoNotifsIosEtape1Titre": "Open Settings",
+    "@tutoNotifsIosEtape1Titre": { "description": "iOS step 1 title. TODO validation partenaires" },
+    "tutoNotifsIosEtape1Corps": "Find the gear icon on your home screen or in your app library.",
+    "@tutoNotifsIosEtape1Corps": { "description": "iOS step 1 body. TODO validation partenaires" },
+    "tutoNotifsIosEtape2Titre": "Tap \"Notifications\"",
+    "@tutoNotifsIosEtape2Titre": { "description": "iOS step 2 title. TODO validation partenaires" },
+    "tutoNotifsIosEtape2Corps": "Scroll down to the \"Notifications\" section and tap it.",
+    "@tutoNotifsIosEtape2Corps": { "description": "iOS step 2 body. TODO validation partenaires" },
+    "tutoNotifsIosEtape3Titre": "Pick a distracting app",
+    "@tutoNotifsIosEtape3Titre": { "description": "iOS step 3 title. TODO validation partenaires" },
+    "tutoNotifsIosEtape3Corps": "Choose an app that interrupts you often — social media, messaging, games.",
+    "@tutoNotifsIosEtape3Corps": { "description": "iOS step 3 body. TODO validation partenaires" },
+    "tutoNotifsIosEtape4Titre": "Turn off or group",
+    "@tutoNotifsIosEtape4Titre": { "description": "iOS step 4 title. TODO validation partenaires" },
+    "tutoNotifsIosEtape4Corps": "Turn notifications off, or enable \"Scheduled Summary\" to get them once a day.",
+    "@tutoNotifsIosEtape4Corps": { "description": "iOS step 4 body. TODO validation partenaires" },
+    "tutoNotifsIosEtape5Titre": "Repeat for each app",
+    "@tutoNotifsIosEtape5Titre": { "description": "iOS step 5 title. TODO validation partenaires" },
+    "tutoNotifsIosEtape5Corps": "Take 2–3 minutes to go through your apps one by one. Every bit of quiet counts.",
+    "@tutoNotifsIosEtape5Corps": { "description": "iOS step 5 body. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape1Titre": "Open Settings",
+    "@tutoNotifsAndroidEtape1Titre": { "description": "Android step 1 title. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape1Corps": "Find the gear icon in your app drawer or by swiping down from the top of the screen.",
+    "@tutoNotifsAndroidEtape1Corps": { "description": "Android step 1 body. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape2Titre": "Go to Apps",
+    "@tutoNotifsAndroidEtape2Titre": { "description": "Android step 2 title. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape2Corps": "Look for \"Apps\", \"App management\" or \"Installed apps\" depending on your phone.",
+    "@tutoNotifsAndroidEtape2Corps": { "description": "Android step 2 body. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape3Titre": "Select an app",
+    "@tutoNotifsAndroidEtape3Titre": { "description": "Android step 3 title. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape3Corps": "Choose a distracting app and open its settings from the list.",
+    "@tutoNotifsAndroidEtape3Corps": { "description": "Android step 3 body. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape4Titre": "Notifications → Turn off",
+    "@tutoNotifsAndroidEtape4Titre": { "description": "Android step 4 title. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape4Corps": "Tap \"Notifications\" in the app's settings, then turn off the non-essential categories.",
+    "@tutoNotifsAndroidEtape4Corps": { "description": "Android step 4 body. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape5Titre": "Do Not Disturb mode",
+    "@tutoNotifsAndroidEtape5Titre": { "description": "Android step 5 title. TODO validation partenaires" },
+    "tutoNotifsAndroidEtape5Corps": "Turn on \"Do Not Disturb\" from the quick settings to create calm, interruption-free windows.",
+    "@tutoNotifsAndroidEtape5Corps": { "description": "Android step 5 body. TODO validation partenaires" }
 }

@@ -3,6 +3,7 @@ import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/locale/locale_bloc.dart';
 import 'package:digiharmony_app/pages/bienvenue/bloc/bienvenue_bloc.dart';
 import 'package:digiharmony_app/pages/demarrage/views/demarrage_page.dart';
+import 'package:digiharmony_app/pages/soutien/bloc/soutien_bloc.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +27,7 @@ class App extends StatelessWidget {
         providers: [
           BlocProvider<LocaleBloc>(create: (_) => LocaleBloc()),
           BlocProvider<BienvenueBloc>(create: (_) => BienvenueBloc()),
+          BlocProvider<SoutienBloc>(create: (_) => SoutienBloc()),
         ],
         child: const AppView(),
       ),

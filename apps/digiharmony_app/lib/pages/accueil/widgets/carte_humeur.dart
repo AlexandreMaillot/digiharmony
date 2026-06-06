@@ -1,6 +1,7 @@
-import 'package:digiharmony_app/common/placeholder_screen.dart';
+import 'package:digiharmony_app/app/routing/app_router.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
+import 'package:digiharmony_app/pages/saisie_humeur/modeles/emotion_canonique.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -75,8 +76,7 @@ class _CarteEtatA extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: () =>
-                    ouvrirPlaceholder(context, l10n.placeholderNoterHumeur),
+                onPressed: () => AppRouter.versSaisieHumeur(context),
                 icon: const Icon(Icons.add_circle_outline),
                 label: Text(l10n.heroLogMoodCta),
               ),
@@ -84,8 +84,7 @@ class _CarteEtatA extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             Center(
               child: TextButton(
-                onPressed: () =>
-                    ouvrirPlaceholder(context, l10n.placeholderJournal),
+                onPressed: () => AppRouter.versJournal(context),
                 child: Text(l10n.heroSeeJournal),
               ),
             ),
@@ -111,7 +110,7 @@ class _CarteEtatB extends StatelessWidget {
       locale.toString(),
     ).format(humeur.noteeLe);
     final couleurEmotion = MoodColors.byKey[humeur.codeEmotion];
-    final libelle = _libelleEmotion(context, humeur.codeEmotion);
+    final libelle = libelleEmotion(l10n, humeur.codeEmotion);
 
     return Card(
       child: Padding(
@@ -170,8 +169,7 @@ class _CarteEtatB extends StatelessWidget {
             const SizedBox(height: AppSpacing.lg),
             Center(
               child: TextButton(
-                onPressed: () =>
-                    ouvrirPlaceholder(context, l10n.placeholderJournal),
+                onPressed: () => AppRouter.versJournal(context),
                 child: Text(l10n.heroSeeJournal),
               ),
             ),
@@ -179,29 +177,5 @@ class _CarteEtatB extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  /// Résout le libellé localisé depuis le [codeEmotion].
-  String _libelleEmotion(BuildContext context, String codeEmotion) {
-    final l10n = context.l10n;
-    switch (codeEmotion) {
-      case 'happy':
-        return l10n.moodHappy;
-      case 'calm':
-        return l10n.moodCalm;
-      case 'dynamic':
-        return l10n.moodDynamic;
-      case 'sad':
-        return l10n.moodSad;
-      case 'angry':
-        return l10n.moodAngry;
-      case 'nervous':
-        return l10n.moodNervous;
-      case 'tired':
-        return l10n.moodTired;
-      default:
-        // Fallback gracieux pour code inconnu (HC-6).
-        return codeEmotion;
-    }
   }
 }

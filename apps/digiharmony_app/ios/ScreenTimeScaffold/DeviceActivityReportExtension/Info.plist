@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Info.plist du target App Extension DeviceActivityReportExtension (SCAFFOLD).
+
+  ⚠️  Ce fichier est un modèle. Il doit être placé dans le TARGET Xcode de
+      l'extension (créé manuellement). Ajuster le bundle identifier selon
+      la convention :
+        development : <host_bundle_id_dev>.devicereport
+        staging     : <host_bundle_id_staging>.devicereport
+        production  : <host_bundle_id_prod>.devicereport
+
+      Le bundle id de l'extension DOIT être un suffixe du bundle id hôte
+      (contrainte Apple, DEC-TE-14).
+-->
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>$(DEVELOPMENT_LANGUAGE)</string>
+    <key>CFBundleDisplayName</key>
+    <string>DigiHarmony Report</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <!-- À remplacer par la valeur correcte selon le flavor -->
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+    <key>CFBundleShortVersionString</key>
+    <string>$(FLUTTER_BUILD_NAME)</string>
+    <key>CFBundleVersion</key>
+    <string>$(FLUTTER_BUILD_NUMBER)</string>
+    <key>NSExtension</key>
+    <dict>
+        <!-- Clé OBLIGATOIRE pour être reconnue comme extension DeviceActivity -->
+        <key>NSExtensionPointIdentifier</key>
+        <string>com.apple.deviceactivity.report</string>
+        <key>NSExtensionPrincipalClass</key>
+        <string>$(PRODUCT_MODULE_NAME).DigiHarmonyReportScene</string>
+    </dict>
+</dict>
+</plist>
