@@ -10,8 +10,13 @@ import 'package:mocktail/mocktail.dart';
 class MockAppDatabase extends Mock implements AppDatabase {}
 
 /// Conseil stub pour les tests.
-Conseil _conseilStub({String cle = 'tipDay03'}) =>
-    Conseil(id: 1, cleConseil: cle);
+Conseil _conseilStub({String cle = 'tipDay03'}) => Conseil(
+  id: 1,
+  cleConseil: cle,
+  typeCarte: 'rappel',
+  accentChrome: 'primary',
+  ordre: 1,
+);
 
 /// Entrée d'humeur stub pour les tests.
 EntreeHumeur _humeurStub({

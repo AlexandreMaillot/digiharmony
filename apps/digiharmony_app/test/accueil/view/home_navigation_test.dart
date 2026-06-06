@@ -5,6 +5,7 @@ import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/locale/locale_bloc.dart';
 import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_view.dart';
+import 'package:digiharmony_app/pages/conseils/views/conseils_page.dart';
 import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
 import 'package:digiharmony_app/pages/parametres/views/parametres_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_view.dart';
@@ -62,7 +63,15 @@ void main() {
     mockDb = _MockAppDatabase();
     when(
       () => mockDb.conseilDuJour(any()),
-    ).thenAnswer((_) async => const Conseil(id: 1, cleConseil: 'tipDay01'));
+    ).thenAnswer(
+      (_) async => const Conseil(
+        id: 1,
+        cleConseil: 'tipDay01',
+        typeCarte: 'rappel',
+        accentChrome: 'primary',
+        ordre: 1,
+      ),
+    );
     when(
       () => mockDb.observerDerniereHumeurDuJour(),
     ).thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
@@ -72,6 +81,19 @@ void main() {
     when(
       () => mockDb.observerEntreesDuMois(any()),
     ).thenAnswer((_) => const Stream<List<EntreeHumeur>>.empty());
+    when(
+      () => mockDb.lireCorpusConseils(),
+    ).thenAnswer(
+      (_) async => [
+        const Conseil(
+          id: 1,
+          cleConseil: 'tipDay01',
+          typeCarte: 'rappel',
+          accentChrome: 'primary',
+          ordre: 1,
+        ),
+      ],
+    );
     hapticLog.clear();
     // Intercepte les appels haptiques via le canal de plateforme.
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -169,17 +191,19 @@ void main() {
       },
     );
 
-    // HN-5 : tuile « Tip of the day » → PlaceholderScreen.
+    // HN-5 : tuile « Tip of the day » → ConseilsPage (DEC-CO-08).
     testWidgets(
-      'HN-5 : Tip of the day → PlaceholderScreen',
+      'HN-5 : Tip of the day → ConseilsPage',
       (tester) async {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
         await tester.pumpNavTest(bloc, db: mockDb);
         await tester.tap(find.text('Tip of the day'));
-        await tester.pumpAndSettle();
-        expect(find.byType(PlaceholderScreen), findsOneWidget);
+        // ConseilsBloc charge de façon asynchrone : pump + délai.
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(ConseilsPage), findsOneWidget);
         expectHaptique();
       },
     );
