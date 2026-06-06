@@ -30,6 +30,7 @@ flowchart TD
     Lib --> Data["data/local/app_database.dart (Drift)"]
     Lib --> Theme["theme/theme.dart · locale/ · common/"]
     Lib --> Config["config/legal_urls.dart"]
+    App --> Ios["ios/ (Runner + DigiHarmonyActivityReportExtension · entitlements family-controls)"]
     Lib --> L10n["l10n/"]
 
     Pages --> Demarrage["demarrage/ (splash)"]
@@ -38,8 +39,11 @@ flowchart TD
     Pages --> Saisie["saisie_humeur/ (sélection + Valider, DEC-004)"]
     Pages --> Journal["journal/ (Jour/Semaine/Mois, lecture Drift)"]
     Pages --> Soutien["soutien/ (Super conseil, déclenché 7 négatives)"]
+    Pages --> TempsEcran["temps_ecran/ (Android natif app_usage + Drift v3 ; iOS Screen Time DEC-006)"]
+    Pages --> TutoNotifs["tuto_notifs/ (tuto statique OS-aware, 0 natif/0 perm)"]
+    Pages --> Parametres["parametres/ (langue live LocaleBloc + confidentialité + liens projet)"]
 
-    Data --> Tables["EntreesHumeur · Conseils"]
+    Data --> Tables["EntreesHumeur · Conseils · UsagesEcranJournaliers (historique, schéma v3)"]
     Data --> Reads["observerDerniereHumeurDuJour · ...DeLaSemaine · ...DuMois · compterSaisiesNegativesConsecutives"]
     L10n --> Arb["arb/ (8 langues: en,fr,el,it,ro,tr,es,mk)"]
     L10n --> Gen["gen/ (app_localizations*.dart généré)"]
@@ -51,7 +55,7 @@ flowchart TD
     Pkgs --> Core["core_package/ (lib/src · test · .github)"]
 
     Docs --> Mem["memory/ (project-overview · codebase-map · internal · external)"]
-    Docs --> Dec["internal/decisions/ (ADR · 0001..0005)"]
+    Docs --> Dec["internal/decisions/ (ADR · 0001..0006)"]
     Docs --> Rules["rules/ (melos7-pub-workspace · android-gradle-minify-off · permissions-zero-collecte)"]
 ```
 
@@ -64,5 +68,14 @@ flowchart TD
 - **Soutien** : déclenché à l'ouverture (post-splash) si compteur ≥ 7 ; anti-relance via `SoutienBloc`
   (HydratedBloc). Prévisualisation dev via un déclencheur `kDebugMode` (tree-shaké en release ; aucune
   entrée de navigation en prod).
+- **Temps d'écran** : Android lit l'usage natif (`app_usage` + MethodChannel `digiharmony/usage_access`)
+  et historise dans `UsagesEcranJournaliers` (Drift, schéma v3). iOS = Apple Screen Time (FamilyControls
+  + DeviceActivityReport, données **non lisibles** par l'app → pas d'historique Drift iOS) derrière le flag
+  `kScreenTimeIosActif` ; plomberie câblée dans `AppDelegate` + extension `DigiHarmonyActivityReportExtension`
+  (DEC-006). Entrée du tuto notifs depuis l'écran temps d'écran.
+- **Paramètres** : 0 nouveau Bloc — choix de langue **en direct** via `LocaleBloc` existant ; version
+  **dynamique** via `package_info_plus` ; liens projet via `url_launcher` **sans gate `canLaunchUrl`**
+  (sur Android 11+ il renvoie false « component name null » alors que `launchUrl` réussit ; on appelle
+  `launchUrl` directement en try/catch).
 - Le dossier `counter/` du template very_good_cli a été retiré.
 
