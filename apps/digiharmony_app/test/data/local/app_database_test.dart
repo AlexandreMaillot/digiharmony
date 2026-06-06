@@ -27,7 +27,7 @@ void main() {
       expect(a.cleConseil, b.cleConseil);
     });
 
-    test('TIP-3 : index = joursDepuisEpoch % n (génériques seulement)', () async {
+    test('TIP-3 : index = joursDepuisEpoch % n (génériques)', () async {
       // conseilDuJour tourne sur les génériques (type_carte != 'emotion')
       // ordonnés par ordre/id — même ensemble que composerDeck (DEC-CO-11).
       final generiques = await db.cartesGeneriquesOrdonnees();
