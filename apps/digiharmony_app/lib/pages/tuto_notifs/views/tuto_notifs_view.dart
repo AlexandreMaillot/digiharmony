@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:digiharmony_app/common/anim/entree_douce.dart';
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/tuto_notifs/modeles/etape_tuto_modele.dart';
@@ -128,28 +129,51 @@ class TutoNotifsView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    l10n.tutoNotifsTitre,
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    l10n.tutoNotifsIntro,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: AppColors.textMuted,
+                  // index 0 — Titre + intro
+                  EntreeDouce(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          l10n.tutoNotifsTitre,
+                          style: theme.textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          l10n.tutoNotifsIntro,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xl),
+                  // Étapes en cascade (index 1+)
                   for (var i = 0; i < etapes.length; i++)
-                    CarteEtape(numero: i + 1, etape: etapes[i]),
+                    EntreeDouce(
+                      index: i + 1,
+                      child: CarteEtape(
+                        numero: i + 1,
+                        etape: etapes[i],
+                      ),
+                    ),
                   const SizedBox(height: AppSpacing.sm),
-                  const CarteEncouragement(),
+                  // index après étapes — carte encouragement
+                  EntreeDouce(
+                    index: etapes.length + 1,
+                    child: const CarteEncouragement(),
+                  ),
                   const SizedBox(height: AppSpacing.lg),
-                  Text(
-                    l10n.tutoNotifsRassurance,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.textMuted,
+                  // Texte de réassurance
+                  EntreeDouce(
+                    index: etapes.length + 2,
+                    child: Text(
+                      l10n.tutoNotifsRassurance,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.textMuted,
+                      ),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),

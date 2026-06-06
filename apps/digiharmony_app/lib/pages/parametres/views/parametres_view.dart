@@ -1,3 +1,4 @@
+import 'package:digiharmony_app/common/anim/entree_douce.dart';
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/parametres/widgets/section_confidentialite.dart';
@@ -64,13 +65,13 @@ class ParametresView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SectionLangue(),
+                  EntreeDouce(child: SectionLangue()),
                   SizedBox(height: AppSpacing.xl),
-                  SectionConfidentialite(),
+                  EntreeDouce(index: 1, child: SectionConfidentialite()),
                   SizedBox(height: AppSpacing.xl),
-                  SectionProjet(),
+                  EntreeDouce(index: 2, child: SectionProjet()),
                   SizedBox(height: AppSpacing.xl),
-                  _LigneVersion(),
+                  EntreeDouce(index: 3, child: _LigneVersion()),
                   SizedBox(height: AppSpacing.lg),
                 ],
               ),

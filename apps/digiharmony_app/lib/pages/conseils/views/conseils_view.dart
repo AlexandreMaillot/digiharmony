@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:digiharmony_app/common/anim/anim_constants.dart';
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/accueil/widgets/particules_flottantes.dart';
@@ -240,16 +241,15 @@ class _CorpsDeck extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget corps;
+
     if (state.status == ConseilsStatus.initial ||
         state.status == ConseilsStatus.chargement) {
-      return const _SkeletonDeck();
-    }
-
-    if (state.deck.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Semantics(
+      corps = const _SkeletonDeck();
+    } else if (state.deck.isEmpty) {
+      corps = const SizedBox.shrink();
+    } else {
+      corps = Semantics(
       label: context.l10n.conseilsCarteSemantique(
         state.indexCourant + 1,
         state.deck.length,
@@ -283,6 +283,17 @@ class _CorpsDeck extends StatelessWidget {
           );
         },
       ),
+    );
+    }
+
+    // Crossfade skeleton → deck en reduced-motion : switch direct.
+    if (disableAnimations) return corps;
+
+    return AnimatedSwitcher(
+      duration: dureeEntree,
+      switchInCurve: curveEntree,
+      switchOutCurve: Curves.easeIn,
+      child: KeyedSubtree(key: ValueKey(state.status), child: corps),
     );
   }
 }

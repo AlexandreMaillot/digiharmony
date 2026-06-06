@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:digiharmony_app/common/anim/entree_douce.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/bloc/saisie_humeur_bloc.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/widgets/carte_feedback_selection.dart';
@@ -55,28 +56,43 @@ class SaisieHumeurView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Header
-                        Text(
-                          l10n.saisieHumeurTitre,
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(
-                                color: AppColors.primary,
+                        // index 0 — Header
+                        EntreeDouce(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                l10n.saisieHumeurTitre,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(color: AppColors.primary),
                               ),
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          l10n.saisieHumeurSousTitre,
-                          style: Theme.of(context).textTheme.bodyLarge
-                              ?.copyWith(
-                                color: AppColors.textMuted,
+                              const SizedBox(height: AppSpacing.xs),
+                              Text(
+                                l10n.saisieHumeurSousTitre,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(color: AppColors.textMuted),
                               ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: AppSpacing.xl),
-                        // Picker 7 pastilles
-                        const PickerEmotions(),
+                        // index 1 — Picker 7 pastilles
+                        // Les pastilles ont déjà leurs propres animations ;
+                        // on enrobe juste l'entrée du groupe.
+                        const EntreeDouce(
+                          index: 1,
+                          child: PickerEmotions(),
+                        ),
                         const SizedBox(height: AppSpacing.lg),
-                        // Carte de feedback (visible après 1re sélection)
-                        const CarteFeedbackSelection(),
+                        // index 2 — Carte de feedback (après 1re sélection)
+                        const EntreeDouce(
+                          index: 2,
+                          child: CarteFeedbackSelection(),
+                        ),
                       ],
                     ),
                   ),

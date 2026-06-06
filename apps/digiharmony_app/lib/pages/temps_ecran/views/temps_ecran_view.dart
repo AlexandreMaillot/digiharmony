@@ -1,3 +1,4 @@
+import 'package:digiharmony_app/common/anim/anim_constants.dart';
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/temps_ecran/bloc/temps_ecran_bloc.dart';
@@ -77,10 +78,36 @@ class _TempsEcranViewState extends State<TempsEcranView>
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.lg),
-              child: _Contenu(),
+              child: _ContenuAvecTransition(),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Wrapper qui enveloppe [_Contenu] avec un crossfade doux lors des
+/// transitions d'état (chargement → contenu, etc.).
+/// En reduced-motion, le switch est direct (pas de fondu).
+class _ContenuAvecTransition extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final disableAnimations =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+
+    if (disableAnimations) return _Contenu();
+
+    return BlocBuilder<TempsEcranBloc, TempsEcranState>(
+      buildWhen: (prev, curr) => prev.status != curr.status,
+      builder: (context, state) => AnimatedSwitcher(
+        duration: dureeEntree,
+        switchInCurve: curveEntree,
+        switchOutCurve: Curves.easeIn,
+        child: KeyedSubtree(
+          key: ValueKey(state.status),
+          child: _Contenu(),
+        ),
       ),
     );
   }

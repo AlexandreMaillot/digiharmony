@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:digiharmony_app/common/anim/entree_douce.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/soutien/confiance/confiance_page.dart';
 import 'package:digiharmony_app/pages/soutien/widgets/bloc_ligne_ecoute.dart';
@@ -68,64 +69,89 @@ class SoutienView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Icone ronde douce
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.primary.withValues(alpha: 0.15),
-                    ),
-                    child: const Icon(
-                      Icons.favorite_border,
-                      color: AppColors.primary,
-                      size: 36,
+                  // index 0 — Icone ronde douce
+                  EntreeDouce(
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.primary.withValues(alpha: 0.15),
+                      ),
+                      child: const Icon(
+                        Icons.favorite_border,
+                        color: AppColors.primary,
+                        size: 36,
+                      ),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  Text(
-                    l10n.soutienTitre,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      color: AppColors.text,
-                      fontWeight: FontWeight.bold,
+                  // index 1 — Titre + accroche + paragraphe
+                  EntreeDouce(
+                    index: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          l10n.soutienTitre,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(
+                                color: AppColors.text,
+                                fontWeight: FontWeight.bold,
+                              ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          l10n.soutienAccroche,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(color: AppColors.primary),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        Text(
+                          l10n.soutienParagraphe,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(color: AppColors.textMuted),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    l10n.soutienAccroche,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColors.primary,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    l10n.soutienParagraphe,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppColors.textMuted,
-                    ),
-                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppSpacing.xl),
-                  // CTA primaire -> ConfiancePage
-                  BoutonActionSoutien(
-                    icone: Icons.volunteer_activism,
-                    label: l10n.soutienCtaConfiance,
-                    style: StyleBoutonSoutien.primaire,
-                    onTap: () => _versConfiance(context),
+                  // index 2 — CTA primaire -> ConfiancePage
+                  EntreeDouce(
+                    index: 2,
+                    child: BoutonActionSoutien(
+                      icone: Icons.volunteer_activism,
+                      label: l10n.soutienCtaConfiance,
+                      style: StyleBoutonSoutien.primaire,
+                      onTap: () => _versConfiance(context),
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  // CTA secondaire — Respiration (STUB V1)
-                  BoutonActionSoutien(
-                    icone: Icons.air,
-                    label: l10n.soutienCtaRespiration,
-                    style: StyleBoutonSoutien.secondaire,
-                    onTap: () => _stubRespiration(context),
+                  // index 3 — CTA secondaire — Respiration (STUB V1)
+                  EntreeDouce(
+                    index: 3,
+                    child: BoutonActionSoutien(
+                      icone: Icons.air,
+                      label: l10n.soutienCtaRespiration,
+                      style: StyleBoutonSoutien.secondaire,
+                      onTap: () => _stubRespiration(context),
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  // Bloc ligne d'ecoute conditionnel
-                  const BlocLigneEcoute(),
+                  // index 4 — Bloc ligne d'ecoute conditionnel
+                  const EntreeDouce(
+                    index: 4,
+                    child: BlocLigneEcoute(),
+                  ),
                   const SizedBox(height: AppSpacing.xl),
                   // Plus tard
                   TextButton(
