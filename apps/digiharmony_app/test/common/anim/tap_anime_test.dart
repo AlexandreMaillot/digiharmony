@@ -7,7 +7,6 @@ Future<void> pumpTapAnime(
   bool disableAnimations = false,
   VoidCallback? onTap,
 }) async {
-  var tapped = false;
   await tester.pumpWidget(
     MediaQuery(
       data: MediaQueryData(disableAnimations: disableAnimations),
@@ -15,7 +14,7 @@ Future<void> pumpTapAnime(
         home: Scaffold(
           body: Center(
             child: TapAnime(
-              onTap: onTap ?? () => tapped = true,
+              onTap: onTap ?? () {},
               child: const Text('tap me'),
             ),
           ),
@@ -100,6 +99,81 @@ void main() {
         await tester.tap(find.text('tap me'));
         await tester.pump(const Duration(milliseconds: 150));
         expect(tapped, isTrue);
+      },
+    );
+
+    // RM-TA-5 : InkWell présent dans les deux modes (focus clavier).
+    testWidgets(
+      'RM-TA-5 : InkWell présent (focus clavier conservé)',
+      (tester) async {
+        await pumpTapAnime(tester);
+        expect(find.byType(InkWell), findsOneWidget);
+      },
+    );
+
+    // RM-TA-6 : En reduced-motion, InkWell aussi présent.
+    testWidgets(
+      'RM-TA-6 : reduced-motion → InkWell présent (focus clavier conservé)',
+      (tester) async {
+        await pumpTapAnime(tester, disableAnimations: true);
+        expect(find.byType(InkWell), findsOneWidget);
+      },
+    );
+
+    // RM-TA-7 : onTap n'est appelé qu'une seule fois par tap (pas de double
+    // feedback).
+    testWidgets(
+      'RM-TA-7 : un tap → onTap appelé exactement une fois',
+      (tester) async {
+        var compteur = 0;
+        await tester.pumpWidget(
+          MediaQuery(
+            data: const MediaQueryData(),
+            child: MaterialApp(
+              home: Scaffold(
+                body: Center(
+                  child: TapAnime(
+                    onTap: () => compteur++,
+                    child: const Text('tap me'),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+
+        await tester.tap(find.text('tap me'));
+        await tester.pump(const Duration(milliseconds: 150));
+        expect(compteur, equals(1));
+      },
+    );
+
+    // RM-TA-8 : En reduced-motion, onTap appelé exactement une fois.
+    testWidgets(
+      'RM-TA-8 : reduced-motion → onTap appelé exactement une fois',
+      (tester) async {
+        var compteur = 0;
+        await tester.pumpWidget(
+          MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: MaterialApp(
+              home: Scaffold(
+                body: Center(
+                  child: TapAnime(
+                    onTap: () => compteur++,
+                    child: const Text('tap me'),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+
+        await tester.tap(find.text('tap me'));
+        await tester.pump();
+        expect(compteur, equals(1));
       },
     );
   });

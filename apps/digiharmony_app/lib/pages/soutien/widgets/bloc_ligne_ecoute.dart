@@ -1,8 +1,9 @@
+import 'package:digiharmony_app/common/anim/tap_anime.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/soutien/modeles/ressource_ligne_ecoute.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:url_launcher/url_launcher.dart';
 
 /// Bloc conditionnel ligne d'ecoute.
@@ -33,7 +34,7 @@ class BlocLigneEcoute extends StatelessWidget {
     return Material(
       color: AppColors.surface,
       borderRadius: AppRadii.cardRadius,
-      child: InkWell(
+      child: TapAnime(
         borderRadius: AppRadii.cardRadius,
         onTap: () => _ouvrirRessource(context, ressource),
         child: Padding(

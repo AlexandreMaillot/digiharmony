@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:digiharmony_app/common/anim/tap_anime.dart';
 import 'package:digiharmony_app/config/legal_urls.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:url_launcher/url_launcher.dart';
 
 /// Section projet — lien open source (GitHub) + mention Erasmus+.
@@ -45,8 +46,7 @@ class SectionProjet extends StatelessWidget {
   }
 
   Future<void> _ouvrirUrl(BuildContext context, String url) async {
-    // HapticFeedback est fire-and-forget (DEC-PARAM-05).
-    unawaited(HapticFeedback.selectionClick());
+    // Le haptique est géré par TapAnime (DEC-PARAM-05).
     final uri = Uri.parse(url);
     // On NE gate PAS sur canLaunchUrl : sur Android 11+ il renvoie false
     // (« component name is null ») meme quand launchUrl reussit. On tente
@@ -90,7 +90,7 @@ class _LienProjet extends StatelessWidget {
     return Material(
       color: AppColors.surface,
       borderRadius: AppRadii.cardRadius,
-      child: InkWell(
+      child: TapAnime(
         borderRadius: AppRadii.cardRadius,
         onTap: onTap,
         child: Padding(

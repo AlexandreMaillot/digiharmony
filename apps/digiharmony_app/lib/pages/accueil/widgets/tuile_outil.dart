@@ -1,3 +1,4 @@
+import 'package:digiharmony_app/common/anim/tap_anime.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +32,7 @@ class TuileOutil extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Card(
-        child: InkWell(
+        child: TapAnime(
           onTap: onTap,
           borderRadius: AppRadii.cardRadius,
           child: Padding(
