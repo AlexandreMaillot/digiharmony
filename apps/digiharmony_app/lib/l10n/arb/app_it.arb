@@ -82,5 +82,10 @@
     "soutienAucuneRelance": "No reminders — at your own pace",
     "soutienConfianceTitre": "Talk to someone you trust",
     "soutienConfianceParagraphe": "You can talk to a parent, a teacher, a friend or a trusted adult. You don't have to carry it all alone.",
+    "soutienConfiancePiste01": "Talk to a close friend you trust",
+    "soutienConfiancePiste02": "Talk to a family member",
+    "soutienConfiancePiste03": "Reach out to a trusted adult at school (counsellor, school nurse)",
+    "soutienConfiancePiste04": "Write down what you feel before talking about it",
+    "soutienConfiancePiste05": "Choose a calm moment to bring it up",
     "soutienErreurLien": "Unable to open this link."
 }

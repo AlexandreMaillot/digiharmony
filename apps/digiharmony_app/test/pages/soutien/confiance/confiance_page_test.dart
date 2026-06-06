@@ -27,7 +27,7 @@ extension PumpConfiance on WidgetTester {
 
 void main() {
   group('ConfiancePage', () {
-    testWidgets('SO-CONF-1 : affiche le titre et le paragraphe', (
+    testWidgets('SO-CONF-1 : affiche le titre, le paragraphe et les pistes', (
       tester,
     ) async {
       await tester.pumpConfiancePage();
@@ -37,10 +37,19 @@ void main() {
         find.text('Talk to someone you trust'),
         findsAtLeastNWidgets(1),
       );
+      // Le texte 'trusted adult' peut apparaître dans le paragraphe ET
+      // dans la piste 03 — on vérifie juste la présence.
       expect(
         find.textContaining('trusted adult'),
-        findsOneWidget,
+        findsAtLeastNWidgets(1),
       );
+
+      // Les 5 pistes bienveillantes doivent toutes être présentes.
+      expect(find.textContaining('close friend'), findsOneWidget);
+      expect(find.textContaining('family member'), findsOneWidget);
+      expect(find.textContaining('trusted adult at school'), findsOneWidget);
+      expect(find.textContaining('Write down'), findsOneWidget);
+      expect(find.textContaining('calm moment'), findsOneWidget);
     });
 
     testWidgets('SO-CONF-2 : fond = AppColors.backgroundDeep', (tester) async {

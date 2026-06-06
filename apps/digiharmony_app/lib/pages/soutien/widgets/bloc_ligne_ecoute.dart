@@ -6,8 +6,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 /// Bloc conditionnel ligne d'ecoute.
 ///
-/// Affiche uniquement si [tableRessources] contient une entree pour
-/// la locale courante. Sinon, rendu vide (masque). (DEC-SO-007)
+/// Affiche l'entree correspondant a la locale courante dans [tableRessources].
+/// Fallback : si la locale courante est absente, utilise l'entree 'fr'.
+/// Se masque uniquement si aucune entree (y compris 'fr') n'existe.
+/// (DEC-SO-007)
 ///
 /// Ouverture via url_launcher (tel:/https:).
 /// Echec -> SnackBar neutre, pas de crash, pas de log distant.
@@ -19,7 +21,8 @@ class BlocLigneEcoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context);
-    final ressource = tableRessources[locale.languageCode];
+    final ressource =
+        tableRessources[locale.languageCode] ?? tableRessources['fr'];
 
     if (ressource == null) return const SizedBox.shrink();
 

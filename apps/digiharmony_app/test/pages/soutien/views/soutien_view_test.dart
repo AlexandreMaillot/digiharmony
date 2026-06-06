@@ -67,16 +67,25 @@ void main() {
     });
 
     testWidgets(
-      "SO-VIEW-3 : bloc ligne d'ecoute masque quand locale sans ressource",
+      "SO-VIEW-3 : bloc ligne d'ecoute visible avec fallback fr",
       (tester) async {
-        // La table est vide -> bloc masque pour toute locale
+        // L'entrée 'fr' (exemple factice) est le fallback.
+        // Pour fr : le bloc est visible avec les libellés FR.
         await tester.pumpSoutienView(locale: const Locale('fr'));
         await tester.pump();
 
-        // Le bloc ligne d'ecoute retourne SizedBox.shrink quand pas de
-        // ressource : aucune carte visible (bloc masque).
-        expect(find.text('Helpline: '), findsNothing);
-        expect(find.text('Available: '), findsNothing);
+        // Le bloc est visible car la locale 'fr' a une entrée directe.
+        expect(find.textContaining('Ligne d'), findsAtLeastNWidgets(1));
+
+        // Pour 'en' : pas d'entrée propre -> fallback fr -> bloc visible.
+        await tester.pumpSoutienView();
+        await tester.pump();
+
+        // Le bloc s'affiche via le fallback 'fr' (nom de la ressource fr).
+        expect(
+          find.textContaining("Ligne d'écoute (exemple"),
+          findsAtLeastNWidgets(1),
+        );
       },
     );
 
@@ -119,6 +128,11 @@ void main() {
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
 
+      // Le BlocLigneEcoute est désormais visible (fallback fr actif) et peut
+      // pousser le bouton « Plus tard » hors du viewport 800×600 de test.
+      // On fait défiler jusqu'au bouton avant de tapper.
+      await tester.ensureVisible(find.text('Later'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Later'));
       await tester.pumpAndSettle();
 
@@ -220,18 +234,45 @@ void main() {
       },
     );
 
-    // Garde-fou : aucun numéro de crise réel dans les sources Dart soutien.
-    // Ce test lit les fichiers Dart du périmètre soutien et vérifie l'absence
-    // des numéros connus (3114, 116111...) ainsi que de séquences de 5+
-    // chiffres consécutifs (format téléphone minimal).
+    // Garde-fou : aucun VRAI numéro de ligne d'écoute officiel dans les
+    // sources Dart du périmètre soutien.
+    //
+    // Principe : l'entrée 'fr' de tableRessources contient un numéro exemple
+    // MANIFESTEMENT FACTICE ('0000000000') destiné à la preview/recette.
+    // Ce pattern est toléré : il est constitué uniquement de zéros répétés et
+    // son libellé contient « exemple — à valider ».
+    //
+    // Le test échoue si un VRAI numéro officiel de la liste noire apparaît
+    // dans n'importe quel fichier Dart du répertoire soutien.
     test(
-      'SO-VIEW-8 : garde-fou — aucun numero reel hardcode dans '
+      'SO-VIEW-8 : garde-fou — aucun vrai numero officiel hardcode dans '
       'lib/pages/soutien/',
       () {
         const soutienDir = 'lib/pages/soutien';
-        const listeNoire = <String>['3114', '116111', '0800'];
-        // 5+ chiffres consécutifs = suspect pour un numéro de téléphone.
+
+        // Liste noire : vrais numéros/préfixes officiels qui ne doivent pas
+        // apparaître dans le code source Dart du périmètre soutien.
+        // Seuls les numéros suffisamment longs (4+ chiffres) sont inclus ici
+        // pour éviter les faux positifs dans les constantes/valeurs numériques
+        // du code (ex. 0.15 pour une opacité, 112px, etc.).
+        // Les numéros courts (15, 112, 911…) sont couverts par SO-RES-3
+        // qui scanne les valeurs de chaîne des ARB.
+        const listeNoire = <String>[
+          '3114', // Numéro national prévention suicide (FR)
+          '116111', // Helpline enfants Europe
+          '116 111', // variante avec espace
+          '3020', // Numéro contre le harcèlement (FR)
+          '0800', // Préfixe numéro vert FR (numéros gratuits officiels)
+          '0805', // Préfixe numéro vert FR alternatif
+          '3919', // Numéro violence conjugale (FR)
+          '0808', // Préfixe helpline UK
+        ];
+
+        // Regex pour détecter les séquences de 5+ chiffres consécutifs.
+        // Tolérance : les séquences constituées uniquement de zéros répétés
+        // (ex. '0000000000') sont acceptées car manifestement fictives.
         final regexpTel = RegExp(r'\d{5,}');
+        final regexpZerosSeuls = RegExp(r'^0+$');
 
         final dir = Directory(soutienDir);
         expect(
@@ -247,21 +288,32 @@ void main() {
 
         for (final fichier in fichiersDart) {
           final contenu = fichier.readAsStringSync();
+
+          // Aucun numéro de la liste noire.
           for (final interdit in listeNoire) {
             expect(
               contenu,
               isNot(contains(interdit)),
               reason:
-                  'Numéro de crise interdit "$interdit" trouvé dans '
+                  'Numéro officiel interdit "$interdit" trouvé dans '
                   '${fichier.path}',
             );
           }
-          expect(
-            regexpTel.hasMatch(contenu),
-            isFalse,
-            reason:
-                'Séquence numérique téléphone suspecte dans ${fichier.path}',
-          );
+
+          // Aucune séquence de 5+ chiffres, sauf les patterns tout-zéros
+          // (exemple factice toléré : '0000000000').
+          final matches = regexpTel.allMatches(contenu);
+          for (final m in matches) {
+            final sequence = m.group(0)!;
+            expect(
+              regexpZerosSeuls.hasMatch(sequence),
+              isTrue,
+              reason:
+                  'Séquence numérique suspecte [$sequence] dans '
+                  "${fichier.path} — si c'est un exemple fictif, "
+                  "vérifier qu'il ne contient que des zéros",
+            );
+          }
         }
       },
     );

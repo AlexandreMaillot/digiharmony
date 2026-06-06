@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 /// Ecran de confiance — pistes bienveillantes locales.
 ///
 /// Accessible uniquement via le CTA primaire de SoutienView.
-/// Aucun formulaire, aucun reseau, aucune collecte.
+/// Aucun formulaire, aucun reseau, aucune collecte, aucun numero.
 /// Textes placeholders a valider par les partenaires (public mineur, Erasmus+).
 /// Retour = pop. (DEC-SO-006)
 class ConfiancePage extends StatelessWidget {
@@ -15,6 +15,14 @@ class ConfiancePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+
+    final pistes = [
+      l10n.soutienConfiancePiste01,
+      l10n.soutienConfiancePiste02,
+      l10n.soutienConfiancePiste03,
+      l10n.soutienConfiancePiste04,
+      l10n.soutienConfiancePiste05,
+    ];
 
     return Scaffold(
       backgroundColor: AppColors.backgroundDeep,
@@ -60,6 +68,55 @@ class ConfiancePage extends StatelessWidget {
                   color: AppColors.textMuted,
                 ),
                 textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              Card(
+                color: AppColors.surface,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: AppRadii.cardRadius,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: pistes
+                        .map(
+                          (piste) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: AppSpacing.xs,
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(
+                                    top: 4,
+                                    right: AppSpacing.sm,
+                                  ),
+                                  child: Icon(
+                                    Icons.circle,
+                                    size: 6,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    piste,
+                                    style:
+                                        Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium?.copyWith(
+                                          color: AppColors.text,
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
               ),
               const SizedBox(height: AppSpacing.xl),
             ],

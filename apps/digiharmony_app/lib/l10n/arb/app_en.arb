@@ -380,6 +380,26 @@
     "@soutienConfianceParagraphe": {
         "description": "ConfiancePage — paragraph (gentle guidance, no form, no data). TODO validation partenaires"
     },
+    "soutienConfiancePiste01": "Talk to a close friend you trust",
+    "@soutienConfiancePiste01": {
+        "description": "ConfiancePage — gentle suggestion 1. TODO validation partenaires"
+    },
+    "soutienConfiancePiste02": "Talk to a family member",
+    "@soutienConfiancePiste02": {
+        "description": "ConfiancePage — gentle suggestion 2. TODO validation partenaires"
+    },
+    "soutienConfiancePiste03": "Reach out to a trusted adult at school (counsellor, school nurse)",
+    "@soutienConfiancePiste03": {
+        "description": "ConfiancePage — gentle suggestion 3. TODO validation partenaires"
+    },
+    "soutienConfiancePiste04": "Write down what you feel before talking about it",
+    "@soutienConfiancePiste04": {
+        "description": "ConfiancePage — gentle suggestion 4. TODO validation partenaires"
+    },
+    "soutienConfiancePiste05": "Choose a calm moment to bring it up",
+    "@soutienConfiancePiste05": {
+        "description": "ConfiancePage — gentle suggestion 5. TODO validation partenaires"
+    },
     "soutienErreurLien": "Unable to open this link.",
     "@soutienErreurLien": {
         "description": "Error snackbar when url_launcher fails to open a helpline resource."
