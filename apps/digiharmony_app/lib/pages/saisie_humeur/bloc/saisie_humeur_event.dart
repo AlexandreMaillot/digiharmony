@@ -5,20 +5,17 @@ sealed class SaisieHumeurEvent {
   const SaisieHumeurEvent();
 }
 
-/// L'utilisateur a tapé sur une pastille d'émotion.
-final class EmotionTapee extends SaisieHumeurEvent {
-  const EmotionTapee(this.codeEmotion);
+/// L'utilisateur a tapé une pastille — sélection visuelle seule, aucune
+/// écriture Drift (l'enregistrement n'a lieu qu'à la validation).
+final class EmotionSelectionnee extends SaisieHumeurEvent {
+  const EmotionSelectionnee(this.codeEmotion);
 
   /// Code stable de l'émotion sélectionnée.
   final String codeEmotion;
 }
 
-/// L'utilisateur a pressé « Annuler » dans le snackbar de confirmation.
-final class SaisieAnnulee extends SaisieHumeurEvent {
-  const SaisieAnnulee();
-}
-
-/// La fenêtre d'annulation a expiré (gérée côté View via SnackBar).
-final class FenetreUndoExpiree extends SaisieHumeurEvent {
-  const FenetreUndoExpiree();
+/// L'utilisateur a pressé « Valider » — déclenche l'UPSERT Drift puis le
+/// retour à l'Accueil (géré côté View).
+final class SaisieValidee extends SaisieHumeurEvent {
+  const SaisieValidee();
 }

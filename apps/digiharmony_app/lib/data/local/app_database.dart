@@ -279,6 +279,14 @@ LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
     final file = File(p.join(dir.path, 'digiharmony.sqlite'));
-    return NativeDatabase.createInBackground(file);
+    return NativeDatabase.createInBackground(
+      file,
+      // `busy_timeout` : si un verrou transitoire subsiste (fichiers WAL/SHM
+      // résiduels après une suppression manuelle des données, ou handle de
+      // l'instance précédente non libéré), SQLite réessaie pendant 5 s au lieu
+      // de lever immédiatement « database is locked (code 5) » à la création
+      // des tables (migration onCreate).
+      setup: (db) => db.execute('PRAGMA busy_timeout = 5000;'),
+    );
   });
 }

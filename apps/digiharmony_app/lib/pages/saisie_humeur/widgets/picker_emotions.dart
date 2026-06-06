@@ -9,8 +9,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 ///
 /// Réactif à l'état du [SaisieHumeurBloc] :
 /// - Sélection courante → anneau sur la pastille correspondante.
-/// - Post-saisie réussie → picker désactivé (DEC-SH-004).
-/// - Post-annulation → picker réactivé.
+/// - Le picker reste interactif tant que l'utilisateur n'a pas validé
+///   (re-sélection libre avant validation).
+/// - Verrouillé seulement pendant l'enregistrement et après succès.
 class PickerEmotions extends StatelessWidget {
   const PickerEmotions({super.key});
 
@@ -18,13 +19,10 @@ class PickerEmotions extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SaisieHumeurBloc, SaisieHumeurState>(
       builder: (context, state) {
-        final codeSelectionne = switch (state) {
-          EnregistrementEnCours(:final codeEmotion) => codeEmotion,
-          EnregistrementReussi(:final codeEmotion) => codeEmotion,
-          _ => null,
-        };
-        // Picker verrouillé après une saisie réussie (DEC-SH-004).
-        final desactive = state is EnregistrementReussi;
+        final codeSelectionne = state.codeSelectionne;
+        // Picker verrouillé pendant l'UPSERT et après succès (avant le pop).
+        final desactive =
+            state is EnregistrementEnCours || state is EnregistrementReussi;
 
         return Wrap(
           spacing: AppSpacing.md,

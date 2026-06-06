@@ -20,7 +20,7 @@ const List<int> _flotDuration = [2000, 1800, 2200, 1900, 2100, 1700, 2300];
 
 /// Pastille circulaire représentant une émotion dans le picker.
 ///
-/// - Taille fixe ~80 px (zone tactile ≥ 48×48 garantie par GestureDetector).
+/// - Taille fixe ~96 px (zone tactile ≥ 48×48 garantie par GestureDetector).
 /// - Couleur via [MoodColors.byKey] uniquement — jamais de hex en dur.
 /// - Animation de flottement au repos désynchronisée par [index]
 ///   (désactivée si `disableAnimations`).
@@ -86,10 +86,10 @@ class PastilleEmotion extends StatelessWidget {
                 unawaited(HapticFeedback.lightImpact());
                 context
                     .read<SaisieHumeurBloc>()
-                    .add(EmotionTapee(emotion.cle));
+                    .add(EmotionSelectionnee(emotion.cle));
               },
         child: SizedBox(
-          width: 80,
+          width: 96,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -155,8 +155,8 @@ class _PastilleBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 80,
-      height: 80,
+      width: 96,
+      height: 96,
       decoration: BoxDecoration(
         color: couleur != null
             ? couleur!.withValues(alpha: 0.18)
@@ -178,7 +178,7 @@ class _PastilleBody extends StatelessWidget {
       child: Center(
         child: Text(
           emotion.emoji,
-          style: const TextStyle(fontSize: 36),
+          style: const TextStyle(fontSize: 46),
           semanticsLabel: libelle,
         ),
       ),

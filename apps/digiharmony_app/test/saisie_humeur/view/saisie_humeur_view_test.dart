@@ -41,6 +41,12 @@ extension PumpSaisie on WidgetTester {
 void main() {
   late MockSaisieHumeurBloc bloc;
 
+  // Requis par mocktail pour `captureAny()` sur le type `SaisieHumeurEvent`
+  // (events non-Equatable, convention projet → capture plutôt qu'égalité).
+  setUpAll(() {
+    registerFallbackValue(const SaisieValidee());
+  });
+
   setUp(() {
     bloc = MockSaisieHumeurBloc();
     when(() => bloc.state).thenReturn(const SaisieInitiale());
@@ -63,7 +69,7 @@ void main() {
       (tester) async {
         await tester.pumpSaisie(bloc);
         expect(find.textContaining('feeling today'), findsWidgets);
-        expect(find.textContaining('single tap'), findsWidgets);
+        expect(find.textContaining('Pick how you feel'), findsWidgets);
       },
     );
 
@@ -87,46 +93,82 @@ void main() {
       await tester.pumpSaisie(bloc);
       expect(find.textContaining('device'), findsOneWidget);
     });
+
+    // SHV-5 : à l'état initial, le bouton Valider est désactivé.
+    testWidgets('SHV-5 : Valider désactivé sans sélection', (tester) async {
+      await tester.pumpSaisie(bloc);
+      final bouton = tester.widget<FilledButton>(find.byType(FilledButton));
+      expect(bouton.enabled, isFalse);
+    });
   });
 
-  group('SaisieHumeurView — feedback sélection', () {
-    // SHV-6 : état EnregistrementEnCours → CarteFeedback visible.
+  group('SaisieHumeurView — sélection & validation', () {
+    // SHV-6 : tap sur une pastille → EmotionSelectionnee ajouté au bloc.
     testWidgets(
-      'SHV-6 : EnregistrementEnCours → CarteFeedback avec libellé + spinner',
+      'SHV-6 : tap pastille → EmotionSelectionnee(code)',
+      (tester) async {
+        await tester.pumpSaisie(bloc);
+        await tester.tap(find.text('😊').first);
+        await tester.pump();
+        // Les events n'étendent pas Equatable (convention projet) → on capture
+        // l'event ajouté et on vérifie son champ plutôt que l'égalité de
+        // valeur.
+        final captures =
+            verify(() => bloc.add(captureAny())).captured;
+        expect(
+          captures.whereType<EmotionSelectionnee>().map((e) => e.codeEmotion),
+          contains('happy'),
+        );
+      },
+    );
+
+    // SHV-7 : sélection présente → CarteFeedback + Valider actif.
+    testWidgets(
+      'SHV-7 : EmotionSelectionneeEtat → feedback visible + Valider actif',
+      (tester) async {
+        when(() => bloc.state)
+            .thenReturn(const EmotionSelectionneeEtat('happy'));
+        await tester.pumpSaisie(bloc);
+        expect(find.textContaining('selected'), findsWidgets);
+        final bouton = tester.widget<FilledButton>(find.byType(FilledButton));
+        expect(bouton.enabled, isTrue);
+      },
+    );
+
+    // SHV-8 : tap sur Valider → SaisieValidee ajouté.
+    testWidgets(
+      'SHV-8 : tap Valider → SaisieValidee',
+      (tester) async {
+        when(() => bloc.state)
+            .thenReturn(const EmotionSelectionneeEtat('happy'));
+        await tester.pumpSaisie(bloc);
+        await tester.tap(find.byType(FilledButton));
+        await tester.pump();
+        verify(() => bloc.add(const SaisieValidee())).called(1);
+      },
+    );
+
+    // SHV-9 : EnregistrementEnCours → spinner dans le bouton, pas de Valider.
+    testWidgets(
+      'SHV-9 : EnregistrementEnCours → spinner bouton',
       (tester) async {
         when(() => bloc.state).thenReturn(
           const EnregistrementEnCours(codeEmotion: 'happy'),
         );
         await tester.pumpSaisie(bloc);
         expect(find.textContaining('selected'), findsWidgets);
-        expect(find.textContaining('Saving'), findsOneWidget);
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      },
-    );
-
-    // SHV-7 : état EnregistrementReussi → pas de spinner.
-    testWidgets(
-      'SHV-7 : EnregistrementReussi → CarteFeedback sans spinner',
-      (tester) async {
-        when(() => bloc.state).thenReturn(
-          const EnregistrementReussi(codeEmotion: 'calm'),
-        );
-        when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
-        await tester.pumpSaisie(bloc);
-        expect(find.byType(CircularProgressIndicator), findsNothing);
       },
     );
   });
 
   group('SaisieHumeurView — couleurs via MoodColors (pas de hex dur)', () {
-    // SHV-8 : pastille sélectionnée utilise MoodColors.byKey.
+    // SHV-10 : pastille sélectionnée utilise MoodColors.byKey (bord coloré).
     testWidgets(
-      'SHV-8 : pastille sélectionnée décorée avec couleur MoodColors',
+      'SHV-10 : pastille sélectionnée décorée avec couleur MoodColors',
       (tester) async {
-        when(() => bloc.state).thenReturn(
-          const EnregistrementReussi(codeEmotion: 'angry'),
-        );
-        when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
+        when(() => bloc.state)
+            .thenReturn(const EmotionSelectionneeEtat('angry'));
         await tester.pumpSaisie(bloc);
 
         final containers = tester.widgetList<Container>(
@@ -136,11 +178,9 @@ void main() {
 
         final hasExpectedColor = containers.any((c) {
           final decoration = c.decoration;
-          if (decoration is BoxDecoration) {
-            if (decoration.border is Border) {
-              final border = decoration.border! as Border;
-              return border.top.color == expectedColor;
-            }
+          if (decoration is BoxDecoration && decoration.border is Border) {
+            final border = decoration.border! as Border;
+            return border.top.color == expectedColor;
           }
           return false;
         });
@@ -149,62 +189,41 @@ void main() {
     );
   });
 
-  group('SaisieHumeurView — reduced motion', () {
-    // SHV-9 : animations de flottement désactivées avec disableAnimations=true.
+  group('SaisieHumeurView — erreur', () {
+    // SHV-11 : EnregistrementEchoue → SnackBar d'erreur affiché.
     testWidgets(
-      'SHV-9 : disableAnimations=true → pas d animation en boucle',
+      'SHV-11 : EnregistrementEchoue → SnackBar message',
       (tester) async {
-        // disableAnimations=true est la valeur par défaut de pumpSaisie.
+        final ctrl = StreamController<SaisieHumeurState>.broadcast();
+        when(() => bloc.state).thenReturn(const SaisieInitiale());
+        when(() => bloc.stream).thenAnswer((_) => ctrl.stream);
+
         await tester.pumpSaisie(bloc);
-        await tester.pump(const Duration(seconds: 1));
-        // Aucune exception de contrôleur d'animation non terminé = OK.
-        expect(find.byType(SaisieHumeurView), findsOneWidget);
+
+        ctrl.add(
+          const EnregistrementEchoue(
+            codeEmotion: 'happy',
+            message: 'Boom',
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        expect(find.text('Boom'), findsOneWidget);
+
+        await ctrl.close();
       },
     );
   });
 
-  group('SaisieHumeurView — snackbar undo', () {
-    // SHV-10 : EnregistrementReussi → SnackBar visible avec action Undo.
+  group('SaisieHumeurView — reduced motion', () {
+    // SHV-12 : animations de flottement désactivées (disableAnimations=true).
     testWidgets(
-      'SHV-10 : EnregistrementReussi → SnackBar Undo visible',
+      'SHV-12 : disableAnimations=true → pas d animation en boucle',
       (tester) async {
-        final ctrl = StreamController<SaisieHumeurState>.broadcast();
-        when(() => bloc.state).thenReturn(const SaisieInitiale());
-        when(() => bloc.stream).thenAnswer((_) => ctrl.stream);
-
         await tester.pumpSaisie(bloc);
-
-        ctrl.add(const EnregistrementReussi(codeEmotion: 'happy'));
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 300));
-
-        expect(find.textContaining('saved'), findsOneWidget);
-        expect(find.textContaining('Undo'), findsOneWidget);
-
-        await ctrl.close();
-      },
-    );
-
-    // SHV-11 : tap Undo → SaisieAnnulee ajouté.
-    testWidgets(
-      'SHV-11 : tap Undo → SaisieAnnulee ajouté au bloc',
-      (tester) async {
-        final ctrl = StreamController<SaisieHumeurState>.broadcast();
-        when(() => bloc.state).thenReturn(const SaisieInitiale());
-        when(() => bloc.stream).thenAnswer((_) => ctrl.stream);
-
-        await tester.pumpSaisie(bloc);
-
-        ctrl.add(const EnregistrementReussi(codeEmotion: 'happy'));
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 300));
-
-        await tester.tap(find.textContaining('Undo'));
-        await tester.pump();
-
-        verify(() => bloc.add(const SaisieAnnulee())).called(1);
-
-        await ctrl.close();
+        await tester.pump(const Duration(seconds: 1));
+        expect(find.byType(SaisieHumeurView), findsOneWidget);
       },
     );
   });

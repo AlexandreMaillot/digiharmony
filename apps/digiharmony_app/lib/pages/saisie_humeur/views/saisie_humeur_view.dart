@@ -6,25 +6,19 @@ import 'package:digiharmony_app/pages/saisie_humeur/widgets/carte_feedback_selec
 import 'package:digiharmony_app/pages/saisie_humeur/widgets/picker_emotions.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Vue de l'écran « Noter mon humeur ».
 ///
 /// Contient : header (titre + sous-titre), picker 7 émotions, carte de
-/// feedback, footer de réassurance.
+/// feedback, bouton « Valider », footer de réassurance.
 ///
-/// La logique SnackBar (confirmation + undo) et le pop automatique sont gérés
-/// ici via [BlocListener] (DEC-SH-005).
-class SaisieHumeurView extends StatefulWidget {
+/// Flux (DEC-SH-008) : la sélection est purement visuelle ; l'enregistrement
+/// Drift n'a lieu qu'au tap sur « Valider », qui referme l'écran et revient à
+/// l'Accueil. Le pop au succès est géré ici via [BlocListener].
+class SaisieHumeurView extends StatelessWidget {
   const SaisieHumeurView({super.key});
-
-  @override
-  State<SaisieHumeurView> createState() => _SaisieHumeurViewState();
-}
-
-class _SaisieHumeurViewState extends State<SaisieHumeurView> {
-  ScaffoldFeatureController<SnackBar, SnackBarClosedReason>?
-      _snackBarController;
 
   @override
   Widget build(BuildContext context) {
@@ -54,27 +48,43 @@ class _SaisieHumeurViewState extends State<SaisieHumeurView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Header
-                Text(
-                  l10n.saisieHumeurTitre,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: AppColors.primary,
-                      ),
+                // Contenu défilable : absorbe les pastilles agrandies + la
+                // carte de feedback sur les petits écrans (anti-overflow).
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Header
+                        Text(
+                          l10n.saisieHumeurTitre,
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    color: AppColors.primary,
+                                  ),
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          l10n.saisieHumeurSousTitre,
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: AppColors.textMuted,
+                                  ),
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
+                        // Picker 7 pastilles
+                        const PickerEmotions(),
+                        const SizedBox(height: AppSpacing.lg),
+                        // Carte de feedback (visible après 1re sélection)
+                        const CarteFeedbackSelection(),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  l10n.saisieHumeurSousTitre,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textMuted,
-                      ),
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                // Picker 7 pastilles
-                const PickerEmotions(),
-                const SizedBox(height: AppSpacing.lg),
-                // Carte de feedback (visible après 1er tap)
-                const CarteFeedbackSelection(),
-                const Spacer(),
+                const SizedBox(height: AppSpacing.md),
+                // Bouton de validation (enregistre + retour Accueil)
+                const _BoutonValider(),
+                const SizedBox(height: AppSpacing.md),
                 // Footer de réassurance
                 Text(
                   l10n.saisieHumeurDonneesLocales,
@@ -93,9 +103,9 @@ class _SaisieHumeurViewState extends State<SaisieHumeurView> {
 
   void _onStateChange(BuildContext context, SaisieHumeurState state) {
     if (state is EnregistrementReussi) {
-      _afficherSnackbarConfirmation(context, state);
-    } else if (state is SaisieAnnuleeEtat) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      unawaited(HapticFeedback.mediumImpact());
+      // Retour à l'Accueil : la carte humeur s'y met à jour via Drift watch().
+      Navigator.of(context).pop();
     } else if (state is EnregistrementEchoue) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -105,38 +115,35 @@ class _SaisieHumeurViewState extends State<SaisieHumeurView> {
       );
     }
   }
+}
 
-  void _afficherSnackbarConfirmation(
-    BuildContext context,
-    EnregistrementReussi state,
-  ) {
+/// Bouton primaire « Valider » : actif dès qu'une émotion est sélectionnée,
+/// affiche un indicateur pendant l'enregistrement.
+class _BoutonValider extends StatelessWidget {
+  const _BoutonValider();
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final bloc = context.read<SaisieHumeurBloc>();
+    return BlocBuilder<SaisieHumeurBloc, SaisieHumeurState>(
+      builder: (context, state) {
+        final enCours = state is EnregistrementEnCours;
+        final actif = state.codeSelectionne != null && !enCours;
 
-    _snackBarController?.close();
-
-    _snackBarController = ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.saisieHumeurEnregistree),
-        duration: const Duration(seconds: 5),
-        action: SnackBarAction(
-          label: l10n.saisieHumeurAnnuler,
-          onPressed: () {
-            bloc.add(const SaisieAnnulee());
-          },
-        ),
-      ),
+        return FilledButton(
+          onPressed: actif
+              ? () =>
+                  context.read<SaisieHumeurBloc>().add(const SaisieValidee())
+              : null,
+          child: enCours
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(l10n.saisieHumeurValider),
+        );
+      },
     );
-
-    unawaited(_snackBarController!.closed.then(_onSnackBarClosed));
-  }
-
-  void _onSnackBarClosed(SnackBarClosedReason reason) {
-    if (!mounted) return;
-    if (reason != SnackBarClosedReason.action) {
-      // Fenêtre undo expirée sans annulation → retour Accueil.
-      context.read<SaisieHumeurBloc>().add(const FenetreUndoExpiree());
-      Navigator.of(context).pop();
-    }
   }
 }

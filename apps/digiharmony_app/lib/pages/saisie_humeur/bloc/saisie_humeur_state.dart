@@ -4,59 +4,60 @@ part of 'saisie_humeur_bloc.dart';
 sealed class SaisieHumeurState extends Equatable {
   const SaisieHumeurState();
 
+  /// Code de l'émotion actuellement retenue (sélectionnée, en cours ou
+  /// échouée), ou `null` à l'état initial. Sert à activer le bouton Valider.
+  String? get codeSelectionne => null;
+
   @override
   List<Object?> get props => [];
 }
 
-/// Aucun tap encore — écran initial.
+/// Aucune émotion sélectionnée — écran initial.
 final class SaisieInitiale extends SaisieHumeurState {
   const SaisieInitiale();
 }
 
-/// Tap reçu, UPSERT en vol.
+/// Une émotion est sélectionnée, en attente de validation (aucune écriture).
+final class EmotionSelectionneeEtat extends SaisieHumeurState {
+  const EmotionSelectionneeEtat(this.codeEmotion);
+
+  final String codeEmotion;
+
+  @override
+  String? get codeSelectionne => codeEmotion;
+
+  @override
+  List<Object?> get props => [codeEmotion];
+}
+
+/// Validation pressée, UPSERT Drift en vol.
 final class EnregistrementEnCours extends SaisieHumeurState {
-  const EnregistrementEnCours({
-    required this.codeEmotion,
-    this.ancienneEntree,
-  });
+  const EnregistrementEnCours({required this.codeEmotion});
 
   final String codeEmotion;
 
-  /// Entrée précédente du jour avant écrasement (null si première saisie).
-  final EntreeHumeur? ancienneEntree;
+  @override
+  String? get codeSelectionne => codeEmotion;
 
   @override
-  List<Object?> get props => [codeEmotion, ancienneEntree];
+  List<Object?> get props => [codeEmotion];
 }
 
-/// UPSERT OK — fenêtre d'annulation ouverte (~5 s).
+/// UPSERT OK — la View referme l'écran et revient à l'Accueil.
 final class EnregistrementReussi extends SaisieHumeurState {
-  const EnregistrementReussi({
-    required this.codeEmotion,
-    this.ancienneEntree,
-  });
+  const EnregistrementReussi({required this.codeEmotion});
 
   final String codeEmotion;
 
-  /// Entrée précédente (pour restauration si annulation).
-  final EntreeHumeur? ancienneEntree;
+  @override
+  String? get codeSelectionne => codeEmotion;
 
   @override
-  List<Object?> get props => [codeEmotion, ancienneEntree];
+  List<Object?> get props => [codeEmotion];
 }
 
-/// Annulation effectuée — l'ancienne valeur a été restaurée ou supprimée.
-final class SaisieAnnuleeEtat extends SaisieHumeurState {
-  const SaisieAnnuleeEtat({this.codeEmotionRestauree});
-
-  /// Code de l'émotion restaurée, null si suppression (première saisie).
-  final String? codeEmotionRestauree;
-
-  @override
-  List<Object?> get props => [codeEmotionRestauree];
-}
-
-/// Exception Drift lors de l'UPSERT ou de l'annulation.
+/// Exception Drift lors de l'UPSERT — la sélection est conservée pour
+/// réessayer.
 final class EnregistrementEchoue extends SaisieHumeurState {
   const EnregistrementEchoue({
     required this.codeEmotion,
@@ -65,6 +66,9 @@ final class EnregistrementEchoue extends SaisieHumeurState {
 
   final String codeEmotion;
   final String message;
+
+  @override
+  String? get codeSelectionne => codeEmotion;
 
   @override
   List<Object?> get props => [codeEmotion, message];

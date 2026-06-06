@@ -8,90 +8,62 @@ part 'saisie_humeur_state.dart';
 
 /// Gère la logique de saisie de l'humeur du jour (US #6).
 ///
-/// - [EmotionTapee] → UPSERT Drift → [EnregistrementReussi]
-///   (ou [EnregistrementEchoue]).
-/// - [SaisieAnnulee] → restaure/supprime → [SaisieAnnuleeEtat].
-/// - [FenetreUndoExpiree] → no-op (le pop est géré côté View).
-///
-/// La fenêtre d'annulation (~5 s) et le pop automatique sont pilotés par la
-/// View via SnackBar Material — le Bloc ne porte pas de Timer (DEC-SH-005).
+/// Flux en deux temps (DEC-SH-008, remplace l'enregistrement 1-tap) :
+/// - [EmotionSelectionnee] → sélection visuelle seule →
+///   [EmotionSelectionneeEtat] (aucune écriture Drift).
+/// - [SaisieValidee] → UPSERT Drift → [EnregistrementReussi]
+///   (ou [EnregistrementEchoue]). La View referme l'écran au succès.
 class SaisieHumeurBloc extends Bloc<SaisieHumeurEvent, SaisieHumeurState> {
   /// Crée le bloc avec la [database] Drift injectée.
   SaisieHumeurBloc({required AppDatabase database})
       : _database = database,
         super(const SaisieInitiale()) {
-    on<EmotionTapee>(_onEmotionTapee, transformer: droppable());
-    on<SaisieAnnulee>(_onSaisieAnnulee, transformer: droppable());
-    on<FenetreUndoExpiree>(_onFenetreUndoExpiree);
+    on<EmotionSelectionnee>(_onEmotionSelectionnee, transformer: restartable());
+    on<SaisieValidee>(_onSaisieValidee, transformer: droppable());
   }
 
   final AppDatabase _database;
 
-  /// Traite un tap sur une pastille d'émotion.
+  /// Traite la sélection d'une émotion (pas d'écriture).
   ///
-  /// `droppable()` : si un UPSERT est déjà en vol, ignore les nouveaux taps
-  /// (DEC-SH-004).
-  Future<void> _onEmotionTapee(
-    EmotionTapee event,
-    Emitter<SaisieHumeurState> emit,
-  ) async {
-    // Si déjà réussi et pas annulé, ignorer les re-taps (picker désactivé).
-    if (state is EnregistrementReussi) return;
-
-    emit(EnregistrementEnCours(codeEmotion: event.codeEmotion));
-
-    try {
-      final ancienne =
-          await _database.enregistrerHumeurDuJour(event.codeEmotion);
-      emit(
-        EnregistrementReussi(
-          codeEmotion: event.codeEmotion,
-          ancienneEntree: ancienne,
-        ),
-      );
-    } on Object catch (e) {
-      emit(
-        EnregistrementEchoue(
-          codeEmotion: event.codeEmotion,
-          message: e.toString(),
-        ),
-      );
-    }
-  }
-
-  /// Traite l'annulation depuis le snackbar.
-  Future<void> _onSaisieAnnulee(
-    SaisieAnnulee event,
-    Emitter<SaisieHumeurState> emit,
-  ) async {
-    final courant = state;
-    if (courant is! EnregistrementReussi) return;
-
-    try {
-      await _database.annulerDerniereSaisie(
-        ancienneEntree: courant.ancienneEntree,
-      );
-      emit(
-        SaisieAnnuleeEtat(
-          codeEmotionRestauree: courant.ancienneEntree?.codeEmotion,
-        ),
-      );
-    } on Object catch (e) {
-      emit(
-        EnregistrementEchoue(
-          codeEmotion: courant.codeEmotion,
-          message: e.toString(),
-        ),
-      );
-    }
-  }
-
-  /// La fenêtre d'annulation a expiré — le pop est géré côté View.
-  void _onFenetreUndoExpiree(
-    FenetreUndoExpiree event,
+  /// Ignorée pendant un enregistrement en vol ou après succès.
+  void _onEmotionSelectionnee(
+    EmotionSelectionnee event,
     Emitter<SaisieHumeurState> emit,
   ) {
-    // No-op : le pop automatique vers l'Accueil est déclenché dans la View
-    // via le callback `.closed` du SnackBar (DEC-SH-005).
+    if (state is EnregistrementEnCours || state is EnregistrementReussi) return;
+    emit(EmotionSelectionneeEtat(event.codeEmotion));
+  }
+
+  /// Traite la validation : UPSERT de l'émotion retenue.
+  ///
+  /// `droppable()` : ignore les taps répétés sur Valider pendant l'écriture.
+  Future<void> _onSaisieValidee(
+    SaisieValidee event,
+    Emitter<SaisieHumeurState> emit,
+  ) async {
+    final code = state.codeSelectionne;
+    // Bloque aussi après succès : avec un UPSERT instantané, `droppable()` ne
+    // suffit pas si le 1er handler s'est terminé avant le 2e tap
+    // (double-write).
+    if (code == null ||
+        state is EnregistrementEnCours ||
+        state is EnregistrementReussi) {
+      return;
+    }
+
+    emit(EnregistrementEnCours(codeEmotion: code));
+
+    try {
+      await _database.enregistrerHumeurDuJour(code);
+      emit(EnregistrementReussi(codeEmotion: code));
+    } on Object catch (e) {
+      emit(
+        EnregistrementEchoue(
+          codeEmotion: code,
+          message: e.toString(),
+        ),
+      );
+    }
   }
 }

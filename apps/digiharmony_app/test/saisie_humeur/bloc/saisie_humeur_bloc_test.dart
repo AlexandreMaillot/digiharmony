@@ -6,18 +6,6 @@ import 'package:mocktail/mocktail.dart';
 
 class MockAppDatabase extends Mock implements AppDatabase {}
 
-/// Stub EntreeHumeur pour les tests.
-EntreeHumeur _humeurStub(String code) {
-  final now = DateTime.now();
-  return EntreeHumeur(
-    id: 1,
-    codeEmotion: code,
-    valence: valencePour(code),
-    creeLe: now,
-    jour: DateTime(now.year, now.month, now.day),
-  );
-}
-
 void main() {
   late MockAppDatabase db;
 
@@ -25,53 +13,75 @@ void main() {
     db = MockAppDatabase();
   });
 
-  group('SaisieHumeurBloc — EmotionTapee', () {
-    // SHB-1 : tap → EnregistrementEnCours puis EnregistrementReussi.
+  group('SaisieHumeurBloc — sélection', () {
+    // SHB-1 : sélection → EmotionSelectionneeEtat, AUCUNE écriture Drift.
     blocTest<SaisieHumeurBloc, SaisieHumeurState>(
-      'SHB-1 : EmotionTapee → [EnregistrementEnCours, EnregistrementReussi]',
+      'SHB-1 : EmotionSelectionnee → [EmotionSelectionneeEtat] sans UPSERT',
+      build: () => SaisieHumeurBloc(database: db),
+      act: (bloc) => bloc.add(const EmotionSelectionnee('happy')),
+      expect: () => [const EmotionSelectionneeEtat('happy')],
+      verify: (_) {
+        verifyNever(() => db.enregistrerHumeurDuJour(any()));
+      },
+    );
+
+    // SHB-2 : re-sélection → la dernière émotion prime.
+    blocTest<SaisieHumeurBloc, SaisieHumeurState>(
+      'SHB-2 : re-sélection change la pastille retenue',
+      build: () => SaisieHumeurBloc(database: db),
+      act: (bloc) => bloc
+        ..add(const EmotionSelectionnee('happy'))
+        ..add(const EmotionSelectionnee('sad')),
+      expect: () => [
+        const EmotionSelectionneeEtat('happy'),
+        const EmotionSelectionneeEtat('sad'),
+      ],
+    );
+  });
+
+  group('SaisieHumeurBloc — validation', () {
+    // SHB-3 : Valider après sélection → EnregistrementEnCours puis Reussi.
+    blocTest<SaisieHumeurBloc, SaisieHumeurState>(
+      'SHB-3 : SaisieValidee → [EnCours, Reussi] + UPSERT appelé',
       build: () {
         when(
           () => db.enregistrerHumeurDuJour('happy'),
         ).thenAnswer((_) async => null);
         return SaisieHumeurBloc(database: db);
       },
-      act: (bloc) => bloc.add(const EmotionTapee('happy')),
+      seed: () => const EmotionSelectionneeEtat('happy'),
+      act: (bloc) => bloc.add(const SaisieValidee()),
       expect: () => [
         const EnregistrementEnCours(codeEmotion: 'happy'),
         const EnregistrementReussi(codeEmotion: 'happy'),
       ],
-    );
-
-    // SHB-2 : tap avec ancienne → EnregistrementReussi porte l'ancienne.
-    blocTest<SaisieHumeurBloc, SaisieHumeurState>(
-      'SHB-2 : UPSERT retourne ancienne → EnregistrementReussi avec ancienne',
-      build: () {
-        final ancienne = _humeurStub('calm');
-        when(
-          () => db.enregistrerHumeurDuJour('sad'),
-        ).thenAnswer((_) async => ancienne);
-        return SaisieHumeurBloc(database: db);
+      verify: (_) {
+        verify(() => db.enregistrerHumeurDuJour('happy')).called(1);
       },
-      act: (bloc) => bloc.add(const EmotionTapee('sad')),
-      expect: () => [
-        const EnregistrementEnCours(codeEmotion: 'sad'),
-        isA<EnregistrementReussi>()
-            .having((s) => s.codeEmotion, 'code', 'sad')
-            .having((s) => s.ancienneEntree?.codeEmotion, 'ancienne', 'calm'),
-      ],
     );
 
-    // SHB-3 : UPSERT lève → EnregistrementEchoue.
+    // SHB-4 : Valider sans sélection → no-op (aucune écriture).
     blocTest<SaisieHumeurBloc, SaisieHumeurState>(
-        'SHB-3 : UPSERT exception → '
-      '[EnregistrementEnCours, EnregistrementEchoue]',
+      'SHB-4 : SaisieValidee sans sélection → aucun état, aucun UPSERT',
+      build: () => SaisieHumeurBloc(database: db),
+      act: (bloc) => bloc.add(const SaisieValidee()),
+      expect: () => const <SaisieHumeurState>[],
+      verify: (_) {
+        verifyNever(() => db.enregistrerHumeurDuJour(any()));
+      },
+    );
+
+    // SHB-5 : UPSERT lève → EnregistrementEchoue (sélection conservée).
+    blocTest<SaisieHumeurBloc, SaisieHumeurState>(
+      'SHB-5 : UPSERT exception → [EnCours, Echoue]',
       build: () {
         when(
           () => db.enregistrerHumeurDuJour('nervous'),
         ).thenThrow(Exception('DB error'));
         return SaisieHumeurBloc(database: db);
       },
-      act: (bloc) => bloc.add(const EmotionTapee('nervous')),
+      seed: () => const EmotionSelectionneeEtat('nervous'),
+      act: (bloc) => bloc.add(const SaisieValidee()),
       expect: () => [
         const EnregistrementEnCours(codeEmotion: 'nervous'),
         isA<EnregistrementEchoue>()
@@ -79,77 +89,21 @@ void main() {
       ],
     );
 
-    // SHB-4 : tap pendant EnregistrementEnCours est droppé (droppable).
+    // SHB-6 : double tap sur Valider pendant l'écriture → un seul UPSERT.
     blocTest<SaisieHumeurBloc, SaisieHumeurState>(
-      'SHB-4 : tap pendant EnregistrementEnCours ignoré (droppable)',
+      'SHB-6 : Valider x2 pendant l’UPSERT ignoré (droppable)',
       build: () {
         when(() => db.enregistrerHumeurDuJour(any()))
             .thenAnswer((_) async => null);
         return SaisieHumeurBloc(database: db);
       },
-      act: (bloc) async {
-        // Premier tap puis deuxième immédiat — le second doit être ignoré.
-        bloc
-          ..add(const EmotionTapee('happy'))
-          ..add(const EmotionTapee('sad'));
+      seed: () => const EmotionSelectionneeEtat('calm'),
+      act: (bloc) => bloc
+        ..add(const SaisieValidee())
+        ..add(const SaisieValidee()),
+      verify: (_) {
+        verify(() => db.enregistrerHumeurDuJour('calm')).called(1);
       },
-      // Seul 'happy' passe.
-      verify: (bloc) {
-        verify(() => db.enregistrerHumeurDuJour('happy')).called(1);
-        verifyNever(() => db.enregistrerHumeurDuJour('sad'));
-      },
-    );
-  });
-
-  group('SaisieHumeurBloc — SaisieAnnulee', () {
-    // SHB-5 : annulation avec ancienne → restaure → SaisieAnnuleeEtat.
-    blocTest<SaisieHumeurBloc, SaisieHumeurState>(
-      'SHB-5 : annulation avec ancienne → SaisieAnnuleeEtat(code ancienne)',
-      build: () {
-        final ancienne = _humeurStub('calm');
-        when(
-          () => db.enregistrerHumeurDuJour('sad'),
-        ).thenAnswer((_) async => ancienne);
-        when(
-          () => db.annulerDerniereSaisie(ancienneEntree: ancienne),
-        ).thenAnswer((_) async {});
-        return SaisieHumeurBloc(database: db);
-      },
-      act: (bloc) async {
-        bloc.add(const EmotionTapee('sad'));
-        // Attendre que l'UPSERT soit terminé.
-        await Future<void>.delayed(const Duration(milliseconds: 10));
-        bloc.add(const SaisieAnnulee());
-      },
-      expect: () => [
-        const EnregistrementEnCours(codeEmotion: 'sad'),
-        isA<EnregistrementReussi>(),
-        const SaisieAnnuleeEtat(codeEmotionRestauree: 'calm'),
-      ],
-    );
-
-    // SHB-6 : annulation sans ancienne → supprime → SaisieAnnuleeEtat(null).
-    blocTest<SaisieHumeurBloc, SaisieHumeurState>(
-      'SHB-6 : annulation sans ancienne → SaisieAnnuleeEtat(null)',
-      build: () {
-        when(
-          () => db.enregistrerHumeurDuJour('tired'),
-        ).thenAnswer((_) async => null);
-        when(
-          () => db.annulerDerniereSaisie(),
-        ).thenAnswer((_) async {});
-        return SaisieHumeurBloc(database: db);
-      },
-      act: (bloc) async {
-        bloc.add(const EmotionTapee('tired'));
-        await Future<void>.delayed(const Duration(milliseconds: 10));
-        bloc.add(const SaisieAnnulee());
-      },
-      expect: () => [
-        const EnregistrementEnCours(codeEmotion: 'tired'),
-        const EnregistrementReussi(codeEmotion: 'tired'),
-        const SaisieAnnuleeEtat(),
-      ],
     );
   });
 }

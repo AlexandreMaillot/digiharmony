@@ -166,9 +166,13 @@
     "@saisieHumeurTitre": {
         "description": "SaisieHumeur screen — main title"
     },
-    "saisieHumeurSousTitre": "A single tap — that's all it takes.",
+    "saisieHumeurSousTitre": "Pick how you feel, then confirm.",
     "@saisieHumeurSousTitre": {
         "description": "SaisieHumeur screen — subtitle below the title"
+    },
+    "saisieHumeurValider": "Confirm",
+    "@saisieHumeurValider": {
+        "description": "SaisieHumeur — primary button label to save the selected mood and return home"
     },
     "saisieHumeurSelectionne": "You selected: {emotion}",
     "@saisieHumeurSelectionne": {

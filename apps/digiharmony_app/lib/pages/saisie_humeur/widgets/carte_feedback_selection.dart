@@ -1,16 +1,16 @@
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/bloc/saisie_humeur_bloc.dart';
+import 'package:digiharmony_app/pages/saisie_humeur/modeles/emotion_canonique.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Carte de feedback affichée après un premier tap sur une pastille.
+/// Carte de feedback affichée dès qu'une émotion est sélectionnée.
 ///
-/// - En [EnregistrementEnCours] : libellé de l'émotion + indicateur de
-///   chargement.
-/// - En [EnregistrementReussi] : libellé uniquement (SnackBar prend le
-///   relais).
-/// - Invisible en [SaisieInitiale].
+/// Reprend le visuel de la maquette : pastille emoji
+/// + « Tu as sélectionné : X » + icône de validation.
+/// L'enregistrement étant instantané, aucun indicateur
+/// « Enregistrement en cours… » n'est affiché. Invisible à l'état initial.
 class CarteFeedbackSelection extends StatelessWidget {
   const CarteFeedbackSelection({super.key});
 
@@ -19,26 +19,7 @@ class CarteFeedbackSelection extends StatelessWidget {
     return BlocBuilder<SaisieHumeurBloc, SaisieHumeurState>(
       builder: (context, state) {
         final l10n = context.l10n;
-
-        final String? codeEmotion;
-        final bool enCours;
-
-        switch (state) {
-          case EnregistrementEnCours():
-            codeEmotion = state.codeEmotion;
-            enCours = true;
-          case EnregistrementReussi():
-            codeEmotion = state.codeEmotion;
-            enCours = false;
-          case SaisieAnnuleeEtat():
-            // Après annulation, réaffiche l'émotion restaurée si disponible.
-            codeEmotion = state.codeEmotionRestauree;
-            enCours = false;
-          case SaisieInitiale():
-          case EnregistrementEchoue():
-            return const SizedBox.shrink();
-        }
-
+        final codeEmotion = state.codeSelectionne;
         if (codeEmotion == null) return const SizedBox.shrink();
 
         final libelle = _libelleEmotion(context, codeEmotion);
@@ -49,40 +30,33 @@ class CarteFeedbackSelection extends StatelessWidget {
             padding: const EdgeInsets.all(AppSpacing.md),
             child: Row(
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        l10n.saisieHumeurSelectionne(libelle),
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: couleur,
-                              fontWeight: FontWeight.w600,
-                            ),
-                      ),
-                      if (enCours) ...[
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          l10n.saisieHumeurEnregistrementEnCours,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: AppColors.textMuted),
-                        ),
-                      ],
-                    ],
+                // Pastille emoji colorée.
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: couleur.withValues(alpha: 0.18),
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    emojiPourCode(codeEmotion),
+                    style: const TextStyle(fontSize: 24),
+                    semanticsLabel: libelle,
                   ),
                 ),
-                if (enCours) ...[
-                  const SizedBox(width: AppSpacing.sm),
-                  SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: couleur,
-                    ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Text(
+                    l10n.saisieHumeurSelectionne(libelle),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: couleur,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
-                ],
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Icon(Icons.check_circle, color: couleur),
               ],
             ),
           ),
