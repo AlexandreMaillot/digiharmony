@@ -28,7 +28,8 @@ flowchart TD
     Lib --> AppDir["app/ (app.dart · view · routing/app_router.dart)"]
     Lib --> Pages["pages/ (features, racine FR)"]
     Lib --> Data["data/local/app_database.dart (Drift)"]
-    Lib --> Theme["theme/theme.dart · locale/ · common/"]
+    Lib --> Theme["theme/theme.dart · locale/ · common/ (widgets · anim/)"]
+    Lib --> Anim["common/anim/ (EntreeDouce · TapAnime · CompteurAnime · routeDouce · anim_constants — a11y/RM-aware)"]
     Lib --> Config["config/legal_urls.dart"]
     App --> Ios["ios/ (Runner + DigiHarmonyActivityReportExtension · entitlements family-controls)"]
     Lib --> L10n["l10n/"]
@@ -56,7 +57,7 @@ flowchart TD
     Pkgs --> Core["core_package/ (lib/src · test · .github)"]
 
     Docs --> Mem["memory/ (project-overview · codebase-map · internal · external)"]
-    Docs --> Dec["internal/decisions/ (ADR · 0001..0007)"]
+    Docs --> Dec["internal/decisions/ (ADR · 0001..0008)"]
     Docs --> Rules["rules/ (melos7-pub-workspace · android-gradle-minify-off · permissions-zero-collecte)"]
 ```
 
