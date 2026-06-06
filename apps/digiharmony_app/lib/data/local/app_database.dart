@@ -408,21 +408,38 @@ class AppDatabase extends _$AppDatabase {
         .watch();
   }
 
+  /// Cartes **génériques** (type_carte != 'emotion'), ordonnées par `ordre`
+  /// puis `id` — identique à la portion générique de `composerDeck`.
+  ///
+  /// Helper mutualisé : garantit que [conseilDuJour] et `composerDeck`
+  /// tournent sur le même ensemble dans le même ordre (DEC-CO-11).
+  Future<List<Conseil>> cartesGeneriquesOrdonnees() async {
+    return (select(conseils)
+          ..where((t) => t.typeCarte.isNotIn(['emotion']))
+          ..orderBy([
+            (t) => OrderingTerm.asc(t.ordre),
+            (t) => OrderingTerm.asc(t.id),
+          ]))
+        .get();
+  }
+
   /// Conseil **déterministe** du jour [jour].
   ///
-  /// `index = joursDepuisEpoch % nbConseils`, stable toute la journée,
-  /// sans aléatoire ni stockage d'état.
+  /// Tourne UNIQUEMENT sur les cartes **génériques**
+  /// (`type_carte` != `'emotion'`) dans le même ordre (`ordre`/`id`) et
+  /// le même modulo que la rotation générique de `composerDeck` (DEC-CO-11).
+  ///
+  /// Garantie : la clé renvoyée est toujours affichable par
+  /// `_resoudreConseil` de l'Accueil — jamais une clé `conseilEmotion*`.
   Future<Conseil> conseilDuJour(DateTime jour) async {
-    final all = await (select(
-      conseils,
-    )..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
-    if (all.isEmpty) {
-      throw StateError('Aucun conseil seedé dans la base.');
+    final generiques = await cartesGeneriquesOrdonnees();
+    if (generiques.isEmpty) {
+      throw StateError('Aucun conseil générique seedé dans la base.');
     }
     final jourNormalise = DateTime(jour.year, jour.month, jour.day);
     final joursDepuisEpoch = jourNormalise.difference(_epoch).inDays;
-    final index = joursDepuisEpoch % all.length;
-    return all[index];
+    final index = joursDepuisEpoch % generiques.length;
+    return generiques[index];
   }
 
   /// Corpus complet de cartes, ordonné par `ordre` puis `id`.

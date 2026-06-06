@@ -274,4 +274,127 @@ void main() {
       },
     );
   });
+  // ─── conseilDuJour — cohérence DEC-CO-11 ─────────────────────────────────
+  group('conseilDuJour — toujours générique + cohérence composerDeck', () {
+    // CDJ-1 : la clé renvoyée n'est jamais une clé émotion.
+    test(
+      'CDJ-1 : conseilDuJour ne renvoie jamais une clé emotion (type_carte)',
+      () async {
+        final db = AppDatabase.forTesting(NativeDatabase.memory());
+        addTearDown(db.close);
+
+        // Vérifie sur 20 jours consécutifs (couvre plusieurs cycles).
+        final base = DateTime(2026);
+        for (var d = 0; d < 20; d++) {
+          final jour = base.add(Duration(days: d));
+          final conseil = await db.conseilDuJour(jour);
+          expect(
+            conseil.typeCarte,
+            isNot('emotion'),
+            reason:
+                'conseilDuJour($jour) a renvoyé une carte émotion '
+                '(cle=${conseil.cleConseil})',
+          );
+        }
+      },
+    );
+
+    // CDJ-2 : clés renvoyées toujours dans la liste blanche
+    // de _resoudreConseil.
+    test(
+      'CDJ-2 : clé renvoyée appartient aux clés génériques connues',
+      () async {
+        const clesAffichables = {
+          'tipDay01', 'tipDay02', 'tipDay03', 'tipDay04',
+          'tipDay05', 'tipDay06', 'tipDay07',
+          'conseilRappelPresent', 'conseilRappelLikes',
+          'conseilPratiqueInteractions', 'conseilPratiqueEspace',
+        };
+
+        final db = AppDatabase.forTesting(NativeDatabase.memory());
+        addTearDown(db.close);
+
+        final base = DateTime(2026);
+        for (var d = 0; d < 20; d++) {
+          final jour = base.add(Duration(days: d));
+          final conseil = await db.conseilDuJour(jour);
+          expect(
+            clesAffichables,
+            contains(conseil.cleConseil),
+            reason:
+                'conseilDuJour($jour) a renvoyé "${conseil.cleConseil}" '
+                "hors de la liste des clés affichables par l'Accueil",
+          );
+        }
+      },
+    );
+
+    // CDJ-3 : cohérence DEC-CO-11 — carte 0 générique composerDeck
+    // == conseilDuJour.
+    test(
+      'CDJ-3 : conseilDuJour == carte 0 générique de composerDeck (DEC-CO-11)',
+      () async {
+        final db = AppDatabase.forTesting(NativeDatabase.memory());
+        addTearDown(db.close);
+
+        final corpus = await db.lireCorpusConseils();
+
+        // Plusieurs jours pour couvrir la rotation.
+        final base = DateTime(2026, 6, 6);
+        for (var i = 0; i < 11; i++) {
+          final jour = base.add(Duration(days: i));
+          final conseil = await db.conseilDuJour(jour);
+
+          // Reproduit le calcul de composerDeck pour la portion générique.
+          // Même tri que cartesGeneriquesOrdonnees (ordre asc, id asc).
+          final generiques = corpus
+              .where((c) => c.typeCarte != 'emotion')
+              .toList()
+            ..sort((a, b) {
+                final cmp = a.ordre.compareTo(b.ordre);
+                return cmp != 0 ? cmp : a.id.compareTo(b.id);
+              });
+
+          final epoch = DateTime(1970);
+          final jourNormalise = DateTime(jour.year, jour.month, jour.day);
+          final offset =
+              jourNormalise.difference(epoch).inDays % generiques.length;
+          final carte0Cle = generiques[offset].cleConseil;
+
+          expect(
+            conseil.cleConseil,
+            carte0Cle,
+            reason:
+                'Jour $jour : conseilDuJour=${conseil.cleConseil} '
+                'mais carte0 générique composerDeck=$carte0Cle',
+          );
+        }
+      },
+    );
+
+    // CDJ-4 : rotation quotidienne (jours successifs => clés tournent).
+    test(
+      'CDJ-4 : rotation quotidienne (jours successifs => clés tournent)',
+      () async {
+        final db = AppDatabase.forTesting(NativeDatabase.memory());
+        addTearDown(db.close);
+
+        // Avec 11 génériques, la rotation est non-triviale.
+        final generiques = await db.cartesGeneriquesOrdonnees();
+        // Saute ce test si corpus réduit (ne devrait pas arriver en prod).
+        if (generiques.length < 2) return;
+
+        final j1 = DateTime(2026, 6, 6);
+        final j2 = j1.add(const Duration(days: 1));
+        final c1 = await db.conseilDuJour(j1);
+        final c2 = await db.conseilDuJour(j2);
+        expect(
+          c1.cleConseil,
+          isNot(c2.cleConseil),
+          reason: 'Deux jours successifs devraient donner des clés différentes',
+        );
+      },
+    );
+  });
+
 }
