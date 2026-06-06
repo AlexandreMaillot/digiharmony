@@ -1,0 +1,18 @@
+# Splash natif — flavor PRODUCTION uniquement.
+# Genere via : dart run flutter_native_splash:create --flavor production
+# Logo carre de marque centre sur le navy profond du design system
+# « Navy & Halo » (AppColors.backgroundDeep = #16213C). dev/staging inchanges.
+flutter_native_splash:
+  color: "#16213C"
+  image: assets/images/logo_digiharmony_square.png
+
+  # Android 12+ : splash systeme base sur une icone (cercle), meme fond.
+  android_12:
+    image: assets/images/logo_digiharmony_square.png
+    color: "#16213C"
+    icon_background_color: "#16213C"
+
+  android: true
+  ios: true
+  web: false
+  fullscreen: true
