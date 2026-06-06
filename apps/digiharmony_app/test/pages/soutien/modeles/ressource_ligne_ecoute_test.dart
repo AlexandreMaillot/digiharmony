@@ -24,21 +24,22 @@ void main() {
 
     // SO-RES-2 : l'entrée 'fr' est présente avec le 3114 (numéro national de
     // prévention du suicide, FR), seul numéro approuvé pour cette locale.
+    // Les libellés UI (titre, disponibilité) sont gérés par l'i18n (ARB),
+    // pas par le modèle.
     test(
-      'SO-RES-2 : entree fr presente avec 3114 approuve',
+      'SO-RES-2 : entree fr presente avec 3114 approuve et type telephone',
       () {
         final fr = tableRessources['fr'];
         expect(fr, isNotNull, reason: 'Fallback fr requis');
         expect(
           fr!.cible,
           '3114',
-          reason:
-              "Cible fr doit être exactement '3114' (numéro FR approuvé)",
+          reason: "Cible fr doit être exactement '3114' (numéro FR approuvé)",
         );
         expect(
-          fr.nom,
-          "Ligne d'écoute",
-          reason: "Nom fr doit être \"Ligne d'écoute\"",
+          fr.type,
+          TypeRessourceEcoute.telephone,
+          reason: 'Type fr doit être telephone',
         );
       },
     );
@@ -128,25 +129,19 @@ void main() {
   });
 
   group('RessourceLigneEcoute', () {
-    test('SO-RES-4 : construction avec tous les champs', () {
+    test('SO-RES-4 : construction avec cible et type (modele reduit)', () {
       const ressource = RessourceLigneEcoute(
-        nom: 'Test Helpline',
         cible: 'TODO_partenaire',
         type: TypeRessourceEcoute.telephone,
-        disponibilite: '24h/24',
       );
-      expect(ressource.nom, 'Test Helpline');
       expect(ressource.cible, 'TODO_partenaire');
       expect(ressource.type, TypeRessourceEcoute.telephone);
-      expect(ressource.disponibilite, '24h/24');
     });
 
     test('SO-RES-5 : type lien disponible', () {
       const ressource = RessourceLigneEcoute(
-        nom: 'Test Web',
         cible: 'https://example.com',
         type: TypeRessourceEcoute.lien,
-        disponibilite: 'Lundi-Vendredi',
       );
       expect(ressource.type, TypeRessourceEcoute.lien);
     });

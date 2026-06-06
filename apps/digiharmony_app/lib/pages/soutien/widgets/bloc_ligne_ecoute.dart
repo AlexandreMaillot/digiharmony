@@ -27,6 +27,8 @@ class BlocLigneEcoute extends StatelessWidget {
 
     if (ressource == null) return const SizedBox.shrink();
 
+    final l10n = context.l10n;
+
     return Material(
       color: AppColors.surface,
       borderRadius: AppRadii.cardRadius,
@@ -48,14 +50,14 @@ class BlocLigneEcoute extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      ressource.nom,
+                      l10n.soutienLigneTitre,
                       style: const TextStyle(
                         color: AppColors.text,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      '${ressource.cible} — ${ressource.disponibilite}',
+                      '${ressource.cible} — ${l10n.soutienLigneDispo}',
                       style: const TextStyle(
                         color: AppColors.textMuted,
                         fontSize: 13,

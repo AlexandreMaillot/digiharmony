@@ -9,29 +9,24 @@ enum TypeRessourceEcoute {
 
 /// Ressource d'écoute associée à une locale (donnée statique embarquée).
 ///
+/// Contient uniquement les données (cible, type).
+/// Les libellés UI (titre, disponibilité) sont gérés par l'i18n (ARB).
+///
 /// L'entrée 'fr' contient le 3114 (numéro FR approuvé).
 /// Les autres locales utilisent le fallback 'fr' — données partenaires
 /// à valider avant déploiement hors France (DEC-SO-007).
 class RessourceLigneEcoute {
   /// Crée une ressource d'écoute.
   const RessourceLigneEcoute({
-    required this.nom,
     required this.cible,
     required this.type,
-    required this.disponibilite,
   });
-
-  /// Nom affiché de la ligne d'écoute.
-  final String nom;
 
   /// Cible : numéro brut (tel) ou URL (https).
   final String cible;
 
   /// Mode d'ouverture de la ressource.
   final TypeRessourceEcoute type;
-
-  /// Libellé de disponibilité (ex. « Disponible 24h/24 »).
-  final String disponibilite;
 }
 
 /// Table statique locale → ressource d'écoute.
@@ -53,9 +48,7 @@ tableRessources = <String, RessourceLigneEcoute>{
   // 3114 = Numéro national de prévention du suicide (FR), approuvé partenaires.
   // Utilisé comme fallback pour toutes les locales sans entrée propre.
   'fr': RessourceLigneEcoute(
-    nom: "Ligne d'écoute",
     cible: '3114',
     type: TypeRessourceEcoute.telephone,
-    disponibilite: 'Disponible 24h/24',
   ),
 };

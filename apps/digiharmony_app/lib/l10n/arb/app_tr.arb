@@ -85,5 +85,7 @@
     "soutienConfiancePiste03": "Reach out to a trusted adult at school (counsellor, school nurse)",
     "soutienConfiancePiste04": "Write down what you feel before talking about it",
     "soutienConfiancePiste05": "Choose a calm moment to bring it up",
-    "soutienErreurLien": "Unable to open this link."
+    "soutienErreurLien": "Unable to open this link.",
+    "soutienLigneTitre": "Helpline",
+    "soutienLigneDispo": "Available 24/7"
 }

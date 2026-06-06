@@ -67,25 +67,26 @@ void main() {
     });
 
     testWidgets(
-      "SO-VIEW-3 : bloc ligne d'ecoute visible avec fallback fr",
+      "SO-VIEW-3 : bloc ligne d'ecoute visible avec titre i18n",
       (tester) async {
-        // L'entrée 'fr' (3114, numéro FR approuvé) est le fallback.
-        // Pour fr : le bloc est visible avec les libellés FR.
+        // Pour 'fr' : le bloc affiche le titre i18n FR.
         await tester.pumpSoutienView(locale: const Locale('fr'));
         await tester.pump();
 
-        // Le bloc est visible car la locale 'fr' a une entrée directe.
+        // Le titre i18n FR est "Ligne d'écoute".
         expect(find.textContaining("Ligne d'écoute"), findsAtLeastNWidgets(1));
+        // Le numéro 3114 (données) est visible dans le sous-titre.
+        expect(find.textContaining('3114'), findsAtLeastNWidgets(1));
 
-        // Pour 'en' : pas d'entrée propre -> fallback fr -> bloc visible.
+        // Pour 'en' : pas d'entrée propre -> fallback fr (cible=3114)
+        // mais titre i18n EN = "Helpline".
         await tester.pumpSoutienView();
         await tester.pump();
 
-        // Le bloc s'affiche via le fallback 'fr' (nom de la ressource fr).
-        expect(
-          find.textContaining("Ligne d'écoute"),
-          findsAtLeastNWidgets(1),
-        );
+        // Le titre i18n EN est "Helpline".
+        expect(find.textContaining('Helpline'), findsAtLeastNWidgets(1));
+        // Le numéro 3114 (données fallback fr) est visible dans le sous-titre.
+        expect(find.textContaining('3114'), findsAtLeastNWidgets(1));
       },
     );
 

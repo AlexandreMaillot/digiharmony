@@ -87,5 +87,7 @@
     "soutienConfiancePiste03": "Contacter un adulte de confiance à l'école (CPE, infirmier·ère)",
     "soutienConfiancePiste04": "Écrire ce que tu ressens avant d'en parler",
     "soutienConfiancePiste05": "Choisir un moment calme pour aborder le sujet",
-    "soutienErreurLien": "Impossible d'ouvrir ce lien."
+    "soutienErreurLien": "Impossible d'ouvrir ce lien.",
+    "soutienLigneTitre": "Ligne d'écoute",
+    "soutienLigneDispo": "Disponible 24h/24"
 }

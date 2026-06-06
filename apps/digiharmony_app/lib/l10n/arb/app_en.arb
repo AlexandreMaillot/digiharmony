@@ -395,5 +395,13 @@
     "soutienErreurLien": "Unable to open this link.",
     "@soutienErreurLien": {
         "description": "Error snackbar when url_launcher fails to open a helpline resource."
+    },
+    "soutienLigneTitre": "Helpline",
+    "@soutienLigneTitre": {
+        "description": "Generic title for the helpline card in the soutien screen."
+    },
+    "soutienLigneDispo": "Available 24/7",
+    "@soutienLigneDispo": {
+        "description": "Generic availability label for the helpline card in the soutien screen."
     }
 }
