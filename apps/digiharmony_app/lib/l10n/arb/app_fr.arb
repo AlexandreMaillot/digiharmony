@@ -154,5 +154,100 @@
     "parametresErasmusCorps": "Projet Erasmus+ — application gratuite, sans publicité.",
     "parametresVersion": "DIGIHARMONY v{version}",
     "parametresLienIndisponible": "Impossible d'ouvrir le lien. Tu peux le retrouver dans ton navigateur.",
-    "parametresLangueActiveSemantique": "Langue active"
+    "parametresLangueActiveSemantique": "Langue active",
+
+    "conseilsTitre": "Conseils",
+    "conseilsRetourTooltip": "Retour",
+    "conseilsHintPrecedent": "précédent",
+    "conseilsHintSuivant": "suivant",
+    "conseilsTagEquilibre": "Équilibre",
+    "conseilsTagRappel": "Rappel",
+    "conseilsTagConseilPratique": "Conseil pratique",
+    "conseilsTagEmotion": "Émotion",
+    "conseilsEmotionHeadline": "Quand tu te sens {emotion}…",
+    "@conseilsEmotionHeadline": {
+        "placeholders": {
+            "emotion": { "type": "String" }
+        }
+    },
+    "conseilsEmotionCta": "Essayer la respiration",
+    "conseilsEmotionRespirationBientot": "L'exercice de respiration arrive bientôt.",
+    "conseilsCompteurSemantique": "Carte {index} sur {total}",
+    "@conseilsCompteurSemantique": {
+        "placeholders": {
+            "index": { "type": "int" },
+            "total": { "type": "int" }
+        }
+    },
+    "conseilsCarteSemantique": "Conseil {index} sur {total}",
+    "@conseilsCarteSemantique": {
+        "placeholders": {
+            "index": { "type": "int" },
+            "total": { "type": "int" }
+        }
+    },
+
+    "conseilRappelPresentCitation1": "Scroll later,",
+    "conseilRappelPresentCitation2": "live now.",
+    "conseilRappelPresentSousTexte": "Les moments présents ne reviennent pas. Le fil, lui, sera toujours là.",
+
+    "conseilRappelLikesCitation1": "Tu n'es pas",
+    "conseilRappelLikesCitation2": "ton nombre de likes.",
+    "conseilRappelLikesSousTexte": "Ta valeur n'a rien à voir avec les chiffres en ligne.",
+
+    "conseilPratiqueInteractionsHeadline": "Gérer tes interactions",
+    "conseilPratiqueInteractionsDo1": "Fixe une limite de temps pour les réseaux sociaux",
+    "conseilPratiqueInteractionsDo2": "Réponds quand tu te sens prêt·e, pas tout de suite",
+    "conseilPratiqueInteractionsDo3": "Coupe les notifications non essentielles",
+    "conseilPratiqueInteractionsDont1": "Ne regarde pas ton téléphone juste au réveil",
+    "conseilPratiqueInteractionsDont2": "Ne scrolle pas quand tu parles à quelqu'un",
+
+    "conseilPratiqueEspaceHeadline": "Créer de l'espace",
+    "conseilPratiqueEspaceDo1": "Laisse ton téléphone dans une autre pièce pendant les repas",
+    "conseilPratiqueEspaceDo2": "Lis ou écris 10 min avant de dormir",
+    "conseilPratiqueEspaceDo3": "Fais une promenade sans écran",
+    "conseilPratiqueEspaceDont1": "N'utilise pas ton téléphone comme réveil",
+    "conseilPratiqueEspaceDont2": "Ne scrolle pas dans ton lit avant de t'endormir",
+
+    "conseilEmotionAngryDo1": "Fais une pause avant de répondre",
+    "conseilEmotionAngryDo2": "Note ce que tu ressens sans l'envoyer",
+    "conseilEmotionAngryDo3": "Éloigne-toi de l'écran quelques minutes",
+    "conseilEmotionAngryDont1": "Ne réponds pas quand tu te sens débordé·e",
+    "conseilEmotionAngryDont2": "Ne publie pas quelque chose que tu pourrais regretter",
+
+    "conseilEmotionSadDo1": "Parle à quelqu'un en qui tu as confiance",
+    "conseilEmotionSadDo2": "Écoute de la musique qui correspond à ce que tu ressens",
+    "conseilEmotionSadDo3": "Autorise-toi à te reposer sans culpabilité",
+    "conseilEmotionSadDont1": "Ne compare pas ta vie à ce que tu vois en ligne",
+    "conseilEmotionSadDont2": "Ne reste pas seul·e trop longtemps avec un sentiment lourd",
+
+    "conseilEmotionNervousDo1": "Prends trois respirations lentes et profondes",
+    "conseilEmotionNervousDo2": "Concentre-toi sur une chose à la fois",
+    "conseilEmotionNervousDo3": "Pose le téléphone et fais une courte marche",
+    "conseilEmotionNervousDont1": "Ne scrolle pas sans fin quand tu te sens anxieux·se",
+    "conseilEmotionNervousDont2": "Ne compare pas ton anxiété aux belles images des autres",
+
+    "conseilEmotionTiredDo1": "Donne-toi la permission de te reposer",
+    "conseilEmotionTiredDo2": "Pose ton téléphone une heure avant de dormir",
+    "conseilEmotionTiredDo3": "Bois de l'eau et étire-toi doucement",
+    "conseilEmotionTiredDont1": "Ne compense pas l'épuisement avec encore plus de scroll",
+    "conseilEmotionTiredDont2": "Ne te sens pas coupable de prendre une pause",
+
+    "conseilEmotionHappyDo1": "Partage ta joie avec quelqu'un à qui tu tiens",
+    "conseilEmotionHappyDo2": "Note une chose qui t'a fait sourire aujourd'hui",
+    "conseilEmotionHappyDo3": "Utilise cette énergie pour quelque chose de créatif",
+    "conseilEmotionHappyDont1": "Ne perds pas ce moment à chercher plus de likes",
+    "conseilEmotionHappyDont2": "Ne laisse pas les réseaux te voler ta bonne humeur",
+
+    "conseilEmotionCalmDo1": "Profite de ce moment de calme — tu le mérites",
+    "conseilEmotionCalmDo2": "Utilise cette tranquillité pour être pleinement présent·e",
+    "conseilEmotionCalmDo3": "Prends une respiration consciente et apprécie le silence",
+    "conseilEmotionCalmDont1": "Ne te précipite pas à remplir le silence avec des écrans",
+    "conseilEmotionCalmDont2": "Ne scrolle pas par habitude quand tu te sens bien",
+
+    "conseilEmotionDynamicDo1": "Canalise cette énergie vers quelque chose de signifiant",
+    "conseilEmotionDynamicDo2": "Bouge ton corps — marche ou danse",
+    "conseilEmotionDynamicDo3": "Lance ce projet que tu remets à plus tard",
+    "conseilEmotionDynamicDont1": "Ne gaspille pas cet élan dans le scroll sans fin",
+    "conseilEmotionDynamicDont2": "Ne laisse pas les notifications briser ton élan"
 }
