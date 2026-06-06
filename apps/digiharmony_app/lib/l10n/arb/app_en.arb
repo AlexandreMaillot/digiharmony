@@ -404,14 +404,6 @@
     "@soutienLigneDispo": {
         "description": "Generic availability label for the helpline card in the soutien screen."
     },
-    "tempsEcranTitre": "My screen time",
-    "@tempsEcranTitre": {
-        "description": "Screen time page in-app title (gentle, non-judgemental)."
-    },
-    "tempsEcranSousTitre": "A gentle look at your phone use.",
-    "@tempsEcranSousTitre": {
-        "description": "Screen time page subtitle."
-    },
     "tempsEcranPermissionTitre": "To see your screen time",
     "@tempsEcranPermissionTitre": {
         "description": "Title of the permission explanation screen (before native access)."

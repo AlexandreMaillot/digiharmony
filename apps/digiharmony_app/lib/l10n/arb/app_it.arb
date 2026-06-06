@@ -88,8 +88,6 @@
     "soutienErreurLien": "Unable to open this link.",
     "soutienLigneTitre": "Helpline",
     "soutienLigneDispo": "Available 24/7",
-    "tempsEcranTitre": "My screen time",
-    "tempsEcranSousTitre": "A gentle look at your phone use.",
     "tempsEcranPermissionTitre": "To see your screen time",
     "tempsEcranPermissionExplication": "DigiHarmony needs access to your phone's usage statistics. This data is read only on your device and is never sent anywhere.",
     "tempsEcranPermissionCta": "Enable access in settings",

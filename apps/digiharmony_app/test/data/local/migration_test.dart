@@ -1,12 +1,15 @@
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sqlite3/sqlite3.dart';
 
-/// Tests de migration v1 → v2 de AppDatabase.
+/// Tests de migration v1 → v2 → v3 de AppDatabase.
 ///
 /// La migration réelle (v1→v2 via onUpgrade) nécessite un schéma v1 préalable.
 /// Ces tests valident le comportement de la base v2 fraîche : colonne `jour`
 /// présente, UPSERT unicité, encodage DateTime cohérent.
+/// Le groupe MIG-V2V3 prouve que la migration v2→v3 crée
+/// `usages_ecran_journaliers` sans perte de données et de façon idempotente.
 void main() {
   group('Base v2 — comportements post-migration', () {
     // MIG-1 : base fraîche v2 — UPSERT fonctionne.
@@ -89,6 +92,139 @@ void main() {
         expect(entree.jour.year, minuitLocal.year);
         expect(entree.jour.month, minuitLocal.month);
         expect(entree.jour.day, minuitLocal.day);
+      },
+    );
+  });
+
+  // ─── Migration v2 → v3 ─────────────────────────────────────────────────────
+  group('Migration v2 → v3 — usages_ecran_journaliers', () {
+    // Crée une base au schéma v2 réel (tables entrees_humeur + conseils,
+    // PAS de usages_ecran_journaliers) via SQL brut, puis ouvre AppDatabase
+    // en v3 pour déclencher onUpgrade(from: 2, to: 3).
+
+    Database buildV2Sqlite() {
+      final rawDb = sqlite3.openInMemory()
+        // ── Schéma v2 réel ────────────────────────────────────────────────
+        ..execute('''
+        CREATE TABLE IF NOT EXISTS entrees_humeur (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          code_emotion TEXT NOT NULL,
+          valence INTEGER NOT NULL,
+          cree_le INTEGER NOT NULL,
+          jour INTEGER NOT NULL
+        )
+      ''')
+        ..execute(
+          'CREATE UNIQUE INDEX IF NOT EXISTS ux_entrees_humeur_jour '
+          'ON entrees_humeur(jour)',
+        )
+        ..execute('''
+        CREATE TABLE IF NOT EXISTS conseils (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          cle_conseil TEXT NOT NULL
+        )
+      ''');
+      // Données v2 : 1 entrée d'humeur + 1 conseil.
+      // Drift stocke DateTime en millisecondes UTC epoch (INTEGER).
+      final jourMs = DateTime(2025, 6).toUtc().millisecondsSinceEpoch;
+      final creeLe =
+          DateTime(2025, 6, 2, 10, 30).toUtc().millisecondsSinceEpoch;
+      rawDb
+        ..execute(
+          'INSERT INTO entrees_humeur '
+          '(code_emotion, valence, cree_le, jour) '
+          'VALUES (?, ?, ?, ?)',
+          ['happy', 1, creeLe, jourMs],
+        )
+        ..execute(
+          "INSERT INTO conseils (cle_conseil) VALUES ('tipDay01')",
+        )
+        // user_version = 2 → Drift déclenchera onUpgrade(from: 2, to: 3)
+        ..execute('PRAGMA user_version = 2');
+      return rawDb;
+    }
+
+    // MIG-V2V3-1 : table usages_ecran_journaliers créée après migration.
+    test(
+      'MIG-V2V3-1 : usages_ecran_journaliers créée par la migration v2→v3',
+      () async {
+        final rawDb = buildV2Sqlite();
+        final executor = NativeDatabase.opened(rawDb);
+        final db = AppDatabase.forTesting(executor);
+        addTearDown(db.close);
+
+        // Déclenche l'ouverture → migration v2→v3 exécutée.
+        await db.customSelect('SELECT 1').get();
+
+        final tables = await db
+            .customSelect(
+              "SELECT name FROM sqlite_master WHERE type='table' "
+              "AND name='usages_ecran_journaliers'",
+            )
+            .get();
+        expect(
+          tables,
+          isNotEmpty,
+          reason:
+              'La table usages_ecran_journaliers doit exister après '
+              'migration v2→v3',
+        );
+      },
+    );
+
+    // MIG-V2V3-2 : données v2 (entrees_humeur, conseils) préservées.
+    test(
+      'MIG-V2V3-2 : données v2 préservées après migration v2→v3',
+      () async {
+        final rawDb = buildV2Sqlite();
+        final executor = NativeDatabase.opened(rawDb);
+        final db = AppDatabase.forTesting(executor);
+        addTearDown(db.close);
+
+        await db.customSelect('SELECT 1').get();
+
+        final humeurs = await db.select(db.entreesHumeur).get();
+        expect(
+          humeurs.length,
+          1,
+          reason: "L'entrée d'humeur v2 doit être préservée",
+        );
+        expect(humeurs.first.codeEmotion, 'happy');
+
+        final tips = await db.select(db.conseils).get();
+        expect(
+          tips,
+          isNotEmpty,
+          reason: 'Les conseils v2 doivent être préservés',
+        );
+      },
+    );
+
+    // MIG-V2V3-3 : idempotence — table déjà présente, pas d'erreur.
+    test(
+      'MIG-V2V3-3 : idempotence — IF NOT EXISTS protège contre un double '
+      'CREATE',
+      () async {
+        final rawDb = buildV2Sqlite()
+          // Pré-crée la table (simule une base semi-migrée).
+          ..execute('''
+          CREATE TABLE IF NOT EXISTS usages_ecran_journaliers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            jour INTEGER NOT NULL,
+            total_secondes INTEGER NOT NULL,
+            maj_le INTEGER NOT NULL
+          )
+        ''');
+        final executor = NativeDatabase.opened(rawDb);
+        final db = AppDatabase.forTesting(executor);
+        addTearDown(db.close);
+
+        // Ne doit PAS lever d'exception malgré la table déjà présente.
+        await expectLater(
+          db.customSelect('SELECT 1').get(),
+          completes,
+          reason: 'La migration doit être idempotente (IF NOT EXISTS)',
+        );
       },
     );
   });
