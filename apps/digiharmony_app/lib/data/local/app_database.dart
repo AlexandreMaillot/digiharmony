@@ -44,6 +44,9 @@ class EntreesHumeur extends Table {
 }
 
 /// Conseils bienveillants — dataset local seedé, rotation quotidienne.
+///
+/// Schéma v4 : colonnes structurelles ajoutées pour le deck de cartes Conseils.
+/// Le texte des cartes vit dans les ARB (jamais dans cette table).
 @DataClassName('Conseil')
 class Conseils extends Table {
   /// Identifiant auto-incrémenté.
@@ -51,6 +54,30 @@ class Conseils extends Table {
 
   /// Clé i18n du conseil (le texte traduit vit dans les ARB).
   TextColumn get cleConseil => text().named('cle_conseil')();
+
+  // ─── AJOUTS (schéma v4) ───
+
+  /// Type de carte : 'rappel' | 'conseil' | 'emotion'.
+  TextColumn get typeCarte =>
+      text().named('type_carte').withDefault(const Constant('conseil'))();
+
+  /// Code émotion canonique si typeCarte == 'emotion' (sinon null).
+  ///
+  /// ∈ emotionsCanoniques ('happy','calm','dynamic','sad','angry','nervous',
+  /// 'tired'). Couleur résolue via MoodColors.byKey à l'affichage.
+  TextColumn get codeEmotion =>
+      text().named('code_emotion').nullable()();
+
+  /// Jeton d'accent CHROME pour les cartes rappel/conseil.
+  ///
+  /// Valeurs : 'primary' | 'lime' | 'or'. Ignoré pour 'emotion' (couleur
+  /// dérivée de MoodColors). JAMAIS un hex (DEC-CO-07).
+  TextColumn get accentChrome =>
+      text().named('accent_chrome').withDefault(const Constant('primary'))();
+
+  /// Ordre stable dans le corpus (rotation déterministe). Défaut = id.
+  IntColumn get ordre =>
+      integer().withDefault(const Constant(0))();
 }
 
 /// Agrégat journalier du temps d'écran — historique multi-jours (DEC-TE-04
@@ -99,7 +126,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   /// Référence Unix epoch pour la rotation déterministe des conseils.
   static final DateTime _epoch = DateTime(1970);
@@ -108,7 +135,7 @@ class AppDatabase extends _$AppDatabase {
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) async {
       await m.createAll();
-      await _seedConseils();
+      await _seedCorpus();
     },
     onUpgrade: (m, from, to) async {
       if (from < 2) {
@@ -166,31 +193,151 @@ class AppDatabase extends _$AppDatabase {
           'ON usages_ecran_journaliers(jour)',
         );
       }
+      if (from < 4) {
+        // Schéma v4 : ajoute 4 colonnes à la table `conseils` (DEC-CO-02).
+        // Idempotent : vérifie PRAGMA table_info avant chaque addColumn.
+        final colonnes = await customSelect(
+          "PRAGMA table_info('conseils')",
+        ).get();
+        final noms = colonnes.map((r) => r.read<String>('name')).toSet();
+
+        if (!noms.contains('type_carte')) {
+          await m.addColumn(conseils, conseils.typeCarte);
+        }
+        if (!noms.contains('code_emotion')) {
+          await m.addColumn(conseils, conseils.codeEmotion);
+        }
+        if (!noms.contains('accent_chrome')) {
+          await m.addColumn(conseils, conseils.accentChrome);
+        }
+        if (!noms.contains('ordre')) {
+          await m.addColumn(conseils, conseils.ordre);
+        }
+
+        // Re-métadonnées des tipDay01..07 existants : tous deviennent
+        // des cartes 'rappel' avec accents cycliques (DEC-CO-11 / Q-CO-7).
+        const tipAccents = [
+          'primary',
+          'lime',
+          'or',
+          'primary',
+          'lime',
+          'or',
+          'primary',
+        ];
+        for (var i = 1; i <= 7; i++) {
+          final accent = tipAccents[i - 1];
+          await customStatement(
+            "UPDATE conseils SET type_carte = 'rappel', "
+            "accent_chrome = '$accent', ordre = $i "
+            "WHERE cle_conseil = 'tipDay0$i'",
+          );
+        }
+
+        // Ajoute les nouvelles cartes par INSERT … WHERE NOT EXISTS
+        // (idempotence par cle_conseil — DEC-CO-02 / Q-CO-6).
+        const nouvelles = [
+          // rappels supplémentaires
+          (
+            'conseilRappelPresent',
+            'rappel',
+            null,
+            'primary',
+            8,
+          ),
+          ('conseilRappelLikes', 'rappel', null, 'or', 9),
+          // conseils pratiques
+          (
+            'conseilPratiqueInteractions',
+            'conseil',
+            null,
+            'lime',
+            10,
+          ),
+          ('conseilPratiqueEspace', 'conseil', null, 'primary', 11),
+          // cartes émotion (les 7 canoniques)
+          ('conseilEmotionAngry', 'emotion', 'angry', 'primary', 12),
+          ('conseilEmotionSad', 'emotion', 'sad', 'primary', 13),
+          ('conseilEmotionNervous', 'emotion', 'nervous', 'primary', 14),
+          ('conseilEmotionTired', 'emotion', 'tired', 'primary', 15),
+          ('conseilEmotionHappy', 'emotion', 'happy', 'primary', 16),
+          ('conseilEmotionCalm', 'emotion', 'calm', 'primary', 17),
+          ('conseilEmotionDynamic', 'emotion', 'dynamic', 'primary', 18),
+        ];
+
+        for (final (cle, type, code, accent, ordre) in nouvelles) {
+          final codeVal =
+              code != null ? "'$code'" : 'NULL';
+          await customStatement(
+            'INSERT INTO conseils '
+            '(cle_conseil, type_carte, code_emotion, accent_chrome, ordre) '
+            "SELECT '$cle', '$type', $codeVal, '$accent', $ordre "
+            'WHERE NOT EXISTS '
+            "(SELECT 1 FROM conseils WHERE cle_conseil = '$cle')",
+          );
+        }
+      }
     },
     beforeOpen: (details) async {
-      // Idempotence : seed si la table est vide (ré-ouverture).
-      await _seedConseils();
+      // Seed idempotent par clé (ré-ouverture ou première installation).
+      await _seedCorpus();
     },
   );
 
-  /// Seed des conseils (~7), idempotent : ne fait rien si déjà peuplé.
-  Future<void> _seedConseils() async {
-    final count = await conseils.count().getSingle();
-    if (count > 0) return;
-    await batch((b) {
-      b.insertAll(
-        conseils,
-        const <ConseilsCompanion>[
-          ConseilsCompanion(cleConseil: Value('tipDay01')),
-          ConseilsCompanion(cleConseil: Value('tipDay02')),
-          ConseilsCompanion(cleConseil: Value('tipDay03')),
-          ConseilsCompanion(cleConseil: Value('tipDay04')),
-          ConseilsCompanion(cleConseil: Value('tipDay05')),
-          ConseilsCompanion(cleConseil: Value('tipDay06')),
-          ConseilsCompanion(cleConseil: Value('tipDay07')),
-        ],
+  /// Seed du corpus complet, idempotent PAR CLÉ (DEC-CO-02 / Q-CO-6).
+  ///
+  /// N'insère que les entrées dont `cle_conseil` est absente. Permet de
+  /// compléter une base v3 (7 tipDay seedés) avec les nouvelles cartes émotion
+  /// sans dupliquer les existantes.
+  Future<void> _seedCorpus() async {
+    const corpus = [
+      // ── tipDay01..07 (rappels — DEC-CO-11 / Q-CO-7) ───────────────────
+      (
+        'tipDay01',
+        'rappel',
+        null,
+        'primary',
+        1,
+      ),
+      ('tipDay02', 'rappel', null, 'lime', 2),
+      ('tipDay03', 'rappel', null, 'or', 3),
+      ('tipDay04', 'rappel', null, 'primary', 4),
+      ('tipDay05', 'rappel', null, 'lime', 5),
+      ('tipDay06', 'rappel', null, 'or', 6),
+      ('tipDay07', 'rappel', null, 'primary', 7),
+      // ── Rappels supplémentaires ────────────────────────────────────────
+      ('conseilRappelPresent', 'rappel', null, 'primary', 8),
+      ('conseilRappelLikes', 'rappel', null, 'or', 9),
+      // ── Conseils pratiques ─────────────────────────────────────────────
+      ('conseilPratiqueInteractions', 'conseil', null, 'lime', 10),
+      ('conseilPratiqueEspace', 'conseil', null, 'primary', 11),
+      // ── Cartes émotion (7 canoniques) ─────────────────────────────────
+      ('conseilEmotionAngry', 'emotion', 'angry', 'primary', 12),
+      ('conseilEmotionSad', 'emotion', 'sad', 'primary', 13),
+      ('conseilEmotionNervous', 'emotion', 'nervous', 'primary', 14),
+      ('conseilEmotionTired', 'emotion', 'tired', 'primary', 15),
+      ('conseilEmotionHappy', 'emotion', 'happy', 'primary', 16),
+      ('conseilEmotionCalm', 'emotion', 'calm', 'primary', 17),
+      ('conseilEmotionDynamic', 'emotion', 'dynamic', 'primary', 18),
+    ];
+
+    // Clés déjà présentes (évite INSERT en double).
+    final existantes =
+        await (select(conseils)..addColumns([conseils.cleConseil])).get();
+    final clesPresentes = existantes.map((r) => r.cleConseil).toSet();
+
+    for (final (cle, type, code, accent, ordre) in corpus) {
+      if (clesPresentes.contains(cle)) continue;
+      await into(conseils).insert(
+        ConseilsCompanion.insert(
+          cleConseil: cle,
+          typeCarte: Value(type),
+          codeEmotion: Value(code),
+          accentChrome: Value(accent),
+          ordre: Value(ordre),
+        ),
       );
-    });
+    }
   }
 
   // ─── Lecture ─────────────────────────────────────────────────────────────
@@ -276,6 +423,19 @@ class AppDatabase extends _$AppDatabase {
     final joursDepuisEpoch = jourNormalise.difference(_epoch).inDays;
     final index = joursDepuisEpoch % all.length;
     return all[index];
+  }
+
+  /// Corpus complet de cartes, ordonné par `ordre` puis `id`.
+  ///
+  /// Utilisé par ConseilsBloc pour composer le deck (DEC-CO-01).
+  /// Lecture ponctuelle (pas de watch) — deck figé à l'ouverture (DEC-CO-06).
+  Future<List<Conseil>> lireCorpusConseils() async {
+    return (select(conseils)
+          ..orderBy([
+            (t) => OrderingTerm.asc(t.ordre),
+            (t) => OrderingTerm.asc(t.id),
+          ]))
+        .get();
   }
 
   // ─── Soutien ──────────────────────────────────────────────────────────────
