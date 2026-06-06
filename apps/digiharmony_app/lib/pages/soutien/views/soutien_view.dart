@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:digiharmony_app/l10n/l10n.dart';
+import 'package:digiharmony_app/pages/soutien/confiance/confiance_page.dart';
 import 'package:digiharmony_app/pages/soutien/widgets/bloc_ligne_ecoute.dart';
 import 'package:digiharmony_app/pages/soutien/widgets/bouton_action_soutien.dart';
 import 'package:digiharmony_app/pages/soutien/widgets/halo_soutien.dart';
@@ -107,7 +108,7 @@ class SoutienView extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppSpacing.xl),
-                  // CTA primaire — Confiance (M7 cablera vers ConfiancePage)
+                  // CTA primaire -> ConfiancePage
                   BoutonActionSoutien(
                     icone: Icons.volunteer_activism,
                     label: l10n.soutienCtaConfiance,
@@ -157,15 +158,10 @@ class SoutienView extends StatelessWidget {
   }
 
   void _versConfiance(BuildContext context) {
-    // Cablage vers ConfiancePage livre en M7.
-    _versConfiancePage(context);
-  }
-
-  void _versConfiancePage(BuildContext context) {
     unawaited(
       Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (_) => const _ConfiancePagePlaceholder(),
+          builder: (_) => const ConfiancePage(),
         ),
       ),
     );
@@ -178,26 +174,6 @@ class SoutienView extends StatelessWidget {
         content: Text(l10n.placeholderComingSoon),
         behavior: SnackBarBehavior.floating,
       ),
-    );
-  }
-}
-
-/// Placeholder ConfiancePage — remplace en M7 par la vraie page.
-class _ConfiancePagePlaceholder extends StatelessWidget {
-  const _ConfiancePagePlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundDeep,
-      appBar: AppBar(
-        backgroundColor: AppColors.backgroundDeep,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.chevron_left, color: AppColors.text),
-        ),
-      ),
-      body: const SizedBox.shrink(),
     );
   }
 }

@@ -4,14 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Insère une saisie d'humeur dans la base de test avec le [codeEmotion] donné.
 ///
-/// [decalageJours] permet de simuler des saisies sur des jours distincts
-/// (pas de contrainte unique violée).
+/// [decalageJours] permet de simuler des saisies sur des jours distincts.
 Future<void> _insererHumeur(
   AppDatabase db,
   String codeEmotion, {
   int decalageJours = 0,
 }) async {
-  final base = DateTime(2026, 1, 1);
+  final base = DateTime(2026, 3, 15);
   final jour = base.add(Duration(days: decalageJours));
   await db.into(db.entreesHumeur).insert(
     EntreesHumeurCompanion.insert(
@@ -55,10 +54,11 @@ void main() {
       expect(await db.compterSaisiesNegativesConsecutives(), 0);
     });
 
-    test('SO-CNT-4 : série négative interrompue par une positive plus ancienne',
+    test(
+        'SO-CNT-4 : série négative interrompue par une positive plus ancienne',
         () async {
       // j0=positive, j1-j3=négatives (la série en tête = 3)
-      await _insererHumeur(db, 'calm', decalageJours: 0);
+      await _insererHumeur(db, 'calm');
       for (var i = 1; i <= 3; i++) {
         await _insererHumeur(db, 'nervous', decalageJours: i);
       }
@@ -66,7 +66,8 @@ void main() {
     });
 
     test(
-        'SO-CNT-5 : 7 saisies négatives sur jours non consécutifs (jours vides entre) → 7',
+        'SO-CNT-5 : 7 négatives sur jours non consécutifs (jours vides entre)'
+        ' → 7',
         () async {
       // Jours 0, 2, 4, 6, 8, 10, 12 (jours impairs vides)
       for (var i = 0; i < 7; i++) {
@@ -75,9 +76,19 @@ void main() {
       expect(await db.compterSaisiesNegativesConsecutives(), 7);
     });
 
-    test('SO-CNT-6 : variantes émotions négatives (sad/angry/nervous/tired)',
+    test(
+        'SO-CNT-6 : variantes emotions negatives'
+        ' (sad/angry/nervous/tired)',
         () async {
-      final emotions = ['sad', 'angry', 'nervous', 'tired', 'sad', 'angry', 'nervous'];
+      final emotions = [
+        'sad',
+        'angry',
+        'nervous',
+        'tired',
+        'sad',
+        'angry',
+        'nervous',
+      ];
       for (var i = 0; i < emotions.length; i++) {
         await _insererHumeur(db, emotions[i], decalageJours: i);
       }

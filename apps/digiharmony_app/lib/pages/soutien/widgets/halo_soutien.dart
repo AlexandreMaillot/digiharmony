@@ -13,8 +13,7 @@ class HaloSoutien extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final disableAnimations =
-        MediaQuery.of(context).disableAnimations;
+    final disableAnimations = MediaQuery.of(context).disableAnimations;
 
     final halo = Container(
       width: 320,

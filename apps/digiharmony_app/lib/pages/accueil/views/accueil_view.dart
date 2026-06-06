@@ -1,3 +1,4 @@
+import 'package:digiharmony_app/app/routing/app_router.dart';
 import 'package:digiharmony_app/common/placeholder_screen.dart';
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
@@ -7,6 +8,7 @@ import 'package:digiharmony_app/pages/accueil/widgets/particules_flottantes.dart
 import 'package:digiharmony_app/pages/accueil/widgets/pilule_action.dart';
 import 'package:digiharmony_app/pages/accueil/widgets/tuile_outil.dart';
 import 'package:digiharmony_app/theme/theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,6 +22,17 @@ class AccueilView extends StatelessWidget {
     final l10n = context.l10n;
 
     return Scaffold(
+      // DEV-only — retiré du build release par tree-shaking (kDebugMode).
+      // Permet de visualiser SoutienPage sans saisir 7 jours negatifs.
+      floatingActionButton: kDebugMode
+          ? FloatingActionButton.small(
+              heroTag: 'debug_soutien',
+              backgroundColor: AppColors.surface,
+              tooltip: '[DEV] Voir SoutienPage',
+              onPressed: () => AppRouter.versSoutien(context),
+              child: const Icon(Icons.support, color: AppColors.primary),
+            )
+          : null,
       body: Stack(
         children: [
           // Décor animé en fond.

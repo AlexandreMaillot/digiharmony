@@ -32,7 +32,7 @@ void main() {
       build: SoutienBloc.new,
       seed: () => const SoutienState(dejaMontrePourEpisodeEnCours: true),
       act: (bloc) => bloc.add(const SoutienReinitialise()),
-      expect: () => [const SoutienState(dejaMontrePourEpisodeEnCours: false)],
+      expect: () => [const SoutienState()],
     );
 
     test('SO-BLOC-4 : round-trip toJson/fromJson (shown = true)', () {
@@ -97,7 +97,7 @@ void main() {
       },
       expect: () => [
         const SoutienState(dejaMontrePourEpisodeEnCours: true),
-        const SoutienState(dejaMontrePourEpisodeEnCours: false),
+        const SoutienState(),
         const SoutienState(dejaMontrePourEpisodeEnCours: true),
       ],
     );

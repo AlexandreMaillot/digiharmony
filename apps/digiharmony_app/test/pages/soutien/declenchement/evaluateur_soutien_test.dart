@@ -43,8 +43,8 @@ void main() {
       );
     });
 
-    test('SO-EVAL-5 : compteur >= 7 et dejaMontre true → false (une fois par épisode)',
-        () {
+    test('SO-EVAL-5 : compteur >= 7 et dejaMontre true'
+        ' → false (une fois par épisode)', () {
       expect(
         EvaluateurSoutien.doitDeclencher(
           compteurNegativesConsecutives: 7,
