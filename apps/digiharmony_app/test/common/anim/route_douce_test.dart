@@ -11,7 +11,7 @@ class _EcranDepart extends StatelessWidget {
     return Scaffold(
       body: ElevatedButton(
         onPressed: () => Navigator.of(context)
-            .push(routeDouce(const _EcranCible())),
+            .push(routeDouce<void>(const _EcranCible())),
         child: const Text('aller'),
       ),
     );
@@ -35,9 +35,9 @@ void main() {
       'RM-RD-1 : reduced-motion → navigation sans FadeTransition',
       (tester) async {
         await tester.pumpWidget(
-          MediaQuery(
-            data: const MediaQueryData(disableAnimations: true),
-            child: MaterialApp(home: const _EcranDepart()),
+          const MediaQuery(
+            data: MediaQueryData(disableAnimations: true),
+            child: MaterialApp(home: _EcranDepart()),
           ),
         );
         await tester.pump();
@@ -59,9 +59,9 @@ void main() {
       'RM-RD-2 : animations ON → FadeTransition présent pendant transition',
       (tester) async {
         await tester.pumpWidget(
-          MediaQuery(
-            data: const MediaQueryData(),
-            child: MaterialApp(home: const _EcranDepart()),
+          const MediaQuery(
+            data: MediaQueryData(),
+            child: MaterialApp(home: _EcranDepart()),
           ),
         );
         await tester.pump();
