@@ -1,8 +1,16 @@
 /// Widget utilitaire : feedback de tap animé (scale + haptique).
 ///
-/// - En reduced-motion : pas de scale, mais garde l'haptique et le onTap.
-/// - Accessible : tap target >= 48 dp inchangée.
-/// - Nommage FR conformément aux conventions du projet.
+/// Surface tappable propre :
+///   - [Material] transparent (pour InkWell a11y)
+///   - [InkWell] sans ripple visible (splash/highlight transparents)
+///   - [AnimatedScale] au tap-down via [InkWell.onHighlightChanged]
+///   - [HapticFeedback.selectionClick] au tap
+///   - [Semantics] configurable
+///
+/// En reduced-motion : pas de scale, garde l'haptique + onTap.
+/// Focus clavier conservé via [InkWell].
+/// Pas de double feedback : un seul callback onTap.
+/// Nommage FR conformément aux conventions du projet.
 library;
 
 import 'dart:async';
@@ -11,12 +19,13 @@ import 'package:digiharmony_app/common/anim/anim_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Enrobage de feedback de tap animé.
+/// Enrobage de feedback de tap animé avec surface tappable propre.
 ///
 /// Usage :
 /// ```dart
 /// TapAnime(
 ///   onTap: () => /* action */,
+///   borderRadius: AppRadii.cardRadius,
 ///   child: MonWidget(),
 /// )
 /// ```
@@ -26,6 +35,8 @@ class TapAnime extends StatefulWidget {
     required this.child,
     required this.onTap,
     this.borderRadius,
+    this.semanticsLabel,
+    this.estBouton = true,
     super.key,
   });
 
@@ -35,8 +46,14 @@ class TapAnime extends StatefulWidget {
   /// Callback déclenché au tap.
   final VoidCallback onTap;
 
-  /// Rayon des coins pour la zone de tap (Semantics/InkWell-like).
+  /// Rayon des coins pour l'InkWell et le Material.
   final BorderRadius? borderRadius;
+
+  /// Label sémantique optionnel (accessible).
+  final String? semanticsLabel;
+
+  /// Indique si le widget doit être annoté comme bouton en sémantique.
+  final bool estBouton;
 
   @override
   State<TapAnime> createState() => _TapAnimeState();
@@ -45,21 +62,9 @@ class TapAnime extends StatefulWidget {
 class _TapAnimeState extends State<TapAnime> {
   bool _appuye = false;
 
-  void _onTapDown(TapDownDetails _) {
+  void _onHighlightChanged(bool val) {
     if (!mounted) return;
-    setState(() => _appuye = true);
-  }
-
-  void _onTapUp(TapUpDetails _) {
-    if (!mounted) return;
-    setState(() => _appuye = false);
-    unawaited(HapticFeedback.selectionClick());
-    widget.onTap();
-  }
-
-  void _onTapCancel() {
-    if (!mounted) return;
-    setState(() => _appuye = false);
+    setState(() => _appuye = val);
   }
 
   @override
@@ -67,27 +72,40 @@ class _TapAnimeState extends State<TapAnime> {
     final disableAnimations =
         MediaQuery.maybeOf(context)?.disableAnimations ?? false;
 
-    // En reduced-motion : pas de scale mais on garde l'haptique + onTap.
-    if (disableAnimations) {
-      return GestureDetector(
-        onTap: () {
-          unawaited(HapticFeedback.selectionClick());
-          widget.onTap();
-        },
-        child: widget.child,
-      );
-    }
+    final inkWell = InkWell(
+      onTap: () {
+        unawaited(HapticFeedback.selectionClick());
+        widget.onTap();
+      },
+      onHighlightChanged: disableAnimations ? null : _onHighlightChanged,
+      borderRadius: widget.borderRadius,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      focusColor: Colors.transparent,
+      child: widget.child,
+    );
 
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      child: AnimatedScale(
-        scale: _appuye ? scaleTap : 1.0,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeOut,
-        child: widget.child,
-      ),
+    final surface = Material(
+      type: MaterialType.transparency,
+      borderRadius: widget.borderRadius,
+      child: inkWell,
+    );
+
+    final contenu = Semantics(
+      label: widget.semanticsLabel,
+      button: widget.estBouton,
+      child: surface,
+    );
+
+    // En reduced-motion : pas de scale.
+    if (disableAnimations) return contenu;
+
+    return AnimatedScale(
+      scale: _appuye ? scaleTap : 1.0,
+      duration: const Duration(milliseconds: 120),
+      curve: Curves.easeOut,
+      child: contenu,
     );
   }
 }
