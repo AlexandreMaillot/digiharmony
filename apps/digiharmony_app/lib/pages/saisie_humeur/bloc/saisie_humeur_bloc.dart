@@ -18,11 +18,32 @@ class SaisieHumeurBloc extends Bloc<SaisieHumeurEvent, SaisieHumeurState> {
   SaisieHumeurBloc({required AppDatabase database})
     : _database = database,
       super(const SaisieInitiale()) {
+    on<SaisieDemarree>(_onSaisieDemarree, transformer: droppable());
     on<EmotionSelectionnee>(_onEmotionSelectionnee, transformer: restartable());
     on<SaisieValidee>(_onSaisieValidee, transformer: droppable());
   }
 
   final AppDatabase _database;
+
+  /// À l'ouverture, pré-sélectionne l'humeur déjà notée aujourd'hui (édition).
+  ///
+  /// Lecture ponctuelle (premier événement du stream Drift du jour). Si une
+  /// entrée existe, on retient son émotion ; sinon l'écran reste initial.
+  Future<void> _onSaisieDemarree(
+    SaisieDemarree event,
+    Emitter<SaisieHumeurState> emit,
+  ) async {
+    if (state is! SaisieInitiale) return;
+    // Stream Drift potentiellement vide (aucune émission) : `firstWhere` avec
+    // `orElse` renvoie null au lieu de lever `StateError: No element`.
+    final humeur = await _database.observerDerniereHumeurDuJour().firstWhere(
+      (_) => true,
+      orElse: () => null,
+    );
+    if (humeur != null && state is SaisieInitiale) {
+      emit(EmotionSelectionneeEtat(humeur.codeEmotion));
+    }
+  }
 
   /// Traite la sélection d'une émotion (pas d'écriture).
   ///

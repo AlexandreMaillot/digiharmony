@@ -5,6 +5,12 @@ sealed class SaisieHumeurEvent {
   const SaisieHumeurEvent();
 }
 
+/// Ouverture de l'écran — pré-sélectionne l'humeur déjà notée aujourd'hui
+/// (édition) si elle existe ; sinon reste à l'état initial.
+final class SaisieDemarree extends SaisieHumeurEvent {
+  const SaisieDemarree();
+}
+
 /// L'utilisateur a tapé une pastille — sélection visuelle seule, aucune
 /// écriture Drift (l'enregistrement n'a lieu qu'à la validation).
 final class EmotionSelectionnee extends SaisieHumeurEvent {

@@ -6,6 +6,18 @@ import 'package:mocktail/mocktail.dart';
 
 class MockAppDatabase extends Mock implements AppDatabase {}
 
+/// Stub EntreeHumeur pour les tests de pré-sélection.
+EntreeHumeur _humeurStub(String code) {
+  final now = DateTime.now();
+  return EntreeHumeur(
+    id: 1,
+    codeEmotion: code,
+    valence: valencePour(code),
+    creeLe: now,
+    jour: DateTime(now.year, now.month, now.day),
+  );
+}
+
 void main() {
   late MockAppDatabase db;
 
@@ -108,6 +120,34 @@ void main() {
       verify: (_) {
         verify(() => db.enregistrerHumeurDuJour('calm')).called(1);
       },
+    );
+  });
+
+  group('SaisieHumeurBloc — pré-sélection (édition)', () {
+    // SHB-7 : ouverture avec humeur du jour existante → pré-sélection.
+    blocTest<SaisieHumeurBloc, SaisieHumeurState>(
+      'SHB-7 : SaisieDemarree avec humeur existante → EmotionSelectionneeEtat',
+      build: () {
+        when(
+          () => db.observerDerniereHumeurDuJour(),
+        ).thenAnswer((_) => Stream.value(_humeurStub('calm')));
+        return SaisieHumeurBloc(database: db);
+      },
+      act: (bloc) => bloc.add(const SaisieDemarree()),
+      expect: () => [const EmotionSelectionneeEtat('calm')],
+    );
+
+    // SHB-8 : ouverture sans humeur du jour → reste à l'état initial.
+    blocTest<SaisieHumeurBloc, SaisieHumeurState>(
+      'SHB-8 : SaisieDemarree sans humeur → aucun état émis',
+      build: () {
+        when(
+          () => db.observerDerniereHumeurDuJour(),
+        ).thenAnswer((_) => Stream<EntreeHumeur?>.value(null));
+        return SaisieHumeurBloc(database: db);
+      },
+      act: (bloc) => bloc.add(const SaisieDemarree()),
+      expect: () => const <SaisieHumeurState>[],
     );
   });
 }

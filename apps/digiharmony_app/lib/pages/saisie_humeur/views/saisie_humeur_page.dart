@@ -23,7 +23,7 @@ class SaisieHumeurPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => SaisieHumeurBloc(
         database: context.read<AppDatabase>(),
-      ),
+      )..add(const SaisieDemarree()),
       child: const SaisieHumeurView(),
     );
   }
