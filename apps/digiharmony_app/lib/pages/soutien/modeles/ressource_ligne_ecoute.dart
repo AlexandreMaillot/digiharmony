@@ -24,13 +24,13 @@ class RessourceLigneEcoute {
   /// Nom affiché de la ligne d'écoute.
   final String nom;
 
-  /// Cible : numéro brut (tel) ou URL (https). Placeholder partenaires.
+  /// Cible : numéro brut (tel) ou URL (https).
   final String cible;
 
   /// Mode d'ouverture de la ressource.
   final TypeRessourceEcoute type;
 
-  /// Libellé de disponibilité (ex. « 24h/24, 7j/7 »). Placeholder partenaires.
+  /// Libellé de disponibilité (ex. « Disponible 24h/24 »).
   final String disponibilite;
 }
 
