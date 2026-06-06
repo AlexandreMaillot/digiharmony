@@ -714,7 +714,7 @@ class UsageEcranJournalier extends DataClass
   /// pour garantir un agrégat max par jour (UPSERT).
   final DateTime jour;
 
-  /// Total agrégé du jour, en **secondes** (somme des usages de toutes les apps).
+  /// Total agrégé du jour, en **secondes** (somme des usages des apps).
   final int totalSecondes;
 
   /// Horodatage local de la dernière mise à jour de l'agrégat.
