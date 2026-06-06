@@ -10,6 +10,7 @@
 | [accueil-home.md](./accueil-home.md) | Accueil (route `/accueil`) | [#2](https://github.com/AlexandreMaillot/digiharmony/issues/2) | Phase 1 | Fondations | `accueil-home.tests.md` ✅ | **implemente** |
 | [noter-humeur.md](./noter-humeur.md) | Noter mon humeur (saisie 1-tap, `SaisieHumeurPage` empilée) | Noter mon humeur (Erwin) | Phase 1 | Fondations (#3), Accueil (#2) | `noter-humeur.tests.md` ⏳ | **valide** |
 | [soutien.md](./soutien.md) | Écran de soutien (« Super conseil », `SoutienPage` empilée, déclenchée à l'ouverture) | Écran de soutien (Erwin) | Phase 1 | Noter mon humeur (#6), Fondations (#3) | `soutien.tests.md` ⏳ | **valide** |
+| [temps-ecran.md](./temps-ecran.md) | Mon temps d'écran (`TempsEcranPage` empilée, lecture **native Android** via `app_usage` + permission `PACKAGE_USAGE_STATS`) | [#12](https://github.com/AlexandreMaillot/digiharmony/issues/12) (US-TE-01), [#13](https://github.com/AlexandreMaillot/digiharmony/issues/13) (US-TE-02) | Phase 2 🟡 | Fondations (#3), Accueil (#2) | `temps-ecran.tests.md` ⏳ | **proposition_a_valider** |
 
 ## Composants partagés (fournis par Fondations)
 
