@@ -224,7 +224,7 @@ class _Header extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.settings, color: AppColors.textMuted),
           tooltip: l10n.reglagesTooltip,
-          onPressed: () => ouvrirPlaceholder(context, l10n.placeholderReglages),
+          onPressed: () => AppRouter.versParametres(context),
         ),
       ],
     );

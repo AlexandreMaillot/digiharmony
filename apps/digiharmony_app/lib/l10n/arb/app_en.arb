@@ -519,6 +519,22 @@
             "duree": { "type": "String" }
         }
     },
+    "tempsEcranIosAutorisationTitre": "To see your screen time",
+    "@tempsEcranIosAutorisationTitre": {
+        "description": "iOS FamilyControls authorization screen title."
+    },
+    "tempsEcranIosAutorisationExplication": "DigiHarmony uses Apple Screen Time. This data stays in your iPhone: the app can't see it, nothing is sent.",
+    "@tempsEcranIosAutorisationExplication": {
+        "description": "iOS authorization explanation — bienveillant, zero-collection reassurance."
+    },
+    "tempsEcranIosAutorisationCta": "Allow",
+    "@tempsEcranIosAutorisationCta": {
+        "description": "iOS FamilyControls authorization CTA button."
+    },
+    "tempsEcranIosDonneesSysteme": "This data stays in your iPhone; the app can't see it.",
+    "@tempsEcranIosDonneesSysteme": {
+        "description": "iOS report footer — zero-collection reassurance."
+    },
     "tutoNotifsTitre": "Reduce my notifications",
     "@tutoNotifsTitre": {
         "description": "Notifications tutorial in-app title."
@@ -574,5 +590,35 @@
     "tutoNotifsAndroidEtape5Titre": "Do Not Disturb mode",
     "@tutoNotifsAndroidEtape5Titre": { "description": "Android step 5 title. TODO validation partenaires" },
     "tutoNotifsAndroidEtape5Corps": "Turn on \"Do Not Disturb\" from the quick settings to create calm, interruption-free windows.",
-    "@tutoNotifsAndroidEtape5Corps": { "description": "Android step 5 body. TODO validation partenaires" }
+    "@tutoNotifsAndroidEtape5Corps": { "description": "Android step 5 body. TODO validation partenaires" },
+    "parametresTitre": "Settings",
+    "@parametresTitre": { "description": "ParametresPage — toolbar title" },
+    "parametresSectionLangue": "Language",
+    "@parametresSectionLangue": { "description": "ParametresPage — section heading for language picker" },
+    "parametresSectionConfidentialite": "Privacy",
+    "@parametresSectionConfidentialite": { "description": "ParametresPage — section heading for privacy card" },
+    "parametresConfidentialiteCorps": "No personal data is stored or shared. No account, no identification.",
+    "@parametresConfidentialiteCorps": { "description": "ParametresPage — privacy reassurance body text" },
+    "parametresSectionProjet": "The project",
+    "@parametresSectionProjet": { "description": "ParametresPage — section heading for project info" },
+    "parametresOpenSourceTitre": "Open source code",
+    "@parametresOpenSourceTitre": { "description": "ParametresPage — open source link title" },
+    "parametresOpenSourceSousTitre": "GitHub · GNU GPL license",
+    "@parametresOpenSourceSousTitre": { "description": "ParametresPage — open source link subtitle" },
+    "parametresErasmusCorps": "Erasmus+ project — free app, no ads.",
+    "@parametresErasmusCorps": { "description": "ParametresPage — Erasmus+ mention card body text" },
+    "parametresVersion": "DIGIHARMONY v{version}",
+    "@parametresVersion": {
+        "description": "ParametresPage — app version line at bottom (wordmark non-translated)",
+        "placeholders": {
+            "version": {
+                "type": "String",
+                "description": "App version string (from package_info_plus)"
+            }
+        }
+    },
+    "parametresLienIndisponible": "Couldn't open the link. You can find it in your browser.",
+    "@parametresLienIndisponible": { "description": "ParametresPage — SnackBar message when url_launcher fails to open a link" },
+    "parametresLangueActiveSemantique": "Active language",
+    "@parametresLangueActiveSemantique": { "description": "ParametresPage — accessibility label suffix for the active language item" }
 }

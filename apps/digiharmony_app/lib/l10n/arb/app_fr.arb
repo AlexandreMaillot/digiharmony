@@ -116,6 +116,10 @@
     "tempsEcranDureeHeuresMinutes": "{heures} h {minutes} min",
     "tempsEcranDureeMinutes": "{minutes} min",
     "tempsEcranAppSemantique": "{app} : {duree}",
+    "tempsEcranIosAutorisationTitre": "Pour voir ton temps d'écran",
+    "tempsEcranIosAutorisationExplication": "DigiHarmony utilise le Temps d'écran d'Apple. Ces données restent dans ton iPhone : l'app ne les voit pas, rien n'est envoyé.",
+    "tempsEcranIosAutorisationCta": "Autoriser",
+    "tempsEcranIosDonneesSysteme": "Ces données restent dans ton iPhone, l'app ne les voit pas.",
     "tutoNotifsTitre": "Réduire mes notifications",
     "tutoNotifsIntro": "Moins de notifications, plus de calme.",
     "tutoNotifsEncouragement": "Chaque notification en moins, c'est une interruption de moins. Prends ton temps.",
@@ -139,5 +143,16 @@
     "tutoNotifsAndroidEtape4Titre": "Notifications → Désactiver",
     "tutoNotifsAndroidEtape4Corps": "Appuie sur « Notifications » dans les paramètres de l'app, puis désactive les catégories non essentielles.",
     "tutoNotifsAndroidEtape5Titre": "Mode Ne pas déranger",
-    "tutoNotifsAndroidEtape5Corps": "Active « Ne pas déranger » depuis les réglages rapides pour créer des plages de calme sans interruption."
+    "tutoNotifsAndroidEtape5Corps": "Active « Ne pas déranger » depuis les réglages rapides pour créer des plages de calme sans interruption.",
+    "parametresTitre": "Paramètres",
+    "parametresSectionLangue": "Langue",
+    "parametresSectionConfidentialite": "Confidentialité",
+    "parametresConfidentialiteCorps": "Aucune donnée personnelle n'est enregistrée ni diffusée. Pas de compte, pas d'identification.",
+    "parametresSectionProjet": "Le projet",
+    "parametresOpenSourceTitre": "Code open source",
+    "parametresOpenSourceSousTitre": "GitHub · Licence GNU GPL",
+    "parametresErasmusCorps": "Projet Erasmus+ — application gratuite, sans publicité.",
+    "parametresVersion": "DIGIHARMONY v{version}",
+    "parametresLienIndisponible": "Impossible d'ouvrir le lien. Tu peux le retrouver dans ton navigateur.",
+    "parametresLangueActiveSemantique": "Langue active"
 }

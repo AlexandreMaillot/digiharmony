@@ -2,6 +2,7 @@ import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/soutien/modeles/ressource_ligne_ecoute.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Bloc conditionnel ligne d'ecoute.
@@ -51,17 +52,20 @@ class BlocLigneEcoute extends StatelessWidget {
                   children: [
                     Text(
                       l10n.soutienLigneTitre,
-                      style: const TextStyle(
-                        color: AppColors.text,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge
+                          ?.copyWith(
+                            color: AppColors.text,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     Text(
                       '${ressource.cible} — ${l10n.soutienLigneDispo}',
-                      style: const TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 13,
-                      ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.textMuted),
                     ),
                   ],
                 ),
@@ -90,15 +94,15 @@ class BlocLigneEcoute extends StatelessWidget {
       uri = Uri.parse(ressource.cible);
     }
 
+    // On NE gate PAS sur canLaunchUrl : sur Android 11+ il renvoie false
+    // (« component name is null ») meme quand launchUrl reussit. On tente
+    // l'ouverture directe et on ne signale l'echec que si launchUrl jette
+    // ou renvoie false.
     bool succes;
     try {
-      final peutOuvrir = await canLaunchUrl(uri);
-      if (!peutOuvrir) {
-        succes = false;
-      } else {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-        succes = true;
-      }
+      succes = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } on PlatformException {
+      succes = false;
     } on Exception {
       succes = false;
     }
