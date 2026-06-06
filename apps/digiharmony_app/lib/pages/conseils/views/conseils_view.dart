@@ -123,11 +123,20 @@ class _ConseilsViewState extends State<ConseilsView> {
                         pageController: _pageController,
                         disableAnimations: disableAnimations,
                       )),
-                      // Hint swipe
+                      // Barre de navigation : flèches tap + hint
+                      // (a11y DEC-CO-08)
                       HintSwipe(
-                        visible: !disableAnimations &&
-                            state.deck.length > 1 &&
+                        visible: state.deck.length > 1 &&
                             state.status == ConseilsStatus.pret,
+                        disableAnimations: disableAnimations,
+                        aPrecedent: state.aPrecedent,
+                        aSuivant: state.aSuivant,
+                        onPrecedent: () => context
+                            .read<ConseilsBloc>()
+                            .add(const ConseilsCartePrecedente()),
+                        onSuivant: () => context
+                            .read<ConseilsBloc>()
+                            .add(const ConseilsCarteSuivante()),
                       ),
                       const SizedBox(height: AppSpacing.md),
                     ],

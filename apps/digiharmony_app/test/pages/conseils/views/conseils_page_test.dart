@@ -154,9 +154,13 @@ void main() {
       },
     );
 
-    // CV-7 : reduced-motion → HintSwipe invisible.
+    // CV-7 : reduced-motion → flèches visibles, hint textuel masqué (DEC-CO-08).
+    //
+    // En reduced-motion, la navigation SANS GESTE doit rester accessible :
+    // les flèches IconButton restent visibles (HintSwipe.visible = true,
+    // HintSwipe.disableAnimations = true). Seul le texte atténué est masqué.
     testWidgets(
-      'CV-7: reduced-motion → HintSwipe invisible',
+      'CV-7: reduced-motion → HintSwipe visible mais hint textuel masqué',
       (tester) async {
         final bloc = _MockConseilsBloc();
         when(() => bloc.state).thenReturn(
@@ -192,14 +196,26 @@ void main() {
         );
         await tester.pump(const Duration(milliseconds: 50));
 
-        // HintSwipe visible=false → SizedBox.shrink (pas de texte ‹ › ).
-        // On cherche le widget HintSwipe avec visible=false.
-        final hintSwipe = tester.widgetList<HintSwipe>(
+        // DEC-CO-08 : en reduced-motion le HintSwipe est VISIBLE
+        // (les flèches permettent la navigation sans swipe).
+        final hintSwipes = tester.widgetList<HintSwipe>(
           find.byType(HintSwipe),
         );
-        for (final h in hintSwipe) {
-          expect(h.visible, isFalse);
+        for (final h in hintSwipes) {
+          expect(
+            h.visible,
+            isTrue,
+            reason: 'Les flèches doivent rester visibles en reduced-motion',
+          );
+          expect(
+            h.disableAnimations,
+            isTrue,
+            reason: 'disableAnimations doit être true',
+          );
         }
+        // Flèches (IconButton chevron_right/left) présentes dans l'arbre.
+        expect(find.byIcon(Icons.chevron_right), findsWidgets);
+        expect(find.byIcon(Icons.chevron_left), findsWidgets);
       },
     );
 
