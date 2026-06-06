@@ -356,14 +356,6 @@
     "@soutienCtaRespiration": {
         "description": "SoutienPage — secondary CTA (STUB V1). TODO validation partenaires"
     },
-    "soutienLignePrefix": "Helpline: ",
-    "@soutienLignePrefix": {
-        "description": "SoutienPage — prefix before helpline name. TODO validation partenaires"
-    },
-    "soutienLigneDispoPrefix": "Available: ",
-    "@soutienLigneDispoPrefix": {
-        "description": "SoutienPage — prefix before helpline availability. TODO validation partenaires"
-    },
     "soutienPlusTard": "Later",
     "@soutienPlusTard": {
         "description": "SoutienPage — 'Later' button (Navigator.pop). TODO validation partenaires"

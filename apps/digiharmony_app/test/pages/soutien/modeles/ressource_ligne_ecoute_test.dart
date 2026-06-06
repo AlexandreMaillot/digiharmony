@@ -22,55 +22,51 @@ void main() {
       },
     );
 
-    // SO-RES-2 : l'entrée 'fr' est présente (exemple factice pour la preview)
-    // et son numéro est manifestement fictif (0000000000 uniquement).
+    // SO-RES-2 : l'entrée 'fr' est présente avec le 3114 (numéro national de
+    // prévention du suicide, FR), seul numéro approuvé pour cette locale.
     test(
-      'SO-RES-2 : entree fr presente et manifestement factice',
+      'SO-RES-2 : entree fr presente avec 3114 approuve',
       () {
         final fr = tableRessources['fr'];
-        expect(fr, isNotNull, reason: 'Fallback fr requis pour la preview');
+        expect(fr, isNotNull, reason: 'Fallback fr requis');
         expect(
           fr!.cible,
-          '0000000000',
+          '3114',
           reason:
-              'Cible fr doit rester le numéro exemple factice '
-              '(0000000000) — pas un vrai numéro de crise',
+              "Cible fr doit être exactement '3114' (numéro FR approuvé)",
         );
         expect(
           fr.nom,
-          contains('exemple'),
-          reason:
-              'Le libellé doit contenir "exemple" pour éviter toute '
-              'confusion lors de la recette',
+          "Ligne d'écoute",
+          reason: "Nom fr doit être \"Ligne d'écoute\"",
         );
       },
     );
 
     // SO-RES-3 : Garde-fou principal — aucun VRAI numéro de ligne d'écoute
-    // officiel ne doit apparaître dans les ARB soutien* ni dans le code source
-    // de cette table.
+    // officiel ne doit apparaître dans les ARB soutien*.
     //
-    // Principe : un écran destiné à des mineurs ne doit jamais présenter un
-    // numéro de crise officiel (3114, 116 111, 119, etc.) hardcodé comme
-    // donnée certifiée — ces numéros doivent être fournis et validés par les
-    // partenaires du projet Erasmus+.
+    // Principe : les ARB ne contiennent jamais de numéros — les données de
+    // ressource vivent uniquement dans le modèle Dart (tableRessources).
+    // 3114 est le seul numéro approuvé pour 'fr' ; il vit dans le modèle,
+    // pas dans les ARB.
     //
-    // Ce test échoue si l'un des numéros de la liste noire apparaît dans :
-    //   - les valeurs des clés soutien* des ARB fr + en
-    //   - la valeur `cible` de l'entrée 'fr' de tableRessources
+    // Ce test échoue si l'un des numéros de la liste noire apparaît dans
+    // les valeurs des clés soutien* des ARB fr + en.
     //
-    // L'exemple factice '0000000000' est explicitement toléré : il ne
-    // correspond à aucun service réel et son libellé "exemple — à valider"
-    // le rend impossible à confondre avec une ressource officielle.
+    // Pour le modèle Dart : assertion stricte `fr.cible == '3114'` —
+    // seul numéro approuvé, tout autre numéro est rejeté.
     test(
       'SO-RES-3 : garde-fou — aucun vrai numero officiel dans ARB soutien*',
       () {
         const arbDir = 'lib/l10n/arb';
 
-        // Liste noire : vrais numéros/préfixes de lignes d'écoute officiels.
-        // Ajouter tout nouveau numéro connu ici.
+        // Liste noire ARB : vrais numéros/préfixes de lignes d'écoute
+        // officiels qui ne doivent pas apparaître dans les ARB.
+        // 3114 est inclus ici car les ARB ne doivent contenir aucun numéro
+        // (3114 vit dans le modèle Dart uniquement).
         const listeNoire = <String>[
-          '3114', // Numéro national prévention suicide (FR)
+          '3114', // Numéro national prévention suicide (FR) — modèle Dart only
           '116111', // Helpline enfants Europe
           '116 111', // variante avec espace
           '119', // Allô enfance en danger (FR)
@@ -84,15 +80,6 @@ void main() {
           '988', // Ligne crise suicide USA
           '0808', // Préfixe helpline UK
         ];
-
-        // Tolérances explicites : patterns manifestement fictifs.
-        // '0000000000' est toléré car c'est l'exemple factice déclaré.
-        bool estTolereDansArb(String valeur) {
-          // Une valeur qui ne contient que des zéros répétés est fictive.
-          final sansBlancs = valeur.replaceAll(' ', '');
-          final regexpZeros = RegExp(r'^0+$');
-          return regexpZeros.hasMatch(sansBlancs);
-        }
 
         for (final lang in ['fr', 'en']) {
           final fichier = File('$arbDir/app_$lang.arb');
@@ -111,7 +98,6 @@ void main() {
 
             if (!cle.startsWith('soutien')) continue;
             if (valeur is! String) continue;
-            if (estTolereDansArb(valeur)) continue;
 
             for (final interdit in listeNoire) {
               expect(
@@ -125,19 +111,17 @@ void main() {
           }
         }
 
-        // Vérification directe : la cible de l'entrée fr ne doit pas
-        // contenir un vrai numéro de la liste noire.
+        // Vérification stricte du modèle Dart : 3114 est le SEUL numéro
+        // approuvé pour 'fr'. Tout autre numéro est rejeté par cette assertion.
         final fr = tableRessources['fr'];
         if (fr != null) {
-          for (final interdit in listeNoire) {
-            expect(
-              fr.cible,
-              isNot(contains(interdit)),
-              reason:
-                  'Cible fr contient un numéro officiel interdit : '
-                  '"$interdit" dans "${fr.cible}"',
-            );
-          }
+          expect(
+            fr.cible,
+            '3114',
+            reason:
+                "Seul '3114' est approuvé comme cible fr. "
+                'Tout autre numéro doit être validé par les partenaires.',
+          );
         }
       },
     );

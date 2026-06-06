@@ -69,13 +69,13 @@ void main() {
     testWidgets(
       "SO-VIEW-3 : bloc ligne d'ecoute visible avec fallback fr",
       (tester) async {
-        // L'entrée 'fr' (exemple factice) est le fallback.
+        // L'entrée 'fr' (3114, numéro FR approuvé) est le fallback.
         // Pour fr : le bloc est visible avec les libellés FR.
         await tester.pumpSoutienView(locale: const Locale('fr'));
         await tester.pump();
 
         // Le bloc est visible car la locale 'fr' a une entrée directe.
-        expect(find.textContaining('Ligne d'), findsAtLeastNWidgets(1));
+        expect(find.textContaining("Ligne d'écoute"), findsAtLeastNWidgets(1));
 
         // Pour 'en' : pas d'entrée propre -> fallback fr -> bloc visible.
         await tester.pumpSoutienView();
@@ -83,7 +83,7 @@ void main() {
 
         // Le bloc s'affiche via le fallback 'fr' (nom de la ressource fr).
         expect(
-          find.textContaining("Ligne d'écoute (exemple"),
+          find.textContaining("Ligne d'écoute"),
           findsAtLeastNWidgets(1),
         );
       },
@@ -234,31 +234,32 @@ void main() {
       },
     );
 
-    // Garde-fou : aucun VRAI numéro de ligne d'écoute officiel dans les
-    // sources Dart du périmètre soutien.
+    // Garde-fou : aucun VRAI numéro de ligne d'écoute officiel (autre que
+    // 3114, numéro FR approuvé) dans les sources Dart du périmètre soutien.
     //
-    // Principe : l'entrée 'fr' de tableRessources contient un numéro exemple
-    // MANIFESTEMENT FACTICE ('0000000000') destiné à la preview/recette.
-    // Ce pattern est toléré : il est constitué uniquement de zéros répétés et
-    // son libellé contient « exemple — à valider ».
+    // Principe : 3114 est le seul numéro approuvé, il vit uniquement dans
+    // le modèle Dart (tableRessources). Aucun autre numéro officiel ne doit
+    // apparaître hardcodé dans le périmètre soutien.
     //
-    // Le test échoue si un VRAI numéro officiel de la liste noire apparaît
-    // dans n'importe quel fichier Dart du répertoire soutien.
+    // Note : 3114 fait 4 chiffres, donc la regex \d{5,} ne le capture pas.
+    // La liste noire explicite ci-dessous couvre les numéros ≥ 4 chiffres
+    // autres que 3114 (3114 = numéro FR approuvé, légitimement dans le modèle).
     test(
       'SO-VIEW-8 : garde-fou — aucun vrai numero officiel hardcode dans '
       'lib/pages/soutien/',
       () {
         const soutienDir = 'lib/pages/soutien';
 
-        // Liste noire : vrais numéros/préfixes officiels qui ne doivent pas
-        // apparaître dans le code source Dart du périmètre soutien.
-        // Seuls les numéros suffisamment longs (4+ chiffres) sont inclus ici
-        // pour éviter les faux positifs dans les constantes/valeurs numériques
-        // du code (ex. 0.15 pour une opacité, 112px, etc.).
+        // Liste noire : vrais numéros/préfixes officiels (hors 3114 approuvé)
+        // qui ne doivent pas apparaître dans le code source Dart du périmètre
+        // soutien. Seuls les numéros suffisamment longs (4+ chiffres) sont
+        // inclus ici pour éviter les faux positifs dans les constantes/valeurs
+        // numériques du code (ex. 0.15 pour une opacité, 112px, etc.).
         // Les numéros courts (15, 112, 911…) sont couverts par SO-RES-3
         // qui scanne les valeurs de chaîne des ARB.
+        // 3114 = numéro FR approuvé — absent de cette liste (présent
+        // légitimement dans tableRessources['fr'].cible).
         const listeNoire = <String>[
-          '3114', // Numéro national prévention suicide (FR)
           '116111', // Helpline enfants Europe
           '116 111', // variante avec espace
           '3020', // Numéro contre le harcèlement (FR)
@@ -270,7 +271,7 @@ void main() {
 
         // Regex pour détecter les séquences de 5+ chiffres consécutifs.
         // Tolérance : les séquences constituées uniquement de zéros répétés
-        // (ex. '0000000000') sont acceptées car manifestement fictives.
+        // sont acceptées car manifestement fictives.
         final regexpTel = RegExp(r'\d{5,}');
         final regexpZerosSeuls = RegExp(r'^0+$');
 

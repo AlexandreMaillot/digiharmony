@@ -9,8 +9,9 @@ enum TypeRessourceEcoute {
 
 /// Ressource d'écoute associée à une locale (donnée statique embarquée).
 ///
-/// ⚠️ PLACEHOLDERS — numéros/URL à remplir par les partenaires du projet.
-/// Table vide par défaut : aucun numéro réel hardcodé (DEC-SO-007).
+/// L'entrée 'fr' contient le 3114 (numéro FR approuvé).
+/// Les autres locales utilisent le fallback 'fr' — données partenaires
+/// à valider avant déploiement hors France (DEC-SO-007).
 class RessourceLigneEcoute {
   /// Crée une ressource d'écoute.
   const RessourceLigneEcoute({
@@ -37,29 +38,24 @@ class RessourceLigneEcoute {
 ///
 /// Clé = `Locale.languageCode`.
 ///
-/// ⚠️ Aucun numéro/URL réel hardcodé (DEC-SO-007).
-/// L'entrée 'fr' est un EXEMPLE MANIFESTEMENT FACTICE destiné à rendre le
-/// bouton d'appel visible en préview/recette. Elle ne doit JAMAIS être
-/// présentée à des utilisateurs finaux en production.
+/// L'entrée 'fr' utilise le 3114 (Numéro national de prévention du suicide,
+/// France), validé par les partenaires du projet pour la locale FR.
 ///
 /// Le bloc ligne d'écoute utilise l'entrée 'fr' comme fallback si la locale
 /// courante n'a pas d'entrée propre ; il se masque uniquement si l'entrée
 /// 'fr' elle-même est absente.
 ///
-// TODO(partenaires): Remplacer l'exemple 'fr' par les ressources validées
-//   par les partenaires du projet (un numéro par pays, public mineur,
-//   Erasmus+). Supprimer ou remplacer cette entrée avant la mise en
-//   production.
+// TODO(partenaires): 3114 = numéro FR (France-only). Ajouter un numéro VALIDÉ
+//   par pays/locale ; le fallback FR ci-dessous est temporaire et ne fonctionne
+//   qu'en France.
 const Map<String, RessourceLigneEcoute>
 tableRessources = <String, RessourceLigneEcoute>{
-  // EXEMPLE FACTICE — à valider et remplacer par les partenaires.
-  // Le numéro '0000000000' est manifestement fictif (aucun service ne répond).
-  // Libellé explicitement marqué « exemple — à valider » pour éviter toute
-  // confusion lors des tests et de la recette.
+  // 3114 = Numéro national de prévention du suicide (FR), approuvé partenaires.
+  // Utilisé comme fallback pour toutes les locales sans entrée propre.
   'fr': RessourceLigneEcoute(
-    nom: "Ligne d'écoute (exemple — à valider)",
-    cible: '0000000000',
+    nom: "Ligne d'écoute",
+    cible: '3114',
     type: TypeRessourceEcoute.telephone,
-    disponibilite: 'Exemple — à valider',
+    disponibilite: 'Disponible 24h/24',
   ),
 };

@@ -11,9 +11,10 @@ import 'package:url_launcher/url_launcher.dart';
 /// Se masque uniquement si aucune entree (y compris 'fr') n'existe.
 /// (DEC-SO-007)
 ///
-/// Ouverture via url_launcher (tel:/https:).
-/// Echec -> SnackBar neutre, pas de crash, pas de log distant.
-/// Aucun numero reel hardcode.
+/// Rendu : carte arrondie entierement tappable (icone tel verte + nom + numero
+/// / disponibilite + icone ouverture verte). Ouverture via url_launcher
+/// (tel:/https:). Echec -> SnackBar neutre i18n, pas de crash, pas de log
+/// distant. Aucune chaine UI en dur.
 class BlocLigneEcoute extends StatelessWidget {
   /// Cree le bloc conditionnel de ligne d'ecoute.
   const BlocLigneEcoute({super.key});
@@ -26,64 +27,51 @@ class BlocLigneEcoute extends StatelessWidget {
 
     if (ressource == null) return const SizedBox.shrink();
 
-    final l10n = context.l10n;
-
-    return Card(
+    return Material(
       color: AppColors.surface,
-      shape: const RoundedRectangleBorder(
+      borderRadius: AppRadii.cardRadius,
+      child: InkWell(
         borderRadius: AppRadii.cardRadius,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.phone, color: AppColors.primary, size: 20),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Text(
-                    '${l10n.soutienLignePrefix}${ressource.nom}',
-                    style: const TextStyle(
-                      color: AppColors.text,
-                      fontWeight: FontWeight.w600,
+        onTap: () => _ouvrirRessource(context, ressource),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.phone,
+                color: AppColors.vertAppel,
+                size: 24,
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      ressource.nom,
+                      style: const TextStyle(
+                        color: AppColors.text,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              '${l10n.soutienLigneDispoPrefix}${ressource.disponibilite}',
-              style: const TextStyle(color: AppColors.textMuted),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: OutlinedButton.icon(
-                onPressed: () => _ouvrirRessource(context, ressource),
-                icon: Icon(
-                  ressource.type == TypeRessourceEcoute.telephone
-                      ? Icons.phone
-                      : Icons.open_in_new,
-                  color: AppColors.primary,
-                ),
-                label: Text(
-                  ressource.nom,
-                  style: const TextStyle(color: AppColors.primary),
-                ),
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: AppColors.primary),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: AppRadii.buttonRadius,
-                  ),
-                  minimumSize: const Size(48, 48),
+                    Text(
+                      '${ressource.cible} — ${ressource.disponibilite}',
+                      style: const TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+              const SizedBox(width: AppSpacing.md),
+              const Icon(
+                Icons.open_in_new,
+                color: AppColors.vertAppel,
+                size: 20,
+              ),
+            ],
+          ),
         ),
       ),
     );
