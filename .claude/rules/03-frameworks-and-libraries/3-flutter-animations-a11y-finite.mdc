@@ -1,0 +1,46 @@
+---
+description: Toute animation Flutter = no-op en reduced-motion + FINIE + via les helpers common/anim (constantes centralisées)
+globs: apps/*/lib/**/*.dart
+alwaysApply: true
+---
+
+Principe:
+- App bien-être, public mineur : animations **douces et subtiles**, jamais accrocheuses (garde-fous
+  éthiques, DEC-003). Réglage **centralisé** : durées/offsets/intensité dans
+  `lib/common/anim/anim_constants.dart` (un seul point pour ajuster globalement).
+- Deux invariants **non négociables** :
+  1. **Reduced-motion** : toute animation doit être **no-op** quand
+     `MediaQuery.maybeOf(context)?.disableAnimations == true` → rendu dans l'état **final**, immédiat
+     (jamais d'opacité 0 figée ni de transform résiduel).
+  2. **Animations FINIES** : pas d'animation infinie ajoutée hors les ambiances dédiées
+     (`HaloRespirant`, `ParticulesFlottantes`), elles-mêmes RM-aware. Une animation infinie fait **hang**
+     `pumpAndSettle` (piège testing.md).
+
+Règles:
+- **Réutiliser les helpers** `lib/common/anim/` au lieu de réécrire :
+  - `EntreeDouce` (apparition fondu + glissement, cascade par `index`).
+  - `routeDouce<T>()` pour les transitions de page (à utiliser dans `AppRouter.*` / `*.route()`).
+  - `TapAnime` pour une surface tappable (scale + `HapticFeedback`, **sans ripple**, focus/Semantics/≥48dp
+    conservés) — ne PAS empiler `TapAnime` au-dessus d'un `InkWell` (double feedback) ; remplacer l'`InkWell`.
+  - `CompteurAnime` (count-up) pour les chiffres.
+  - `AnimatedSwitcher` pour les crossfades d'état (chargement→contenu).
+- **Tap** : scale 0.97 + haptique, **pas de ripple Material** (`splash/highlight transparent`). Boutons
+  Material standards (`ElevatedButton`/`OutlinedButton`) laissés tels quels.
+- **Tests** : ne jamais `pumpAndSettle()` avec une animation infinie. Soit `disableAnimations:true` +
+  `pump()`, soit piloter une animation finie avec `pump(Duration)`. Couvrir le no-op reduced-motion.
+
+Anti-pattern:
+```dart
+// animation non gardée → reste animée même en reduced-motion, et opacité 0 si jamais jouée
+child.animate().fadeIn();                 // pas de garde disableAnimations
+GestureDetector(onTap: ..., child: InkWell(onTap: ..., child: ...)); // double feedback
+```
+
+Correct:
+```dart
+EntreeDouce(index: i, child: monItem);     // no-op en reduced-motion, fini
+TapAnime(onTap: ..., child: maCarte);      // scale+haptique, pas de ripple, a11y intacte
+Navigator.of(context).push(routeDouce(MaPage()));
+```
+
+Contexte projet : DEC-008 (système d'animations UX) ; section « Animations » de `design-system.md`.

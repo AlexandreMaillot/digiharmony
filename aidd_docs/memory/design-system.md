@@ -65,6 +65,22 @@ Sémantiques : Info = réutilise le cyan primaire ; Succès = vert dédié disti
 - Taille de tap 48×48 dp min. Feedback : `HapticFeedback` + son léger ; retour visuel sur chaque tap.
 - Ton bienveillant systématique ; jamais d'alerte agressive.
 
+## Animations / micro-interactions
+
+Esprit **doux et subtil** (jamais accrocheur — cf. garde-fous éthiques). Couche réutilisable
+`lib/common/anim/` ; intensité **centralisée** dans `anim_constants.dart` (réglage global en 1 fichier).
+
+- **Helpers** : `EntreeDouce` (cascade fondu + glissement ~8 px à l'apparition), `routeDouce` (transitions
+  de page fondu + léger glissement), `TapAnime` (surface tappable = scale 0.97 + `HapticFeedback`, **ripple
+  supprimé**, focus/sémantique conservés), `CompteurAnime` (count-up). Crossfade d'états via `AnimatedSwitcher`.
+- **RÈGLE D'OR a11y** : **toute** animation est **no-op si `MediaQuery.disableAnimations`** (reduced-motion)
+  → état final immédiat. Et **animations FINIES** (jamais infinies hors halos/particules dédiés, eux aussi
+  RM-aware) → piège `pumpAndSettle` évité (tests : `disableAnimations:true` + `pump(Duration)`). Voir rule
+  `3-flutter-animations-a11y-finite` + [[testing]].
+- **Tap** : scale + haptique **sans ripple Material** (jugé trop dur pour l'esthétique douce). Boutons
+  Material standards conservés tels quels ; pastilles d'humeur / deck Conseils gardent leurs anims propres.
+- Halo respirant + particules flottantes (ambiantes) restent les seules animations en boucle, déjà RM-aware.
+
 ## Principe ludique apaisant — garde-fous éthiques (NON négociables)
 
 Vivant mais **jamais accrocheur**. **Aucun streak, aucun point/badge/classement/comparaison, aucun rappel agressif/FOMO, aucune boucle de rétention.** Pas de mascotte. L'app combat la sur-sollicitation. Voir [[architecture]] et DEC-003.
