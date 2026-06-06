@@ -39,8 +39,8 @@ class EntreesHumeur extends Table {
 
   @override
   List<Set<Column<Object>>> get uniqueKeys => [
-        {jour},
-      ];
+    {jour},
+  ];
 }
 
 /// Conseils bienveillants — dataset local seedé, rotation quotidienne.
@@ -73,56 +73,55 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) async {
-          await m.createAll();
-          await _seedConseils();
-        },
-        onUpgrade: (m, from, to) async {
-          if (from < 2) {
-            // Ajoute `jour` seulement si absente (idempotence).
-            // Sur une base semi-migrée, SQLite lèverait
-            // "duplicate column name: jour" → crash DB.
-            final infos = await customSelect(
-              "PRAGMA table_info('entrees_humeur')",
-            ).get();
-            final aDejaJour =
-                infos.any((r) => r.read<String>('name') == 'jour');
-            if (!aDejaJour) {
-              await m.addColumn(entreesHumeur, entreesHumeur.jour);
-            }
-            // Backfill : dérive `jour` depuis `cree_le`.
-            // Drift sérialise DateTime en epoch unix (microsecondes UTC).
-            // On recalcule le minuit local en secondes * 1000 (format Drift).
-            // Formule : jour_ms = (cree_le / 86400000000) * 86400000000
-            // => troncature au jour UTC (acceptable pour backfill — données
-            // existantes sont en test uniquement, pas en prod).
-            await customStatement(
-              'UPDATE entrees_humeur '
-              'SET jour = (cree_le / 86400000000) * 86400000000',
-            );
-            // Déduplication avant index unique : ne garder que la dernière
-            // entrée par jour (max cree_le), supprimer les doublons éventuels.
-            await customStatement(
-              'DELETE FROM entrees_humeur WHERE id NOT IN ( '
-              ' SELECT id FROM entrees_humeur e1 '
-              ' WHERE cree_le = ( '
-              '  SELECT MAX(cree_le) FROM entrees_humeur e2 '
-              '  WHERE e2.jour = e1.jour '
-              ' ) '
-              ')',
-            );
-            // Index unique sur `jour`.
-            await customStatement(
-              'CREATE UNIQUE INDEX IF NOT EXISTS ux_entrees_humeur_jour '
-              'ON entrees_humeur(jour)',
-            );
-          }
-        },
-        beforeOpen: (details) async {
-          // Idempotence : seed si la table est vide (ré-ouverture).
-          await _seedConseils();
-        },
-      );
+    onCreate: (m) async {
+      await m.createAll();
+      await _seedConseils();
+    },
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        // Ajoute `jour` seulement si absente (idempotence).
+        // Sur une base semi-migrée, SQLite lèverait
+        // "duplicate column name: jour" → crash DB.
+        final infos = await customSelect(
+          "PRAGMA table_info('entrees_humeur')",
+        ).get();
+        final aDejaJour = infos.any((r) => r.read<String>('name') == 'jour');
+        if (!aDejaJour) {
+          await m.addColumn(entreesHumeur, entreesHumeur.jour);
+        }
+        // Backfill : dérive `jour` depuis `cree_le`.
+        // Drift sérialise DateTime en epoch unix (microsecondes UTC).
+        // On recalcule le minuit local en secondes * 1000 (format Drift).
+        // Formule : jour_ms = (cree_le / 86400000000) * 86400000000
+        // => troncature au jour UTC (acceptable pour backfill — données
+        // existantes sont en test uniquement, pas en prod).
+        await customStatement(
+          'UPDATE entrees_humeur '
+          'SET jour = (cree_le / 86400000000) * 86400000000',
+        );
+        // Déduplication avant index unique : ne garder que la dernière
+        // entrée par jour (max cree_le), supprimer les doublons éventuels.
+        await customStatement(
+          'DELETE FROM entrees_humeur WHERE id NOT IN ( '
+          ' SELECT id FROM entrees_humeur e1 '
+          ' WHERE cree_le = ( '
+          '  SELECT MAX(cree_le) FROM entrees_humeur e2 '
+          '  WHERE e2.jour = e1.jour '
+          ' ) '
+          ')',
+        );
+        // Index unique sur `jour`.
+        await customStatement(
+          'CREATE UNIQUE INDEX IF NOT EXISTS ux_entrees_humeur_jour '
+          'ON entrees_humeur(jour)',
+        );
+      }
+    },
+    beforeOpen: (details) async {
+      // Idempotence : seed si la table est vide (ré-ouverture).
+      await _seedConseils();
+    },
+  );
 
   /// Seed des conseils (~7), idempotent : ne fait rien si déjà peuplé.
   Future<void> _seedConseils() async {
@@ -166,6 +165,52 @@ class AppDatabase extends _$AppDatabase {
         .watchSingleOrNull();
   }
 
+  /// Entrées d'humeur de la semaine contenant [jourReference], réactif.
+  ///
+  /// Bornes `[lundi 00:00, lundi+7j)` en heure locale, tri `creeLe ASC`.
+  /// La borne haute est **exclue** (`isSmallerThanValue(end)`) —
+  /// pas de post-filtrage (DEC-J-11).
+  Stream<List<EntreeHumeur>> observerEntreesDeLaSemaine(
+    DateTime jourReference,
+  ) {
+    final jour = DateTime(
+      jourReference.year,
+      jourReference.month,
+      jourReference.day,
+    );
+    // Lundi de la semaine (weekday : lundi = 1, dimanche = 7).
+    final start = jour.subtract(Duration(days: jour.weekday - 1));
+    final end = start.add(const Duration(days: 7));
+    return (select(entreesHumeur)
+          ..where(
+            (t) =>
+                t.creeLe.isBiggerOrEqualValue(start) &
+                t.creeLe.isSmallerThanValue(end),
+          )
+          ..orderBy([(t) => OrderingTerm.asc(t.creeLe)]))
+        .watch();
+  }
+
+  /// Entrées d'humeur du mois de [jourReference], réactif.
+  ///
+  /// Bornes `[1er du mois 00:00, 1er du mois suivant 00:00)` en heure locale,
+  /// tri `creeLe ASC`. La borne haute est **exclue** —
+  /// pas de post-filtrage (DEC-J-11).
+  Stream<List<EntreeHumeur>> observerEntreesDuMois(DateTime jourReference) {
+    final start = DateTime(jourReference.year, jourReference.month);
+    // Premier jour du mois suivant (gestion automatique du dépassement de mois
+    // par le constructeur DateTime — ex. mois 12 → 13 devient janvier + 1 an).
+    final end = DateTime(jourReference.year, jourReference.month + 1);
+    return (select(entreesHumeur)
+          ..where(
+            (t) =>
+                t.creeLe.isBiggerOrEqualValue(start) &
+                t.creeLe.isSmallerThanValue(end),
+          )
+          ..orderBy([(t) => OrderingTerm.asc(t.creeLe)]))
+        .watch();
+  }
+
   /// Conseil **déterministe** du jour [jour].
   ///
   /// `index = joursDepuisEpoch % nbConseils`, stable toute la journée,
@@ -195,10 +240,11 @@ class AppDatabase extends _$AppDatabase {
     final jourNormalise = DateTime(now.year, now.month, now.day);
 
     // Lire l'entrée existante du jour avant l'UPSERT.
-    final ancienne = await (select(entreesHumeur)
-          ..where((t) => t.jour.equals(jourNormalise))
-          ..limit(1))
-        .getSingleOrNull();
+    final ancienne =
+        await (select(entreesHumeur)
+              ..where((t) => t.jour.equals(jourNormalise))
+              ..limit(1))
+            .getSingleOrNull();
 
     // UPSERT : conflit sur l'index unique `jour` → update.
     // `DoUpdate` avec `target: [entreesHumeur.jour]` cible explicitement
@@ -245,9 +291,9 @@ class AppDatabase extends _$AppDatabase {
       );
     } else {
       // Supprime l'entrée du jour.
-      await (delete(entreesHumeur)
-            ..where((t) => t.jour.equals(jourCourant)))
-          .go();
+      await (delete(
+        entreesHumeur,
+      )..where((t) => t.jour.equals(jourCourant))).go();
     }
   }
 }

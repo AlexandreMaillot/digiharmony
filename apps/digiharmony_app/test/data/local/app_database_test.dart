@@ -128,4 +128,140 @@ void main() {
       expect(emissions.last, 'dynamic');
     });
   });
+
+  group('observerEntreesDeLaSemaine', () {
+    Future<void> insertAvecJour(
+      String code,
+      int valence,
+      DateTime at,
+    ) {
+      final jour = DateTime(at.year, at.month, at.day);
+      return db
+          .into(db.entreesHumeur)
+          .insert(
+            EntreesHumeurCompanion.insert(
+              codeEmotion: code,
+              valence: valence,
+              creeLe: at,
+              jour: jour,
+            ),
+          );
+    }
+
+    // SEMAINE-1 : entrée lundi incluse, entrée lundi suivant exclue.
+    test('SEMAINE-1 : borne lundi incluse, lundi+7j exclue', () async {
+      // Lundi 2026-06-01 00:00.
+      final lundi = DateTime(2026, 6);
+      // Entrée au lundi (borne basse incluse).
+      await insertAvecJour('happy', 1, lundi);
+      // Entrée au lundi suivant (borne haute exclue).
+      final lundiSuivant = DateTime(2026, 6, 8);
+      await insertAvecJour('sad', -1, lundiSuivant);
+
+      final ref = DateTime(2026, 6, 3); // mercredi de la même semaine
+      final entries = await db.observerEntreesDeLaSemaine(ref).first;
+      expect(entries.length, 1);
+      expect(entries.first.codeEmotion, 'happy');
+    });
+
+    // SEMAINE-2 : semaine sans entrée → liste vide.
+    test('SEMAINE-2 : semaine vide → liste vide', () async {
+      final ref = DateTime(2026, 6, 3);
+      final entries = await db.observerEntreesDeLaSemaine(ref).first;
+      expect(entries, isEmpty);
+    });
+
+    // SEMAINE-3 : tri ASC par creeLe.
+    test('SEMAINE-3 : tri creeLe ASC', () async {
+      final lundi = DateTime(2026, 6);
+      final mercredi = DateTime(2026, 6, 3);
+      await insertAvecJour('calm', 1, mercredi);
+      await insertAvecJour('angry', -1, lundi);
+      final entries = await db.observerEntreesDeLaSemaine(lundi).first;
+      expect(entries.first.codeEmotion, 'angry');
+      expect(entries.last.codeEmotion, 'calm');
+    });
+
+    // SEMAINE-4 : réactif — nouvelle entrée → ré-émission.
+    test('SEMAINE-4 : réactif (nouvelles entrées)', () async {
+      final ref = DateTime(2026, 6, 3);
+      final emissions = <int>[];
+      final sub = db
+          .observerEntreesDeLaSemaine(ref)
+          .listen((list) => emissions.add(list.length));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      await insertAvecJour('happy', 1, ref);
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      await sub.cancel();
+      expect(emissions.first, 0);
+      expect(emissions.last, 1);
+    });
+  });
+
+  group('observerEntreesDuMois', () {
+    Future<void> insertAvecJour(
+      String code,
+      int valence,
+      DateTime at,
+    ) {
+      final jour = DateTime(at.year, at.month, at.day);
+      return db
+          .into(db.entreesHumeur)
+          .insert(
+            EntreesHumeurCompanion.insert(
+              codeEmotion: code,
+              valence: valence,
+              creeLe: at,
+              jour: jour,
+            ),
+          );
+    }
+
+    // MOIS-1 : entrée 1er du mois incluse, 1er mois suivant exclue.
+    test('MOIS-1 : borne 1er inclus, 1er mois suivant exclue', () async {
+      final premierJuin = DateTime(2026, 6);
+      final premierJuillet = DateTime(2026, 7);
+      await insertAvecJour('happy', 1, premierJuin);
+      await insertAvecJour('sad', -1, premierJuillet);
+
+      final ref = DateTime(2026, 6, 15);
+      final entries = await db.observerEntreesDuMois(ref).first;
+      expect(entries.length, 1);
+      expect(entries.first.codeEmotion, 'happy');
+    });
+
+    // MOIS-2 : mois sans entrée → liste vide.
+    test('MOIS-2 : mois vide → liste vide', () async {
+      final ref = DateTime(2026, 5, 15);
+      final entries = await db.observerEntreesDuMois(ref).first;
+      expect(entries, isEmpty);
+    });
+
+    // MOIS-3 : réactif — nouvelle entrée → ré-émission.
+    test('MOIS-3 : réactif (nouvelle entrée dans le mois)', () async {
+      final ref = DateTime(2026, 6, 10);
+      final emissions = <int>[];
+      final sub = db
+          .observerEntreesDuMois(ref)
+          .listen((list) => emissions.add(list.length));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      await insertAvecJour('calm', 1, ref);
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      await sub.cancel();
+      expect(emissions.first, 0);
+      expect(emissions.last, 1);
+    });
+
+    // MOIS-4 : gestion fin d'année (décembre → borne janvier n+1).
+    test("MOIS-4 : décembre borné sur janvier de l'année suivante", () async {
+      final deuxDecembre = DateTime(2026, 12, 2);
+      await insertAvecJour('dynamic', 1, deuxDecembre);
+      // Entrée au 1er janvier 2027 (borne haute exclue).
+      await insertAvecJour('tired', -1, DateTime(2027));
+      final ref = DateTime(2026, 12, 15);
+      final entries = await db.observerEntreesDuMois(ref).first;
+      expect(entries.length, 1);
+      expect(entries.first.codeEmotion, 'dynamic');
+    });
+  });
 }

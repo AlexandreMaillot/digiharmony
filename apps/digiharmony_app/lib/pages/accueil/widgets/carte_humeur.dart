@@ -1,5 +1,4 @@
 import 'package:digiharmony_app/app/routing/app_router.dart';
-import 'package:digiharmony_app/common/placeholder_screen.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
 import 'package:digiharmony_app/theme/theme.dart';
@@ -84,8 +83,7 @@ class _CarteEtatA extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             Center(
               child: TextButton(
-                onPressed: () =>
-                    ouvrirPlaceholder(context, l10n.placeholderJournal),
+                onPressed: () => AppRouter.versJournal(context),
                 child: Text(l10n.heroSeeJournal),
               ),
             ),
@@ -170,8 +168,7 @@ class _CarteEtatB extends StatelessWidget {
             const SizedBox(height: AppSpacing.lg),
             Center(
               child: TextButton(
-                onPressed: () =>
-                    ouvrirPlaceholder(context, l10n.placeholderJournal),
+                onPressed: () => AppRouter.versJournal(context),
                 child: Text(l10n.heroSeeJournal),
               ),
             ),

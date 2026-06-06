@@ -1,6 +1,7 @@
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_page.dart';
 import 'package:digiharmony_app/pages/bienvenue/views/bienvenue_page.dart';
+import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,6 +38,24 @@ abstract final class AppRouter {
         builder: (_) => RepositoryProvider<AppDatabase>.value(
           value: database,
           child: const SaisieHumeurPage(),
+        ),
+      ),
+    );
+  }
+
+  /// Ouvre le journal (empilé, retour possible).
+  ///
+  /// Utilisé depuis la carte humeur de l'Accueil (états A et B — DEC-J-11).
+  /// `push` (pas `pushReplacement`) : le chevron permet de revenir.
+  /// La [AppDatabase] est transmise explicitement pour traverser la frontière
+  /// de route (DEC-FND-07).
+  static Future<void> versJournal(BuildContext context) {
+    final database = context.read<AppDatabase>();
+    return Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => RepositoryProvider<AppDatabase>.value(
+          value: database,
+          child: const JournalPage(),
         ),
       ),
     );

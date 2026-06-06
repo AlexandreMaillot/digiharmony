@@ -199,5 +199,141 @@
     "saisieHumeurDonneesLocales": "Your data stays on your device",
     "@saisieHumeurDonneesLocales": {
         "description": "SaisieHumeur — reassurance footer about local storage"
+    },
+    "journalTitle": "My journal",
+    "@journalTitle": {
+        "description": "JournalPage — Toolbar title"
+    },
+    "journalMenuTooltip": "Options",
+    "@journalMenuTooltip": {
+        "description": "JournalPage — Toolbar menu icon tooltip"
+    },
+    "journalSegmentDay": "Day",
+    "@journalSegmentDay": {
+        "description": "JournalPage — SegmentedControl segment label for day view"
+    },
+    "journalSegmentWeek": "Week",
+    "@journalSegmentWeek": {
+        "description": "JournalPage — SegmentedControl segment label for week view"
+    },
+    "journalSegmentMonth": "Month",
+    "@journalSegmentMonth": {
+        "description": "JournalPage — SegmentedControl segment label for month view"
+    },
+    "journalDayMoodPrefix": "Today you are feeling",
+    "@journalDayMoodPrefix": {
+        "description": "JournalPage Day view — prefix before mood label when mood is logged"
+    },
+    "journalDayTipLabel": "Tip of the day",
+    "@journalDayTipLabel": {
+        "description": "JournalPage Day view — label before the daily tip text"
+    },
+    "journalDayDoExerciseCta": "Do the exercise",
+    "@journalDayDoExerciseCta": {
+        "description": "JournalPage Day view — CTA button for the exercise (stub V1)"
+    },
+    "journalDayEditMoodLink": "Edit my mood",
+    "@journalDayEditMoodLink": {
+        "description": "JournalPage Day view — link to SaisieHumeur to edit today's mood"
+    },
+    "journalDayEmptyTitle": "No mood logged yet today",
+    "@journalDayEmptyTitle": {
+        "description": "JournalPage Day view — empty state title (benevolent)"
+    },
+    "journalDayEmptyBody": "Whenever you feel ready, you can note how you feel.",
+    "@journalDayEmptyBody": {
+        "description": "JournalPage Day view — empty state body text (gentle, no FOMO)"
+    },
+    "journalDayEmptyCta": "Log my mood",
+    "@journalDayEmptyCta": {
+        "description": "JournalPage Day view — empty state CTA to SaisieHumeur"
+    },
+    "journalWeekTitle": "This week",
+    "@journalWeekTitle": {
+        "description": "JournalPage Week view — section title"
+    },
+    "journalWeekNoEntry": "·",
+    "@journalWeekNoEntry": {
+        "description": "JournalPage Week view — neutral marker for days with no mood logged"
+    },
+    "journalWeekSummary": "You logged your mood on {count} of 7 days.",
+    "@journalWeekSummary": {
+        "description": "JournalPage Week view — descriptive summary when at least 1 mood is logged",
+        "placeholders": {
+            "count": {
+                "type": "int",
+                "description": "Number of days with a mood logged this week"
+            }
+        }
+    },
+    "journalWeekSummaryEmpty": "No mood logged this week yet.",
+    "@journalWeekSummaryEmpty": {
+        "description": "JournalPage Week view — summary when no mood logged this week"
+    },
+    "journalMonthPrevTooltip": "Previous month",
+    "@journalMonthPrevTooltip": {
+        "description": "JournalPage Month view — previous month arrow tooltip"
+    },
+    "journalMonthNextTooltip": "Next month",
+    "@journalMonthNextTooltip": {
+        "description": "JournalPage Month view — next month arrow tooltip (disabled when current month)"
+    },
+    "journalMonthSectionTitle": "This month at a glance",
+    "@journalMonthSectionTitle": {
+        "description": "JournalPage Month view — synthesis section title"
+    },
+    "journalMonthSummary": "A gentle look back over your month.",
+    "@journalMonthSummary": {
+        "description": "JournalPage Month view — descriptive summary when at least 1 mood logged (no comparison)"
+    },
+    "journalMonthSummaryEmpty": "No mood logged this month yet.",
+    "@journalMonthSummaryEmpty": {
+        "description": "JournalPage Month view — summary when no mood logged this month"
+    },
+    "journalMonthFrequencyLine": "{label}: {count, plural, =1{1 day} other{{count} days}}",
+    "@journalMonthFrequencyLine": {
+        "description": "JournalPage Month view — one line per emotion with occurrences (neutral count, no ranking)",
+        "placeholders": {
+            "label": {
+                "type": "String",
+                "description": "Localised mood label (mood* key)"
+            },
+            "count": {
+                "type": "int",
+                "description": "Number of days with this emotion logged"
+            }
+        }
+    },
+    "journalCalendarDaySemantics": "Day {day}",
+    "@journalCalendarDaySemantics": {
+        "description": "JournalPage Month view — accessibility label for a calendar day with no mood",
+        "placeholders": {
+            "day": {
+                "type": "int",
+                "description": "Day number in the month"
+            }
+        }
+    },
+    "journalCalendarDayMoodSemantics": "Day {day}: {mood}",
+    "@journalCalendarDayMoodSemantics": {
+        "description": "JournalPage Month view — accessibility label for a calendar day with a mood logged",
+        "placeholders": {
+            "day": {
+                "type": "int",
+                "description": "Day number in the month"
+            },
+            "mood": {
+                "type": "String",
+                "description": "Localised mood label (mood* key)"
+            }
+        }
+    },
+    "journalExerciseComingSoon": "This exercise is coming soon.",
+    "@journalExerciseComingSoon": {
+        "description": "JournalPage Day view — SnackBar message for the exercise stub (V1)"
+    },
+    "journalLocalDataNote": "Your data stays on this device.",
+    "@journalLocalDataNote": {
+        "description": "JournalPage — reassurance note about local-only storage (zero collection)"
     }
 }
