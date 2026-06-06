@@ -1,12 +1,16 @@
 import 'dart:async';
 
-import 'package:digiharmony_app/app/routing/app_router.dart';
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
+import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
+import 'package:digiharmony_app/pages/accueil/views/accueil_page.dart';
 import 'package:digiharmony_app/pages/demarrage/bloc/demarrage_bloc.dart';
 import 'package:digiharmony_app/pages/demarrage/widgets/anneaux_ondes.dart';
 import 'package:digiharmony_app/pages/demarrage/widgets/barre_signature.dart';
 import 'package:digiharmony_app/pages/demarrage/widgets/points_chargement.dart';
+import 'package:digiharmony_app/pages/soutien/bloc/soutien_bloc.dart';
+import 'package:digiharmony_app/pages/soutien/declenchement/evaluateur_soutien.dart';
+import 'package:digiharmony_app/pages/soutien/views/soutien_page.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -87,7 +91,65 @@ class _DemarrageViewState extends State<DemarrageView> {
       case DemarrageErreur():
         // L'onboarding est abandonné : on route toujours vers l'Accueil
         // (DEC-PROD-2026). BienvenueBloc reste dormant.
-        unawaited(AppRouter.versAccueil(context));
+        unawaited(_versAccueilPuisEvaluerSoutien(context));
+    }
+  }
+
+  /// Route vers l'Accueil puis évalue le déclenchement du soutien.
+  ///
+  /// Append-only : ne modifie pas le comportement existant (Accueil toujours
+  /// affiché).
+  ///
+  /// Correctif séquence (DEC-SO-003/004) :
+  /// `pushReplacement(Accueil)` démonte `DemarrageView`, ce qui invalide le
+  /// `BuildContext`. Pour éviter que le guard `context.mounted` court-circuite
+  /// la branche soutien avant l'évaluation, on :
+  ///   1. capture `navigator`, `db`, `soutienBloc` et `dejaMontre` TANT QUE
+  ///      le widget est encore monté (avant tout `await`) ;
+  ///   2. appelle `compterSaisiesNegativesConsecutives()` (seul await avant
+  ///      toute navigation) ;
+  ///   3. effectue toutes les navigations sur le `NavigatorState` capturé,
+  ///      sans dépendre du contexte démonté.
+  Future<void> _versAccueilPuisEvaluerSoutien(BuildContext context) async {
+    // ── Capture avant tout await ──────────────────────────────────────────
+    if (!context.mounted) return;
+    final navigator = Navigator.of(context);
+    final db = context.read<AppDatabase>();
+    final soutienBloc = context.read<SoutienBloc>();
+    final dejaMontre = soutienBloc.state.dejaMontrePourEpisodeEnCours;
+
+    // ── Lecture du compteur (seul await avant navigation) ─────────────────
+    final compteur = await db.compterSaisiesNegativesConsecutives();
+
+    // ── Décision avant de démonter le contexte ────────────────────────────
+    // Réarmement : compteur redescendu < seuil alors que le flag est posé.
+    if (compteur < EvaluateurSoutien.seuil && dejaMontre) {
+      soutienBloc.add(const SoutienReinitialise());
+    }
+
+    final doitDeclencher = EvaluateurSoutien.doitDeclencher(
+      compteurNegativesConsecutives: compteur,
+      dejaMontrePourEpisodeEnCours:
+          soutienBloc.state.dejaMontrePourEpisodeEnCours,
+    );
+
+    // ── Navigation via NavigatorState capturé (contexte déjà potentiellement
+    //    démonté à ce stade — on n'en dépend plus) ─────────────────────────
+    //
+    // `pushReplacement` retourne une Future qui ne se résout que quand la
+    // route poussée est elle-même poppée (ce qui n'arrive jamais pour
+    // AccueilPage). On ne l'attend PAS : on lance et on continue.
+    unawaited(navigator.pushReplacement(AccueilPage.route()));
+
+    if (doitDeclencher) {
+      // Marquage à l'affichage (DEC-SO-004).
+      soutienBloc.add(const SoutienMontre());
+      // `push` sur la même SoutienPage : même logique — ne pas awaiter.
+      unawaited(
+        navigator.push(
+          MaterialPageRoute<void>(builder: (_) => const SoutienPage()),
+        ),
+      );
     }
   }
 }

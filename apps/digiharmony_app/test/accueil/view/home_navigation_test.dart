@@ -1,8 +1,12 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:digiharmony_app/common/placeholder_screen.dart';
+import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_view.dart';
+import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
+import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_view.dart';
+import 'package:digiharmony_app/pages/temps_ecran/views/temps_ecran_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,18 +16,23 @@ import 'package:mocktail/mocktail.dart';
 class MockAccueilBloc extends MockBloc<AccueilEvent, AccueilState>
     implements AccueilBloc {}
 
+class _MockAppDatabase extends Mock implements AppDatabase {}
+
 /// Pompe l'AccueilView avec animations désactivées.
 extension PumpNav on WidgetTester {
-  Future<void> pumpNavTest(AccueilBloc bloc) {
+  Future<void> pumpNavTest(AccueilBloc bloc, {required AppDatabase db}) {
     return pumpWidget(
       MediaQuery(
         data: const MediaQueryData(disableAnimations: true),
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: BlocProvider<AccueilBloc>.value(
-            value: bloc,
-            child: const AccueilView(),
+          home: RepositoryProvider<AppDatabase>.value(
+            value: db,
+            child: BlocProvider<AccueilBloc>.value(
+              value: bloc,
+              child: const AccueilView(),
+            ),
           ),
         ),
       ),
@@ -33,10 +42,28 @@ extension PumpNav on WidgetTester {
 
 void main() {
   late MockAccueilBloc bloc;
+  late _MockAppDatabase mockDb;
   final hapticLog = <MethodCall>[];
+
+  setUpAll(() {
+    registerFallbackValue(DateTime(2026));
+  });
 
   setUp(() {
     bloc = MockAccueilBloc();
+    mockDb = _MockAppDatabase();
+    when(
+      () => mockDb.conseilDuJour(any()),
+    ).thenAnswer((_) async => const Conseil(id: 1, cleConseil: 'tipDay01'));
+    when(
+      () => mockDb.observerDerniereHumeurDuJour(),
+    ).thenAnswer((_) => const Stream<EntreeHumeur?>.empty());
+    when(
+      () => mockDb.observerEntreesDeLaSemaine(any()),
+    ).thenAnswer((_) => const Stream<List<EntreeHumeur>>.empty());
+    when(
+      () => mockDb.observerEntreesDuMois(any()),
+    ).thenAnswer((_) => const Stream<List<EntreeHumeur>>.empty());
     hapticLog.clear();
     // Intercepte les appels haptiques via le canal de plateforme.
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -78,7 +105,7 @@ void main() {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc);
+        await tester.pumpNavTest(bloc, db: mockDb);
         await tester.tap(find.byIcon(Icons.settings));
         await tester.pumpAndSettle();
         expect(find.byType(PlaceholderScreen), findsOneWidget);
@@ -86,33 +113,35 @@ void main() {
       },
     );
 
-    // HN-2 : CTA « Log my mood » (État A) → PlaceholderScreen.
+    // HN-2 : CTA « Log my mood » (État A) → SaisieHumeurView.
     testWidgets(
-      'HN-2 : Log my mood → PlaceholderScreen',
+      'HN-2 : Log my mood → SaisieHumeurView',
       (tester) async {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc);
+        await tester.pumpNavTest(bloc, db: mockDb);
         await tester.tap(find.text('Log my mood'));
-        await tester.pumpAndSettle();
-        expect(find.byType(PlaceholderScreen), findsOneWidget);
-        expectHaptique();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(SaisieHumeurView), findsOneWidget);
       },
     );
 
-    // HN-3 : « See my journal » → PlaceholderScreen.
+    // HN-3 : « See my journal » → JournalPage (recâblé M2).
     testWidgets(
-      'HN-3 : See my journal → PlaceholderScreen',
+      'HN-3 : See my journal → JournalPage',
       (tester) async {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc);
+        await tester.pumpNavTest(bloc, db: mockDb);
         await tester.tap(find.text('See my journal'));
-        await tester.pumpAndSettle();
-        expect(find.byType(PlaceholderScreen), findsOneWidget);
-        expectHaptique();
+        // Utilise pump + durée fixe (JournalPage démarre un stream infini).
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(JournalPage), findsOneWidget);
+        expect(find.byType(PlaceholderScreen), findsNothing);
       },
     );
 
@@ -123,7 +152,7 @@ void main() {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc);
+        await tester.pumpNavTest(bloc, db: mockDb);
         await tester.tap(find.text('Choose your bubble'));
         await tester.pumpAndSettle();
         expect(find.byType(PlaceholderScreen), findsOneWidget);
@@ -138,7 +167,7 @@ void main() {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc);
+        await tester.pumpNavTest(bloc, db: mockDb);
         await tester.tap(find.text('Tip of the day'));
         await tester.pumpAndSettle();
         expect(find.byType(PlaceholderScreen), findsOneWidget);
@@ -153,7 +182,7 @@ void main() {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc);
+        await tester.pumpNavTest(bloc, db: mockDb);
         // Scroll pour rendre le widget visible.
         await tester.scrollUntilVisible(
           find.text('Take a break'),
@@ -166,23 +195,37 @@ void main() {
       },
     );
 
-    // HN-7 : lien « My screen time » → PlaceholderScreen.
+    // HN-7 : lien « My screen time » → TempsEcranView (plus de placeholder).
     testWidgets(
-      'HN-7 : My screen time → PlaceholderScreen',
+      'HN-7 : My screen time → TempsEcranView',
       (tester) async {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc);
-        // Scroll pour rendre le widget visible.
+        await tester.pumpNavTest(bloc, db: mockDb);
         await tester.scrollUntilVisible(
           find.text('My screen time'),
           100,
         );
         await tester.tap(find.text('My screen time'));
-        await tester.pumpAndSettle();
-        expect(find.byType(PlaceholderScreen), findsOneWidget);
-        expectHaptique();
+        // Pas de pumpAndSettle (halo respirant) — pump séquentiel.
+        await tester.pump();
+        await tester.pump();
+        expect(find.byType(TempsEcranView), findsOneWidget);
+      },
+    );
+
+    // HN-8 : le lien « Reduce my notifications » a été retiré de l'Accueil
+    // (réalignement maquette Banani). La navigation vers TutoNotifsView se
+    // fait désormais depuis l'écran temps d'écran (carte action).
+    testWidgets(
+      'HN-8 : Reduce my notifications absent de lAccueil',
+      (tester) async {
+        when(() => bloc.state).thenReturn(
+          const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
+        );
+        await tester.pumpNavTest(bloc, db: mockDb);
+        expect(find.text('Reduce my notifications'), findsNothing);
       },
     );
   });

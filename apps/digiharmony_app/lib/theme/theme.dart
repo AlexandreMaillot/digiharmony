@@ -35,6 +35,10 @@ abstract final class AppColors {
   /// Texte atténué : sous-titres, légendes, placeholders.
   static const Color textMuted = Color(0xFFA7B6CE);
 
+  /// Vert d'action « appeler » — distinct de la palette émotions [MoodColors],
+  /// interdite sur l'écran soutien.
+  static const Color vertAppel = Color(0xFF34C759);
+
   /// Dégradé signature (cyan → lime → or).
   ///
   /// RÉSERVÉ aux moments de marque (splash, halo). Jamais sur le journal.

@@ -53,8 +53,23 @@ class $EntreesHumeurTable extends EntreesHumeur
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _jourMeta = const VerificationMeta('jour');
   @override
-  List<GeneratedColumn> get $columns => [id, codeEmotion, valence, creeLe];
+  late final GeneratedColumn<DateTime> jour = GeneratedColumn<DateTime>(
+    'jour',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    codeEmotion,
+    valence,
+    creeLe,
+    jour,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -97,11 +112,23 @@ class $EntreesHumeurTable extends EntreesHumeur
     } else if (isInserting) {
       context.missing(_creeLeMeta);
     }
+    if (data.containsKey('jour')) {
+      context.handle(
+        _jourMeta,
+        jour.isAcceptableOrUnknown(data['jour']!, _jourMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_jourMeta);
+    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {jour},
+  ];
   @override
   EntreeHumeur map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -122,6 +149,10 @@ class $EntreesHumeurTable extends EntreesHumeur
         DriftSqlType.dateTime,
         data['${effectivePrefix}cree_le'],
       )!,
+      jour: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}jour'],
+      )!,
     );
   }
 
@@ -138,7 +169,7 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
   /// Code stable de l'émotion (aligné `MoodColors.byKey`).
   final String codeEmotion;
 
-  /// Valence : >= 0 positive/neutre, < 0 négative.
+  /// Valence : >= 0 positive/neutre, < 0 négative (DEC-SH-002).
   ///
   /// Sert au futur compteur « 7 émotions négatives consécutives », dérivé de
   /// Drift (DEC-001), jamais dupliqué dans HydratedBloc.
@@ -146,11 +177,18 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
 
   /// Horodatage local de création.
   final DateTime creeLe;
+
+  /// Jour normalisé (minuit local) — clé d'unicité quotidienne (v2).
+  ///
+  /// Stocké comme DateTime à 00:00:00 local. Index UNIQUE généré par Drift
+  /// via [uniqueKeys]. Permet l'UPSERT par jour (DEC-SH-001).
+  final DateTime jour;
   const EntreeHumeur({
     required this.id,
     required this.codeEmotion,
     required this.valence,
     required this.creeLe,
+    required this.jour,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -159,6 +197,7 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
     map['code_emotion'] = Variable<String>(codeEmotion);
     map['valence'] = Variable<int>(valence);
     map['cree_le'] = Variable<DateTime>(creeLe);
+    map['jour'] = Variable<DateTime>(jour);
     return map;
   }
 
@@ -168,6 +207,7 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
       codeEmotion: Value(codeEmotion),
       valence: Value(valence),
       creeLe: Value(creeLe),
+      jour: Value(jour),
     );
   }
 
@@ -181,6 +221,7 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
       codeEmotion: serializer.fromJson<String>(json['codeEmotion']),
       valence: serializer.fromJson<int>(json['valence']),
       creeLe: serializer.fromJson<DateTime>(json['creeLe']),
+      jour: serializer.fromJson<DateTime>(json['jour']),
     );
   }
   @override
@@ -191,6 +232,7 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
       'codeEmotion': serializer.toJson<String>(codeEmotion),
       'valence': serializer.toJson<int>(valence),
       'creeLe': serializer.toJson<DateTime>(creeLe),
+      'jour': serializer.toJson<DateTime>(jour),
     };
   }
 
@@ -199,11 +241,13 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
     String? codeEmotion,
     int? valence,
     DateTime? creeLe,
+    DateTime? jour,
   }) => EntreeHumeur(
     id: id ?? this.id,
     codeEmotion: codeEmotion ?? this.codeEmotion,
     valence: valence ?? this.valence,
     creeLe: creeLe ?? this.creeLe,
+    jour: jour ?? this.jour,
   );
   EntreeHumeur copyWithCompanion(EntreesHumeurCompanion data) {
     return EntreeHumeur(
@@ -213,6 +257,7 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
           : this.codeEmotion,
       valence: data.valence.present ? data.valence.value : this.valence,
       creeLe: data.creeLe.present ? data.creeLe.value : this.creeLe,
+      jour: data.jour.present ? data.jour.value : this.jour,
     );
   }
 
@@ -222,13 +267,14 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
           ..write('id: $id, ')
           ..write('codeEmotion: $codeEmotion, ')
           ..write('valence: $valence, ')
-          ..write('creeLe: $creeLe')
+          ..write('creeLe: $creeLe, ')
+          ..write('jour: $jour')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, codeEmotion, valence, creeLe);
+  int get hashCode => Object.hash(id, codeEmotion, valence, creeLe, jour);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -236,7 +282,8 @@ class EntreeHumeur extends DataClass implements Insertable<EntreeHumeur> {
           other.id == this.id &&
           other.codeEmotion == this.codeEmotion &&
           other.valence == this.valence &&
-          other.creeLe == this.creeLe);
+          other.creeLe == this.creeLe &&
+          other.jour == this.jour);
 }
 
 class EntreesHumeurCompanion extends UpdateCompanion<EntreeHumeur> {
@@ -244,31 +291,37 @@ class EntreesHumeurCompanion extends UpdateCompanion<EntreeHumeur> {
   final Value<String> codeEmotion;
   final Value<int> valence;
   final Value<DateTime> creeLe;
+  final Value<DateTime> jour;
   const EntreesHumeurCompanion({
     this.id = const Value.absent(),
     this.codeEmotion = const Value.absent(),
     this.valence = const Value.absent(),
     this.creeLe = const Value.absent(),
+    this.jour = const Value.absent(),
   });
   EntreesHumeurCompanion.insert({
     this.id = const Value.absent(),
     required String codeEmotion,
     required int valence,
     required DateTime creeLe,
+    required DateTime jour,
   }) : codeEmotion = Value(codeEmotion),
        valence = Value(valence),
-       creeLe = Value(creeLe);
+       creeLe = Value(creeLe),
+       jour = Value(jour);
   static Insertable<EntreeHumeur> custom({
     Expression<int>? id,
     Expression<String>? codeEmotion,
     Expression<int>? valence,
     Expression<DateTime>? creeLe,
+    Expression<DateTime>? jour,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (codeEmotion != null) 'code_emotion': codeEmotion,
       if (valence != null) 'valence': valence,
       if (creeLe != null) 'cree_le': creeLe,
+      if (jour != null) 'jour': jour,
     });
   }
 
@@ -277,12 +330,14 @@ class EntreesHumeurCompanion extends UpdateCompanion<EntreeHumeur> {
     Value<String>? codeEmotion,
     Value<int>? valence,
     Value<DateTime>? creeLe,
+    Value<DateTime>? jour,
   }) {
     return EntreesHumeurCompanion(
       id: id ?? this.id,
       codeEmotion: codeEmotion ?? this.codeEmotion,
       valence: valence ?? this.valence,
       creeLe: creeLe ?? this.creeLe,
+      jour: jour ?? this.jour,
     );
   }
 
@@ -301,6 +356,9 @@ class EntreesHumeurCompanion extends UpdateCompanion<EntreeHumeur> {
     if (creeLe.present) {
       map['cree_le'] = Variable<DateTime>(creeLe.value);
     }
+    if (jour.present) {
+      map['jour'] = Variable<DateTime>(jour.value);
+    }
     return map;
   }
 
@@ -310,7 +368,8 @@ class EntreesHumeurCompanion extends UpdateCompanion<EntreeHumeur> {
           ..write('id: $id, ')
           ..write('codeEmotion: $codeEmotion, ')
           ..write('valence: $valence, ')
-          ..write('creeLe: $creeLe')
+          ..write('creeLe: $creeLe, ')
+          ..write('jour: $jour')
           ..write(')'))
         .toString();
   }
@@ -514,16 +573,339 @@ class ConseilsCompanion extends UpdateCompanion<Conseil> {
   }
 }
 
+class $UsagesEcranJournaliersTable extends UsagesEcranJournaliers
+    with TableInfo<$UsagesEcranJournaliersTable, UsageEcranJournalier> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UsagesEcranJournaliersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _jourMeta = const VerificationMeta('jour');
+  @override
+  late final GeneratedColumn<DateTime> jour = GeneratedColumn<DateTime>(
+    'jour',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _totalSecondesMeta = const VerificationMeta(
+    'totalSecondes',
+  );
+  @override
+  late final GeneratedColumn<int> totalSecondes = GeneratedColumn<int>(
+    'total_secondes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _majLeMeta = const VerificationMeta('majLe');
+  @override
+  late final GeneratedColumn<DateTime> majLe = GeneratedColumn<DateTime>(
+    'maj_le',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, jour, totalSecondes, majLe];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'usages_ecran_journaliers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UsageEcranJournalier> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('jour')) {
+      context.handle(
+        _jourMeta,
+        jour.isAcceptableOrUnknown(data['jour']!, _jourMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_jourMeta);
+    }
+    if (data.containsKey('total_secondes')) {
+      context.handle(
+        _totalSecondesMeta,
+        totalSecondes.isAcceptableOrUnknown(
+          data['total_secondes']!,
+          _totalSecondesMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_totalSecondesMeta);
+    }
+    if (data.containsKey('maj_le')) {
+      context.handle(
+        _majLeMeta,
+        majLe.isAcceptableOrUnknown(data['maj_le']!, _majLeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_majLeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {jour},
+  ];
+  @override
+  UsageEcranJournalier map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UsageEcranJournalier(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      jour: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}jour'],
+      )!,
+      totalSecondes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}total_secondes'],
+      )!,
+      majLe: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}maj_le'],
+      )!,
+    );
+  }
+
+  @override
+  $UsagesEcranJournaliersTable createAlias(String alias) {
+    return $UsagesEcranJournaliersTable(attachedDatabase, alias);
+  }
+}
+
+class UsageEcranJournalier extends DataClass
+    implements Insertable<UsageEcranJournalier> {
+  /// Identifiant auto-incrémenté.
+  final int id;
+
+  /// Jour normalisé (minuit local) — clé d'unicité quotidienne.
+  ///
+  /// Stocké comme DateTime à 00:00:00 local. Index UNIQUE via [uniqueKeys]
+  /// pour garantir un agrégat max par jour (UPSERT).
+  final DateTime jour;
+
+  /// Total agrégé du jour, en **secondes** (somme des usages des apps).
+  final int totalSecondes;
+
+  /// Horodatage local de la dernière mise à jour de l'agrégat.
+  final DateTime majLe;
+  const UsageEcranJournalier({
+    required this.id,
+    required this.jour,
+    required this.totalSecondes,
+    required this.majLe,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['jour'] = Variable<DateTime>(jour);
+    map['total_secondes'] = Variable<int>(totalSecondes);
+    map['maj_le'] = Variable<DateTime>(majLe);
+    return map;
+  }
+
+  UsagesEcranJournaliersCompanion toCompanion(bool nullToAbsent) {
+    return UsagesEcranJournaliersCompanion(
+      id: Value(id),
+      jour: Value(jour),
+      totalSecondes: Value(totalSecondes),
+      majLe: Value(majLe),
+    );
+  }
+
+  factory UsageEcranJournalier.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UsageEcranJournalier(
+      id: serializer.fromJson<int>(json['id']),
+      jour: serializer.fromJson<DateTime>(json['jour']),
+      totalSecondes: serializer.fromJson<int>(json['totalSecondes']),
+      majLe: serializer.fromJson<DateTime>(json['majLe']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'jour': serializer.toJson<DateTime>(jour),
+      'totalSecondes': serializer.toJson<int>(totalSecondes),
+      'majLe': serializer.toJson<DateTime>(majLe),
+    };
+  }
+
+  UsageEcranJournalier copyWith({
+    int? id,
+    DateTime? jour,
+    int? totalSecondes,
+    DateTime? majLe,
+  }) => UsageEcranJournalier(
+    id: id ?? this.id,
+    jour: jour ?? this.jour,
+    totalSecondes: totalSecondes ?? this.totalSecondes,
+    majLe: majLe ?? this.majLe,
+  );
+  UsageEcranJournalier copyWithCompanion(UsagesEcranJournaliersCompanion data) {
+    return UsageEcranJournalier(
+      id: data.id.present ? data.id.value : this.id,
+      jour: data.jour.present ? data.jour.value : this.jour,
+      totalSecondes: data.totalSecondes.present
+          ? data.totalSecondes.value
+          : this.totalSecondes,
+      majLe: data.majLe.present ? data.majLe.value : this.majLe,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UsageEcranJournalier(')
+          ..write('id: $id, ')
+          ..write('jour: $jour, ')
+          ..write('totalSecondes: $totalSecondes, ')
+          ..write('majLe: $majLe')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, jour, totalSecondes, majLe);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UsageEcranJournalier &&
+          other.id == this.id &&
+          other.jour == this.jour &&
+          other.totalSecondes == this.totalSecondes &&
+          other.majLe == this.majLe);
+}
+
+class UsagesEcranJournaliersCompanion
+    extends UpdateCompanion<UsageEcranJournalier> {
+  final Value<int> id;
+  final Value<DateTime> jour;
+  final Value<int> totalSecondes;
+  final Value<DateTime> majLe;
+  const UsagesEcranJournaliersCompanion({
+    this.id = const Value.absent(),
+    this.jour = const Value.absent(),
+    this.totalSecondes = const Value.absent(),
+    this.majLe = const Value.absent(),
+  });
+  UsagesEcranJournaliersCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime jour,
+    required int totalSecondes,
+    required DateTime majLe,
+  }) : jour = Value(jour),
+       totalSecondes = Value(totalSecondes),
+       majLe = Value(majLe);
+  static Insertable<UsageEcranJournalier> custom({
+    Expression<int>? id,
+    Expression<DateTime>? jour,
+    Expression<int>? totalSecondes,
+    Expression<DateTime>? majLe,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (jour != null) 'jour': jour,
+      if (totalSecondes != null) 'total_secondes': totalSecondes,
+      if (majLe != null) 'maj_le': majLe,
+    });
+  }
+
+  UsagesEcranJournaliersCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? jour,
+    Value<int>? totalSecondes,
+    Value<DateTime>? majLe,
+  }) {
+    return UsagesEcranJournaliersCompanion(
+      id: id ?? this.id,
+      jour: jour ?? this.jour,
+      totalSecondes: totalSecondes ?? this.totalSecondes,
+      majLe: majLe ?? this.majLe,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (jour.present) {
+      map['jour'] = Variable<DateTime>(jour.value);
+    }
+    if (totalSecondes.present) {
+      map['total_secondes'] = Variable<int>(totalSecondes.value);
+    }
+    if (majLe.present) {
+      map['maj_le'] = Variable<DateTime>(majLe.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UsagesEcranJournaliersCompanion(')
+          ..write('id: $id, ')
+          ..write('jour: $jour, ')
+          ..write('totalSecondes: $totalSecondes, ')
+          ..write('majLe: $majLe')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $EntreesHumeurTable entreesHumeur = $EntreesHumeurTable(this);
   late final $ConseilsTable conseils = $ConseilsTable(this);
+  late final $UsagesEcranJournaliersTable usagesEcranJournaliers =
+      $UsagesEcranJournaliersTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [entreesHumeur, conseils];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    entreesHumeur,
+    conseils,
+    usagesEcranJournaliers,
+  ];
 }
 
 typedef $$EntreesHumeurTableCreateCompanionBuilder =
@@ -532,6 +914,7 @@ typedef $$EntreesHumeurTableCreateCompanionBuilder =
       required String codeEmotion,
       required int valence,
       required DateTime creeLe,
+      required DateTime jour,
     });
 typedef $$EntreesHumeurTableUpdateCompanionBuilder =
     EntreesHumeurCompanion Function({
@@ -539,6 +922,7 @@ typedef $$EntreesHumeurTableUpdateCompanionBuilder =
       Value<String> codeEmotion,
       Value<int> valence,
       Value<DateTime> creeLe,
+      Value<DateTime> jour,
     });
 
 class $$EntreesHumeurTableFilterComposer
@@ -567,6 +951,11 @@ class $$EntreesHumeurTableFilterComposer
 
   ColumnFilters<DateTime> get creeLe => $composableBuilder(
     column: $table.creeLe,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get jour => $composableBuilder(
+    column: $table.jour,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -599,6 +988,11 @@ class $$EntreesHumeurTableOrderingComposer
     column: $table.creeLe,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get jour => $composableBuilder(
+    column: $table.jour,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$EntreesHumeurTableAnnotationComposer
@@ -623,6 +1017,9 @@ class $$EntreesHumeurTableAnnotationComposer
 
   GeneratedColumn<DateTime> get creeLe =>
       $composableBuilder(column: $table.creeLe, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get jour =>
+      $composableBuilder(column: $table.jour, builder: (column) => column);
 }
 
 class $$EntreesHumeurTableTableManager
@@ -660,11 +1057,13 @@ class $$EntreesHumeurTableTableManager
                 Value<String> codeEmotion = const Value.absent(),
                 Value<int> valence = const Value.absent(),
                 Value<DateTime> creeLe = const Value.absent(),
+                Value<DateTime> jour = const Value.absent(),
               }) => EntreesHumeurCompanion(
                 id: id,
                 codeEmotion: codeEmotion,
                 valence: valence,
                 creeLe: creeLe,
+                jour: jour,
               ),
           createCompanionCallback:
               ({
@@ -672,11 +1071,13 @@ class $$EntreesHumeurTableTableManager
                 required String codeEmotion,
                 required int valence,
                 required DateTime creeLe,
+                required DateTime jour,
               }) => EntreesHumeurCompanion.insert(
                 id: id,
                 codeEmotion: codeEmotion,
                 valence: valence,
                 creeLe: creeLe,
+                jour: jour,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -824,6 +1225,202 @@ typedef $$ConseilsTableProcessedTableManager =
       Conseil,
       PrefetchHooks Function()
     >;
+typedef $$UsagesEcranJournaliersTableCreateCompanionBuilder =
+    UsagesEcranJournaliersCompanion Function({
+      Value<int> id,
+      required DateTime jour,
+      required int totalSecondes,
+      required DateTime majLe,
+    });
+typedef $$UsagesEcranJournaliersTableUpdateCompanionBuilder =
+    UsagesEcranJournaliersCompanion Function({
+      Value<int> id,
+      Value<DateTime> jour,
+      Value<int> totalSecondes,
+      Value<DateTime> majLe,
+    });
+
+class $$UsagesEcranJournaliersTableFilterComposer
+    extends Composer<_$AppDatabase, $UsagesEcranJournaliersTable> {
+  $$UsagesEcranJournaliersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get jour => $composableBuilder(
+    column: $table.jour,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get totalSecondes => $composableBuilder(
+    column: $table.totalSecondes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get majLe => $composableBuilder(
+    column: $table.majLe,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UsagesEcranJournaliersTableOrderingComposer
+    extends Composer<_$AppDatabase, $UsagesEcranJournaliersTable> {
+  $$UsagesEcranJournaliersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get jour => $composableBuilder(
+    column: $table.jour,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get totalSecondes => $composableBuilder(
+    column: $table.totalSecondes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get majLe => $composableBuilder(
+    column: $table.majLe,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UsagesEcranJournaliersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UsagesEcranJournaliersTable> {
+  $$UsagesEcranJournaliersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get jour =>
+      $composableBuilder(column: $table.jour, builder: (column) => column);
+
+  GeneratedColumn<int> get totalSecondes => $composableBuilder(
+    column: $table.totalSecondes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get majLe =>
+      $composableBuilder(column: $table.majLe, builder: (column) => column);
+}
+
+class $$UsagesEcranJournaliersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UsagesEcranJournaliersTable,
+          UsageEcranJournalier,
+          $$UsagesEcranJournaliersTableFilterComposer,
+          $$UsagesEcranJournaliersTableOrderingComposer,
+          $$UsagesEcranJournaliersTableAnnotationComposer,
+          $$UsagesEcranJournaliersTableCreateCompanionBuilder,
+          $$UsagesEcranJournaliersTableUpdateCompanionBuilder,
+          (
+            UsageEcranJournalier,
+            BaseReferences<
+              _$AppDatabase,
+              $UsagesEcranJournaliersTable,
+              UsageEcranJournalier
+            >,
+          ),
+          UsageEcranJournalier,
+          PrefetchHooks Function()
+        > {
+  $$UsagesEcranJournaliersTableTableManager(
+    _$AppDatabase db,
+    $UsagesEcranJournaliersTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UsagesEcranJournaliersTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$UsagesEcranJournaliersTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$UsagesEcranJournaliersTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> jour = const Value.absent(),
+                Value<int> totalSecondes = const Value.absent(),
+                Value<DateTime> majLe = const Value.absent(),
+              }) => UsagesEcranJournaliersCompanion(
+                id: id,
+                jour: jour,
+                totalSecondes: totalSecondes,
+                majLe: majLe,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime jour,
+                required int totalSecondes,
+                required DateTime majLe,
+              }) => UsagesEcranJournaliersCompanion.insert(
+                id: id,
+                jour: jour,
+                totalSecondes: totalSecondes,
+                majLe: majLe,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UsagesEcranJournaliersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UsagesEcranJournaliersTable,
+      UsageEcranJournalier,
+      $$UsagesEcranJournaliersTableFilterComposer,
+      $$UsagesEcranJournaliersTableOrderingComposer,
+      $$UsagesEcranJournaliersTableAnnotationComposer,
+      $$UsagesEcranJournaliersTableCreateCompanionBuilder,
+      $$UsagesEcranJournaliersTableUpdateCompanionBuilder,
+      (
+        UsageEcranJournalier,
+        BaseReferences<
+          _$AppDatabase,
+          $UsagesEcranJournaliersTable,
+          UsageEcranJournalier
+        >,
+      ),
+      UsageEcranJournalier,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -832,4 +1429,9 @@ class $AppDatabaseManager {
       $$EntreesHumeurTableTableManager(_db, _db.entreesHumeur);
   $$ConseilsTableTableManager get conseils =>
       $$ConseilsTableTableManager(_db, _db.conseils);
+  $$UsagesEcranJournaliersTableTableManager get usagesEcranJournaliers =>
+      $$UsagesEcranJournaliersTableTableManager(
+        _db,
+        _db.usagesEcranJournaliers,
+      );
 }

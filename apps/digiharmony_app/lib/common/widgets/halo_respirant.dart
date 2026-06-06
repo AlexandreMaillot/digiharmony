@@ -45,10 +45,12 @@ class HaloRespirant extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final disableAnimations =
-        animer != null ? !animer! : MediaQuery.of(context).disableAnimations;
+    final disableAnimations = animer != null
+        ? !animer!
+        : MediaQuery.of(context).disableAnimations;
 
-    final couleursEffectives = couleurs ??
+    final couleursEffectives =
+        couleurs ??
         [
           AppColors.primary.withValues(alpha: 0.18),
           AppColors.signatureGradient[1].withValues(alpha: 0.08),

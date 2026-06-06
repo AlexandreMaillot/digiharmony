@@ -26,3 +26,13 @@ pubspec_overrides.yaml
 # === OS ===
 .DS_Store
 Thumbs.db
+
+# === Session logs (ne jamais committer) ===
+.specstory/
+# Tooling Claude versionné (règles, agents, commands, skills du projet) ;
+# seuls les fichiers locaux (settings.local.json, etc.) restent ignorés.
+.claude/*
+!.claude/rules/
+!.claude/agents/
+!.claude/commands/
+!.claude/skills/

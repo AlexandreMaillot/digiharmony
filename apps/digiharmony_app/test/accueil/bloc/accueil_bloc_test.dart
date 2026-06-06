@@ -17,12 +17,16 @@ Conseil _conseilStub({String cle = 'tipDay03'}) =>
 EntreeHumeur _humeurStub({
   String code = 'happy',
   DateTime? loggedAt,
-}) => EntreeHumeur(
-  id: 1,
-  codeEmotion: code,
-  valence: 1,
-  creeLe: loggedAt ?? DateTime(2026, 6, 5, 14, 30),
-);
+}) {
+  final at = loggedAt ?? DateTime(2026, 6, 5, 14, 30);
+  return EntreeHumeur(
+    id: 1,
+    codeEmotion: code,
+    valence: 1,
+    creeLe: at,
+    jour: DateTime(at.year, at.month, at.day),
+  );
+}
 
 /// Configure le mock DB pour émettre [valeurs] depuis le stream d'humeur.
 ///
