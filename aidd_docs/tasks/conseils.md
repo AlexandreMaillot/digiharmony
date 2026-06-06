@@ -3,7 +3,7 @@ page: Conseils
 slug: conseils
 route: ConseilsPage (push via AppRouter.versConseils)
 feature_dir: apps/digiharmony_app/lib/pages/conseils/
-status: proposition_a_valider
+status: implemente
 github:
 us:
   - "US-CO-01 « Parcourir le deck de conseils » (à créer via Erwin — milestone Phase 2 🟡)"

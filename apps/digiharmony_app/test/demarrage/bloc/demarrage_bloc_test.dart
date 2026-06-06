@@ -20,7 +20,13 @@ void main() {
     database = _MockAppDatabase();
     // Warm-up Drift par défaut : succès immédiat.
     when(() => database.conseilDuJour(any())).thenAnswer(
-      (_) async => const Conseil(id: 1, cleConseil: 'tipDay01'),
+      (_) async => const Conseil(
+        id: 1,
+        cleConseil: 'tipDay01',
+        typeCarte: 'rappel',
+        accentChrome: 'primary',
+        ordre: 1,
+      ),
     );
   });
 
@@ -49,7 +55,13 @@ void main() {
       when(() => database.conseilDuJour(any())).thenAnswer(
         (_) async {
           await Future<void>.delayed(const Duration(milliseconds: 80));
-          return const Conseil(id: 1, cleConseil: 'tipDay01');
+          return const Conseil(
+        id: 1,
+        cleConseil: 'tipDay01',
+        typeCarte: 'rappel',
+        accentChrome: 'primary',
+        ordre: 1,
+      );
         },
       );
       return build();

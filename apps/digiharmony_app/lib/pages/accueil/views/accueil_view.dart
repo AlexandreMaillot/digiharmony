@@ -107,10 +107,7 @@ class AccueilView extends StatelessWidget {
                               label: l10n.homeToolDailyTip,
                               icone: Icons.lightbulb_outline,
                               description: tipTexte,
-                              onTap: () => ouvrirPlaceholder(
-                                context,
-                                l10n.placeholderConseil,
-                              ),
+                              onTap: () => AppRouter.versConseils(context),
                             ),
                           ],
                         ),
@@ -156,6 +153,11 @@ class AccueilView extends StatelessWidget {
   }
 
   /// Résout le texte du conseil depuis la clé i18n.
+  ///
+  /// Couvre toutes les clés que `conseilDuJour` peut désormais renvoyer :
+  /// tipDay01..07 (rappels historiques) + conseilRappelPresent/Likes
+  /// + cartes conseil pratique. Les cartes émotion ne peuvent jamais
+  /// arriver ici (conseilDuJour filtre type_carte != 'emotion', DEC-CO-11).
   String _resoudreConseil(BuildContext context, String cle) {
     final l10n = context.l10n;
     switch (cle) {
@@ -173,6 +175,15 @@ class AccueilView extends StatelessWidget {
         return l10n.tipDay06;
       case 'tipDay07':
         return l10n.tipDay07;
+      // Nouveaux rappels/conseils génériques (corpus v4) — headline court.
+      case 'conseilRappelPresent':
+        return l10n.conseilRappelPresentCitation1;
+      case 'conseilRappelLikes':
+        return l10n.conseilRappelLikesCitation1;
+      case 'conseilPratiqueInteractions':
+        return l10n.conseilPratiqueInteractionsHeadline;
+      case 'conseilPratiqueEspace':
+        return l10n.conseilPratiqueEspaceHeadline;
       default:
         return l10n.tipDay01;
     }
