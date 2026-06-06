@@ -30,7 +30,9 @@ class JournalSegmentedControl extends StatelessWidget {
       height: 48,
       padding: const EdgeInsets.all(4),
       decoration: const BoxDecoration(
-        color: AppColors.surface,
+        // Piste plus sombre que l'AppBar (`surface`) pour contraster — sinon le
+        // conteneur se fond dans la barre. Le segment actif reste en `primary`.
+        color: AppColors.backgroundDeep,
         borderRadius: BorderRadius.all(Radius.circular(24)),
       ),
       child: Row(
