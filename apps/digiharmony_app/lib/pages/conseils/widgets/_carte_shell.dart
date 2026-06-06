@@ -5,7 +5,17 @@ import 'package:flutter/material.dart';
 // Composants internes partagés par les 3 types de cartes Conseils.
 // Préfixe underscore dans le nom de fichier = usage interne seulement.
 
+/// Hauteur minimale d'une carte du deck (maquette new_screen13 : `minHeight
+/// 440px`). La carte remplit la zone du deck quelle que soit la quantité de
+/// contenu (pas de tassement / grand vide sous la carte).
+const double hauteurMinCarte = 440;
+
 /// Coquille de carte avec streak accent, clouds décoratifs et fond surface.
+///
+/// La carte adopte une **hauteur cohérente** : elle remplit la hauteur
+/// disponible du deck (côté appelant) tout en garantissant un plancher de
+/// [hauteurMinCarte]. Le [child] est un `Column` distribué (`spaceBetween`)
+/// — voir les cartes rappel/emotion/conseil.
 class ContenuCarte extends StatelessWidget {
   const ContenuCarte({required this.accent, required this.child, super.key});
 
@@ -25,6 +35,10 @@ class ContenuCarte extends StatelessWidget {
         ),
       ),
       clipBehavior: Clip.antiAlias,
+      // Le contenu est l'enfant DIMENSIONNANT du Stack (non `Positioned`) afin
+      // de contribuer à la hauteur intrinsèque (l'appelant l'entoure d'un
+      // `IntrinsicHeight` + `minHeight` pour remplir le viewport). Les éléments
+      // décoratifs (clouds, streak) sont `Positioned` (sans effet de taille).
       child: Stack(
         children: [
           // Cloud radial haut-gauche
@@ -39,20 +53,32 @@ class ContenuCarte extends StatelessWidget {
             right: -30,
             child: _Cloud(couleur: accent.withValues(alpha: 0.10), taille: 100),
           ),
-          // Streak accent 4 px en haut
+          // Streak accent 4 px en haut — dégradé horizontal qui s'estompe
+          // à gauche ET à droite (transparent → accent → transparent),
+          // conforme maquette new_screen13.
           Positioned(
             top: 0,
             left: 0,
             right: 0,
-            child: Container(height: 4, color: accent),
+            child: Container(
+              height: 4,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    accent.withValues(alpha: 0),
+                    accent,
+                    accent.withValues(alpha: 0),
+                  ],
+                ),
+              ),
+            ),
           ),
-          // Contenu principal
+          // Contenu principal (enfant dimensionnant) — Column `spaceBetween`
+          // distribué sur la hauteur (maquette : padding px-7 py-8 = 28h/32v).
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.lg + 4,
-              AppSpacing.lg,
-              AppSpacing.lg,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 28,
+              vertical: 32,
             ),
             child: child,
           ),

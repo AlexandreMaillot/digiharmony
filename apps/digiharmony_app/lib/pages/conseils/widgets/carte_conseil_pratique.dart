@@ -38,31 +38,42 @@ class CarteConseilPratiqueWidget extends StatelessWidget {
     final dos = resoudreLignes(l10n, cle, 'Do', 3);
     final donts = resoudreLignes(l10n, cle, 'Dont', 2);
 
+    // Maquette : Column `justify-between` en 2 zones (tag / bloc
+    // headline+dos+donts) → distribue le contenu sur la pleine hauteur.
     return ContenuCarte(
       accent: accent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Zone haute : tag
           TagCarte(
             label: tag.isEmpty ? l10n.conseilsTagConseilPratique : tag,
             accent: accent,
             icone: Icons.bolt,
           ),
-          const SizedBox(height: AppSpacing.md),
-          if (headline.isNotEmpty)
-            Text(
-              headline,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppColors.text,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          if (headline.isNotEmpty) const SizedBox(height: AppSpacing.md),
-          if (dos.isNotEmpty) ...[
-            ...dos.map((d) => PuceDo(texte: d, accent: accent)),
-            const SizedBox(height: AppSpacing.xs),
-          ],
-          if (donts.isNotEmpty) ...donts.map((d) => PuceDont(texte: d)),
+          // Zone basse : headline + Do's + Don'ts
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (headline.isNotEmpty) ...[
+                Text(
+                  headline,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: AppColors.text,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+              ],
+              if (dos.isNotEmpty) ...[
+                ...dos.map((d) => PuceDo(texte: d, accent: accent)),
+                const SizedBox(height: AppSpacing.xs),
+              ],
+              if (donts.isNotEmpty) ...donts.map((d) => PuceDont(texte: d)),
+            ],
+          ),
         ],
       ),
     );

@@ -6,6 +6,7 @@ import 'package:digiharmony_app/pages/conseils/bloc/conseils_bloc.dart';
 import 'package:digiharmony_app/pages/conseils/modeles/carte_conseil.dart';
 import 'package:digiharmony_app/pages/conseils/views/conseils_page.dart';
 import 'package:digiharmony_app/pages/conseils/views/conseils_view.dart';
+import 'package:digiharmony_app/pages/conseils/widgets/_carte_shell.dart';
 import 'package:digiharmony_app/pages/conseils/widgets/hint_swipe.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -154,7 +155,7 @@ void main() {
       },
     );
 
-    // CV-7 : reduced-motion → flèches visibles, hint textuel masqué (DEC-CO-08).
+    // CV-7 : reduced-motion → flèches visibles, hint masqué (DEC-CO-08).
     //
     // En reduced-motion, la navigation SANS GESTE doit rester accessible :
     // les flèches IconButton restent visibles (HintSwipe.visible = true,
@@ -248,5 +249,85 @@ void main() {
         expect(tester.takeException(), isNull);
       },
     );
+  });
+
+  // ── Fidélité UI (maquette new_screen13) ──────────────────────────────────
+  group('ConseilsView — fidélité UI', () {
+    // Rend une carte rappel seule dans un viewport haut, reduced-motion ON
+    // (swipe-hint OFF → pas d'animation infinie, jamais de pumpAndSettle).
+    Widget buildCarteSeule({required bool disableAnimations}) {
+      final bloc = _MockConseilsBloc();
+      when(() => bloc.state).thenReturn(
+        const ConseilsState(
+          status: ConseilsStatus.pret,
+          deck: [
+            CarteRappel(cleContenu: 'tipDay01', accentChrome: 'primary'),
+          ],
+        ),
+      );
+      when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
+      return MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: MediaQuery(
+          data: MediaQueryData(disableAnimations: disableAnimations),
+          child: BlocProvider<ConseilsBloc>.value(
+            value: bloc,
+            child: const ConseilsView(),
+          ),
+        ),
+      );
+    }
+
+    // CV-FID-1 : la carte remplit la hauteur du deck (≥ hauteurMinCarte),
+    // ne se tasse pas au contenu (problème #1 du correctif). Viewport haut.
+    testWidgets(
+      'CV-FID-1: la carte rappel remplit la hauteur (≥ hauteurMinCarte)',
+      (tester) async {
+        tester.view.physicalSize = const Size(412, 920);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await tester.pumpWidget(buildCarteSeule(disableAnimations: true));
+        // pump simple (jamais pumpAndSettle : swipe-hint OFF ici de toute
+        // façon, mais on garde la garde-fou testing.md).
+        await tester.pump(const Duration(milliseconds: 50));
+
+        expect(tester.takeException(), isNull);
+        final carteSize = tester.getSize(find.byType(ContenuCarte));
+        expect(
+          carteSize.height,
+          greaterThanOrEqualTo(hauteurMinCarte),
+          reason: 'La carte doit remplir le deck, pas se tasser au contenu',
+        );
+      },
+    );
+
+    // CV-FID-2 : reduced-motion → aucune animation infinie en cours
+    // (swipe-hint OFF). On vérifie qu'aucun frame supplémentaire n'est planifié
+    // après un pump (sinon pumpAndSettle bouclerait — piège testing.md).
+    testWidgets(
+      "CV-FID-2: reduced-motion → pas d'animation swipe-hint en cours",
+      (tester) async {
+        await tester.pumpWidget(buildCarteSeule(disableAnimations: true));
+        await tester.pump(const Duration(milliseconds: 50));
+        expect(tester.takeException(), isNull);
+        // Aucune frame planifiée ⇒ pas d'animation infinie active.
+        expect(
+          tester.binding.hasScheduledFrame,
+          isFalse,
+          reason: 'En reduced-motion le swipe-hint doit être désactivé',
+        );
+      },
+    );
+
+    // NB : le rendu motion-ON complet de ConseilsView n'est pas testé en
+    // widget-test (ParticulesFlottantes s'appuie sur `flutter_animate` qui
+    // planifie des timers infinis → piège testing.md : jamais de
+    // pumpAndSettle). La convention projet teste la vue en reduced-motion.
+    // La désactivation du swipe-hint en reduced-motion est couverte par
+    // CV-FID-2 ; sa logique (AnimationController.repeat OFF si actif==false
+    // ou disableAnimations) reste un plain controller disposé proprement.
   });
 }

@@ -5,6 +5,8 @@ import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/accueil/widgets/particules_flottantes.dart';
 import 'package:digiharmony_app/pages/conseils/bloc/conseils_bloc.dart';
 import 'package:digiharmony_app/pages/conseils/modeles/carte_conseil.dart';
+import 'package:digiharmony_app/pages/conseils/widgets/_carte_shell.dart'
+    show hauteurMinCarte;
 import 'package:digiharmony_app/pages/conseils/widgets/carte_conseil_pratique.dart';
 import 'package:digiharmony_app/pages/conseils/widgets/carte_emotion.dart';
 import 'package:digiharmony_app/pages/conseils/widgets/carte_rappel.dart';
@@ -276,6 +278,8 @@ class _CorpsDeck extends StatelessWidget {
             accent: accent,
             index: index,
             total: state.deck.length,
+            actif: index == state.indexCourant,
+            disableAnimations: disableAnimations,
           );
         },
       ),
@@ -285,12 +289,14 @@ class _CorpsDeck extends StatelessWidget {
 
 // ─── Item de carte ────────────────────────────────────────────────────────
 
-class _CarteItem extends StatelessWidget {
+class _CarteItem extends StatefulWidget {
   const _CarteItem({
     required this.carte,
     required this.accent,
     required this.index,
     required this.total,
+    required this.actif,
+    required this.disableAnimations,
   });
 
   final CarteConseil carte;
@@ -298,32 +304,129 @@ class _CarteItem extends StatelessWidget {
   final int index;
   final int total;
 
+  /// Vrai si cette carte est la carte active (anime le swipe-hint).
+  final bool actif;
+
+  /// Si vrai (reduced-motion), le swipe-hint est désactivé (carte statique).
+  final bool disableAnimations;
+
+  @override
+  State<_CarteItem> createState() => _CarteItemState();
+}
+
+class _CarteItemState extends State<_CarteItem>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    // Swipe-hint : oscillation douce (~3.5 s, infinie) de la carte active.
+    // rotate -2° → +1.5° + légère translation X (maquette new_screen13).
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3500),
+    );
+    _majAnimation();
+  }
+
+  @override
+  void didUpdateWidget(_CarteItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.actif != widget.actif ||
+        oldWidget.disableAnimations != widget.disableAnimations) {
+      _majAnimation();
+    }
+  }
+
+  void _majAnimation() {
+    if (widget.actif && !widget.disableAnimations) {
+      if (!_controller.isAnimating) {
+        unawaited(_controller.repeat(reverse: true));
+      }
+    } else {
+      _controller
+        ..stop()
+        ..value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 335),
-        child: SingleChildScrollView(
-          child: _buildCarte(context),
+    // La carte remplit la hauteur du viewport du PageView (hauteur cohérente
+    // quelle que soit la quantité de contenu), avec un plancher à
+    // [hauteurMinCarte]. Scroll interne UNIQUEMENT en cas de débordement
+    // (gros textes / a11y) — sinon la carte est centrée et ne se tasse pas.
+    final carte = Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 335),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final hauteurDispo = constraints.maxHeight.isFinite
+                  ? constraints.maxHeight
+                  : hauteurMinCarte;
+              final hauteurCarte = hauteurDispo > hauteurMinCarte
+                  ? hauteurDispo
+                  : hauteurMinCarte;
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: hauteurCarte),
+                  child: IntrinsicHeight(child: _buildCarte(context)),
+                ),
+              );
+            },
+          ),
         ),
       ),
+    );
+
+    if (!widget.actif || widget.disableAnimations) {
+      return carte;
+    }
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        // t ∈ [0,1] → rotation -2° (= -0.0349 rad) à +1.5° (= 0.0262 rad).
+        final t = _controller.value;
+        final angle = (-2 + t * 3.5) * 3.1415926535 / 180;
+        final dx = (t - 0.5) * 8; // translation X douce ± 4 px
+        return Transform.translate(
+          offset: Offset(dx, 0),
+          child: Transform.rotate(
+            angle: angle,
+            child: child,
+          ),
+        );
+      },
+      child: carte,
     );
   }
 
   Widget _buildCarte(BuildContext context) {
-    return switch (carte) {
+    return switch (widget.carte) {
       CarteRappel() => CarteRappelWidget(
-          carte: carte as CarteRappel,
-          accent: accent,
+          carte: widget.carte as CarteRappel,
+          accent: widget.accent,
         ),
       CarteEmotion() => CarteEmotionWidget(
-          carte: carte as CarteEmotion,
-          accent: accent,
+          carte: widget.carte as CarteEmotion,
+          accent: widget.accent,
         ),
       CarteConseilPratique() => CarteConseilPratiqueWidget(
-          carte: carte as CarteConseilPratique,
-          accent: accent,
+          carte: widget.carte as CarteConseilPratique,
+          accent: widget.accent,
         ),
     };
   }

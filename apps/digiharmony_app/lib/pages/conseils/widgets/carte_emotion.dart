@@ -35,37 +35,41 @@ class CarteEmotionWidget extends StatelessWidget {
     final dos = resoudreLignes(l10n, cle, 'Do', 3);
     final donts = resoudreLignes(l10n, cle, 'Dont', 2);
 
+    // Maquette : Column `justify-between` en 3 zones (tag / bloc
+    // headline+dos+donts / CTA) → distribue le contenu sur la pleine hauteur.
     return ContenuCarte(
       accent: accent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Tag « Émotion »
+          // Zone haute : tag « Émotion »
           TagCarte(
             label: l10n.conseilsTagEmotion,
             accent: accent,
             icone: Icons.favorite_border,
           ),
-          const SizedBox(height: AppSpacing.md),
-          // Headline contextuel
-          Text(
-            l10n.conseilsEmotionHeadline(emotion),
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: AppColors.text,
-              fontWeight: FontWeight.bold,
-            ),
+          // Zone médiane : headline + Do's + Don'ts
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.conseilsEmotionHeadline(emotion),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: AppColors.text,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              if (dos.isNotEmpty) ...[
+                ...dos.map((d) => PuceDo(texte: d, accent: accent)),
+                const SizedBox(height: AppSpacing.xs),
+              ],
+              if (donts.isNotEmpty) ...donts.map((d) => PuceDont(texte: d)),
+            ],
           ),
-          const SizedBox(height: AppSpacing.md),
-          // Do's
-          if (dos.isNotEmpty) ...[
-            ...dos.map((d) => PuceDo(texte: d, accent: accent)),
-            const SizedBox(height: AppSpacing.xs),
-          ],
-          // Don'ts
-          if (donts.isNotEmpty)
-            ...donts.map((d) => PuceDont(texte: d)),
-          const SizedBox(height: AppSpacing.md),
-          // CTA respiration (STUB — DEC-J-02 / DEC-CO-09 : pas d'écriture)
+          // Zone basse : CTA respiration (STUB — DEC-J-02 / DEC-CO-09).
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(

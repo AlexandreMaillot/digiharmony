@@ -37,37 +37,56 @@ class CarteRappelWidget extends StatelessWidget {
     final sousTexte = resoudreCleCorpus(l10n, '${cle}SousTexte');
     final tag = resoudreCleCorpus(l10n, '${cle}Tag');
 
+    // Citation (28 px de base ; agrandie à 40 px quand la carte n'a qu'une
+    // seule ligne — tipDay01..07 sans Citation2/SousTexte — pour occuper
+    // visiblement la carte pleine hauteur, conforme maquette new_screen13).
+    final citationSeule = citation2.isEmpty && sousTexte.isEmpty;
+    final tailleCitation = citationSeule ? 40.0 : 28.0;
+
+    // Maquette : Column `justify-between` en 3 zones (tag / citation /
+    // sous-texte). Quand Citation2 et SousTexte sont vides (rappels-citation),
+    // la citation reste centrée verticalement dans la carte pleine hauteur
+    // grâce à `spaceBetween` (carte intentionnelle, jamais « cassée »).
     return ContenuCarte(
       accent: accent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Zone haute : tag
           TagCarte(
             label: tag,
             accent: accent,
             icone: Icons.wb_sunny_outlined,
           ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            citation1,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontSize: 28,
-              color: AppColors.text,
-              fontWeight: FontWeight.bold,
-              height: 1.15,
-            ),
-          ),
-          if (citation2.isNotEmpty)
-            Text(
-              citation2,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontSize: 28,
-                color: accent,
-                fontWeight: FontWeight.bold,
-                height: 1.15,
+          // Zone médiane : citation (centrée verticalement)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                citation1,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontSize: tailleCitation,
+                  color: AppColors.text,
+                  fontWeight: FontWeight.bold,
+                  height: 1.15,
+                ),
               ),
-            ),
-          const SizedBox(height: AppSpacing.md),
+              if (citation2.isNotEmpty)
+                Text(
+                  citation2,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontSize: tailleCitation,
+                    color: accent,
+                    fontWeight: FontWeight.bold,
+                    height: 1.15,
+                  ),
+                ),
+            ],
+          ),
+          // Zone basse : sous-texte (SizedBox vide si absent → garde la
+          // distribution `spaceBetween`).
           if (sousTexte.isNotEmpty)
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 260),
@@ -78,7 +97,9 @@ class CarteRappelWidget extends StatelessWidget {
                   fontSize: 13,
                 ),
               ),
-            ),
+            )
+          else
+            const SizedBox.shrink(),
         ],
       ),
     );
