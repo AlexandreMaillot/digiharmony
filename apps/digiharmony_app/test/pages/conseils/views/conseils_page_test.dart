@@ -322,6 +322,30 @@ void main() {
       },
     );
 
+    // CV-FID-3 : la carte rappel (tipDay01) affiche bien 3 Do's et 2 Don'ts.
+    // Vérifie que les PuceDo/PuceDont sont dans l'arbre après l'ajout des listes.
+    testWidgets(
+      'CV-FID-3: carte rappel tipDay01 affiche 3 PuceDo + 2 PuceDont',
+      (tester) async {
+        await tester.pumpWidget(buildCarteSeule(disableAnimations: true));
+        await tester.pump(const Duration(milliseconds: 50));
+
+        expect(tester.takeException(), isNull);
+        // 3 puces Do (check rond accent)
+        expect(
+          find.byType(PuceDo),
+          findsNWidgets(3),
+          reason: 'tipDay01 doit afficher 3 puces Do',
+        );
+        // 2 puces Don't (close rond gris)
+        expect(
+          find.byType(PuceDont),
+          findsNWidgets(2),
+          reason: "tipDay01 doit afficher 2 puces Don't",
+        );
+      },
+    );
+
     // NB : le rendu motion-ON complet de ConseilsView n'est pas testé en
     // widget-test (ParticulesFlottantes s'appuie sur `flutter_animate` qui
     // planifie des timers infinis → piège testing.md : jamais de
