@@ -28,7 +28,10 @@ scope: all
 
 ## Branching Strategy
 
-- Convention : branche unique `main` pour l'instant ; pas de process PR formalisé
+- Modèle en place : `main` (intégration finale) ← `alexandre` (branche d'intégration dev) ←
+  branches de feature `feat/*`. Process PR actif : feature → `alexandre` → `main` (ex. PR #15
+  `feat → alexandre`, PR #16 `alexandre → main` — les 3 branches sont alignées).
+- `.specstory/` n'a jamais été versionné (re-`git rm --cached` si réintroduit par un merge).
 - Format de branche (convention) : `type/short-description`
 
 | Prefix       | Usage                     |

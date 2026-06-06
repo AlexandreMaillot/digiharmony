@@ -1,19 +1,24 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-/// Flag de bascule : mettre à `true` UNIQUEMENT après :
-///   1. Obtention de l'entitlement `com.apple.developer.family-controls`
-///      (portail Apple Developer — accès spécial, hors code).
-///   2. Regénération des provisioning profiles (Runner + extension, 3 flavors).
-///   3. Dans Xcode : activer la capability Screen Time sur le target Runner,
-///      ajouter `ScreenTimeScaffold/ScreenTimeAuthorization.swift` au target
-///      Runner (Build Phases > Compile Sources), et créer le target
-///      `DeviceActivityReportExtension` (voir ScreenTimeScaffold/README.md).
-///   4. Mettre ce flag à `true` et relancer `flutter build ios`.
+/// Flag de bascule du chemin iOS Screen Time.
 ///
-/// Tant que ce flag est `false`, le comportement iOS reste `indisponible`
-/// (chemin actuel inchangé, DEC-TE-03).
+/// **Actuellement `true`** : la plomberie native est câblée (canal
+/// `digiharmony/screen_time` + extension `DeviceActivityReportExtension`,
+/// capability « Family Controls (Development) »), donc la View peut emprunter
+/// le chemin iOS réel. Au runtime, si l'entitlement n'est pas effectivement
+/// provisionné (ex. flavor sans profil régénéré), le canal natif renvoie
+/// `indisponible` et l'UI dégrade proprement (pas de crash —
+/// `AppDelegate.swift`).
+///
+/// Repasser à `false` désactive entièrement le chemin iOS (statut forcé
+/// `indisponible`, canal jamais appelé). Prérequis pour la **distribution**
+/// App Store (≠ Development) : entitlement
+/// `com.apple.developer.family-controls` approuvé par Apple + provisioning
+/// régénéré (Runner + extension, 3 flavors). Matériel de référence :
+/// `ScreenTimeScaffold/README.md`. Voir DEC-006/DEC-TE-03.
 const bool kScreenTimeIosActif = true;
 
 /// Statut d'autorisation FamilyControls retourné par le canal natif iOS.
@@ -39,8 +44,8 @@ enum StatutAutorisationIos {
 
 /// Wrapper autour du [MethodChannel] `digiharmony/screen_time` (côté Dart).
 ///
-/// INERTE tant que [kScreenTimeIosActif] est `false` : le canal n'est jamais
-/// appelé sur le chemin actif. Voir les instructions d'activation ci-dessus.
+/// Le canal n'est emprunté que lorsque [kScreenTimeIosActif] est `true`
+/// (cas actuel) ; sinon le chemin iOS est totalement court-circuité en amont.
 ///
 /// Méthodes exposées :
 ///   - [statutAutorisation] : lecture silencieuse du statut FamilyControls
@@ -66,7 +71,7 @@ class ScreenTimeIosChannel {
     try {
       final resultat =
           await _canal.invokeMethod<String>('statutAutorisation');
-      return _parseStatut(resultat);
+      return parseStatut(resultat);
     } on PlatformException {
       return StatutAutorisationIos.indisponible;
     }
@@ -86,7 +91,7 @@ class ScreenTimeIosChannel {
     try {
       final resultat =
           await _canal.invokeMethod<String>('demanderAutorisation');
-      return _parseStatut(resultat);
+      return parseStatut(resultat);
     } on PlatformException {
       return StatutAutorisationIos.indisponible;
     }
@@ -96,7 +101,14 @@ class ScreenTimeIosChannel {
   // Helpers internes
   // ---------------------------------------------------------------------------
 
-  StatutAutorisationIos _parseStatut(String? valeur) {
+  /// Convertit la chaîne brute du canal natif en [StatutAutorisationIos].
+  ///
+  /// Toute valeur inconnue ou `null` → [StatutAutorisationIos.indisponible]
+  /// (jamais d'exception). Exposé pour les tests : le mapping est le contrat
+  /// avec le code Swift, le garde-fou `Platform.isIOS` empêchant de l'exercer
+  /// via les méthodes publiques sur l'hôte de test.
+  @visibleForTesting
+  static StatutAutorisationIos parseStatut(String? valeur) {
     return switch (valeur) {
       'nonDemande' => StatutAutorisationIos.nonDemande,
       'refuse' => StatutAutorisationIos.refuse,

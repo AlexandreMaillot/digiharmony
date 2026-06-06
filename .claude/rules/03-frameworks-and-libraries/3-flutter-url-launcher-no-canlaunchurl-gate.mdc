@@ -1,0 +1,58 @@
+---
+description: url_launcher — ne JAMAIS gater l'ouverture sur canLaunchUrl ; appeler launchUrl directement en try/catch
+globs: apps/*/lib/**/*.dart
+alwaysApply: true
+---
+
+Principe:
+- Sur **Android 11+** (API 30), `canLaunchUrl` interroge `resolveActivity`/`queryIntentActivities`,
+  soumis au **package visibility filtering**. Sans déclaration `<queries>` adéquate, il renvoie
+  **`false`** et l'app logge `I/UrlLauncher: component name for <url> is null` — **alors que
+  `launchUrl` réussirait**.
+- `launchUrl` utilise `startActivity`, qui **n'est PAS** soumis au même filtrage de visibilité que
+  `canLaunchUrl`. L'ouverture réelle peut donc aboutir même quand `canLaunchUrl` retourne `false`.
+- Conséquence du gate `if (await canLaunchUrl(uri)) launchUrl(...) else echec` : le lien semble
+  « cassé » (SnackBar d'erreur) alors que le navigateur/`tel:` se serait ouvert. Ajouter `<queries>`
+  au manifeste aide `canLaunchUrl` mais reste fragile et **insuffisant** — le vrai correctif est de
+  supprimer le gate.
+
+Règles:
+- **Ne pas gater sur `canLaunchUrl`** pour décider d'ouvrir un lien. Appeler **directement**
+  `launchUrl(uri, mode: LaunchMode.externalApplication)`.
+- Encapsuler dans un `try/catch` ; ne signaler l'échec (SnackBar i18n) **que si** `launchUrl` renvoie
+  `false` **ou** jette (`PlatformException`/`Exception`). Dégradation propre si aucun handler.
+- `canLaunchUrl` reste acceptable uniquement pour **afficher/masquer** un élément à l'avance (ex.
+  cacher un bouton si aucun client mail) — jamais comme garde-fou de l'ouverture elle-même.
+- Garder un bloc `<queries>` au manifeste (VIEW https/http, DIAL tel) est inoffensif et utile si du
+  code futur réutilise `canLaunchUrl`, mais ne dispense pas de la règle ci-dessus.
+
+Anti-pattern (lien « component name is null », SnackBar à tort):
+```dart
+if (await canLaunchUrl(uri)) {
+  await launchUrl(uri, mode: LaunchMode.externalApplication);
+} else {
+  succes = false; // Android 11+ : faux négatif → l'utilisateur voit "Couldn't open the link"
+}
+```
+
+Correct:
+```dart
+var succes = true;
+try {
+  succes = await launchUrl(uri, mode: LaunchMode.externalApplication);
+} on PlatformException {
+  succes = false;
+} on Exception {
+  succes = false;
+}
+if (!succes && context.mounted) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(context.l10n.<cleErreurLien>)),
+  );
+}
+```
+
+Tests:
+- Le cas d'échec se mocke via **`launchUrl` qui jette** (ou renvoie `false`), PAS via
+  `canLaunch == false` (qui n'est plus appelé). Vérifier `launchUrl(url, ...)` appelé sur tap, et
+  SnackBar i18n affiché uniquement sur exception/`false`.

@@ -59,12 +59,19 @@ Après accord Apple :
    - development  : `<host_bundle_id_dev>.devicereport`
    - staging      : `<host_bundle_id_staging>.devicereport`
    - production   : `<host_bundle_id_prod>.devicereport`
-5. **Remplacer** les fichiers Swift générés par Xcode par ceux de ce répertoire :
-   - `DeviceActivityReportExtension/DeviceActivityReportExtension.swift`
-   - `DeviceActivityReportExtension/TotalActivityView.swift`
-6. Câbler `DeviceActivityReportExtension/Info.plist` au target (ajuster les
+> ℹ️ **Déjà fait** : le target `DeviceActivityReportExtension` existe et est câblé.
+> Les fichiers de référence vivent désormais dans `../DeviceActivityReportExtension/`
+> (et non plus dans ce dossier scaffold). Les étapes 5-7 ci-dessous documentent la
+> procédure d'origine pour rejouer le câblage sur un nouveau flavor / une nouvelle machine.
+
+5. **Remplacer** les fichiers Swift générés par Xcode par ceux de
+   `../DeviceActivityReportExtension/` :
+   - `DeviceActivityReportExtension.swift`
+   - `TotalActivityReport.swift`
+   - `TotalActivityView.swift`
+6. Câbler `../DeviceActivityReportExtension/Info.plist` au target (ajuster les
    bundle ids et `NSExtensionPrincipalClass`).
-7. Câbler `DeviceActivityReportExtension/DeviceActivityReportExtension.entitlements`
+7. Câbler `../DeviceActivityReportExtension/DeviceActivityReportExtension.entitlements`
    au target (Build Settings > Code Signing Entitlements).
 
 ### Étape 5 — Activer FamilyControls sur le target d'extension
