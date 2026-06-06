@@ -113,8 +113,7 @@ void main() {
         // Les events n'étendent pas Equatable (convention projet) → on capture
         // l'event ajouté et on vérifie son champ plutôt que l'égalité de
         // valeur.
-        final captures =
-            verify(() => bloc.add(captureAny())).captured;
+        final captures = verify(() => bloc.add(captureAny())).captured;
         expect(
           captures.whereType<EmotionSelectionnee>().map((e) => e.codeEmotion),
           contains('happy'),
@@ -126,8 +125,9 @@ void main() {
     testWidgets(
       'SHV-7 : EmotionSelectionneeEtat → feedback visible + Valider actif',
       (tester) async {
-        when(() => bloc.state)
-            .thenReturn(const EmotionSelectionneeEtat('happy'));
+        when(
+          () => bloc.state,
+        ).thenReturn(const EmotionSelectionneeEtat('happy'));
         await tester.pumpSaisie(bloc);
         expect(find.textContaining('selected'), findsWidgets);
         final bouton = tester.widget<FilledButton>(find.byType(FilledButton));
@@ -139,8 +139,9 @@ void main() {
     testWidgets(
       'SHV-8 : tap Valider → SaisieValidee',
       (tester) async {
-        when(() => bloc.state)
-            .thenReturn(const EmotionSelectionneeEtat('happy'));
+        when(
+          () => bloc.state,
+        ).thenReturn(const EmotionSelectionneeEtat('happy'));
         await tester.pumpSaisie(bloc);
         await tester.tap(find.byType(FilledButton));
         await tester.pump();
@@ -167,8 +168,9 @@ void main() {
     testWidgets(
       'SHV-10 : pastille sélectionnée décorée avec couleur MoodColors',
       (tester) async {
-        when(() => bloc.state)
-            .thenReturn(const EmotionSelectionneeEtat('angry'));
+        when(
+          () => bloc.state,
+        ).thenReturn(const EmotionSelectionneeEtat('angry'));
         await tester.pumpSaisie(bloc);
 
         final containers = tester.widgetList<Container>(

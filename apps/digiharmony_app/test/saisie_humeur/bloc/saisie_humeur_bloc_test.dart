@@ -84,8 +84,11 @@ void main() {
       act: (bloc) => bloc.add(const SaisieValidee()),
       expect: () => [
         const EnregistrementEnCours(codeEmotion: 'nervous'),
-        isA<EnregistrementEchoue>()
-            .having((s) => s.codeEmotion, 'code', 'nervous'),
+        isA<EnregistrementEchoue>().having(
+          (s) => s.codeEmotion,
+          'code',
+          'nervous',
+        ),
       ],
     );
 
@@ -93,8 +96,9 @@ void main() {
     blocTest<SaisieHumeurBloc, SaisieHumeurState>(
       'SHB-6 : Valider x2 pendant l’UPSERT ignoré (droppable)',
       build: () {
-        when(() => db.enregistrerHumeurDuJour(any()))
-            .thenAnswer((_) async => null);
+        when(
+          () => db.enregistrerHumeurDuJour(any()),
+        ).thenAnswer((_) async => null);
         return SaisieHumeurBloc(database: db);
       },
       seed: () => const EmotionSelectionneeEtat('calm'),

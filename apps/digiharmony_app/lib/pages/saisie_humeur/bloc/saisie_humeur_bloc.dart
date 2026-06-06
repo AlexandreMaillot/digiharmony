@@ -16,8 +16,8 @@ part 'saisie_humeur_state.dart';
 class SaisieHumeurBloc extends Bloc<SaisieHumeurEvent, SaisieHumeurState> {
   /// Crée le bloc avec la [database] Drift injectée.
   SaisieHumeurBloc({required AppDatabase database})
-      : _database = database,
-        super(const SaisieInitiale()) {
+    : _database = database,
+      super(const SaisieInitiale()) {
     on<EmotionSelectionnee>(_onEmotionSelectionnee, transformer: restartable());
     on<SaisieValidee>(_onSaisieValidee, transformer: droppable());
   }

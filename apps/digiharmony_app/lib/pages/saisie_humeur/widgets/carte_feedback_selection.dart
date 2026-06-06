@@ -50,13 +50,20 @@ class CarteFeedbackSelection extends StatelessWidget {
                   child: Text(
                     l10n.saisieHumeurSelectionne(libelle),
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: couleur,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      // Texte en blanc (la couleur d'émotion reste sur la
+                      // pastille emoji uniquement).
+                      color: AppColors.text,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
-                Icon(Icons.check_circle, color: couleur),
+                // Coche en contour, dans la couleur du bouton (primary), pas
+                // celle de l'émotion (conforme maquette).
+                const Icon(
+                  Icons.check_circle_outline,
+                  color: AppColors.primary,
+                ),
               ],
             ),
           ),

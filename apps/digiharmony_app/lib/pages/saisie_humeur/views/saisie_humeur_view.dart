@@ -58,18 +58,18 @@ class SaisieHumeurView extends StatelessWidget {
                         // Header
                         Text(
                           l10n.saisieHumeurTitre,
-                          style:
-                              Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    color: AppColors.primary,
-                                  ),
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(
+                                color: AppColors.primary,
+                              ),
                         ),
                         const SizedBox(height: AppSpacing.xs),
                         Text(
                           l10n.saisieHumeurSousTitre,
-                          style:
-                              Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: AppColors.textMuted,
-                                  ),
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(
+                                color: AppColors.textMuted,
+                              ),
                         ),
                         const SizedBox(height: AppSpacing.xl),
                         // Picker 7 pastilles
@@ -90,8 +90,8 @@ class SaisieHumeurView extends StatelessWidget {
                   l10n.saisieHumeurDonneesLocales,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textMuted,
-                      ),
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ],
             ),
@@ -133,7 +133,7 @@ class _BoutonValider extends StatelessWidget {
         return FilledButton(
           onPressed: actif
               ? () =>
-                  context.read<SaisieHumeurBloc>().add(const SaisieValidee())
+                    context.read<SaisieHumeurBloc>().add(const SaisieValidee())
               : null,
           child: enCours
               ? const SizedBox(

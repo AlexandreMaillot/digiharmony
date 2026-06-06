@@ -52,8 +52,7 @@ class PastilleEmotion extends StatelessWidget {
   Widget build(BuildContext context) {
     final couleur = MoodColors.byKey[emotion.cle];
     final libelle = _libelleEmotion(context, emotion.cle);
-    final disableAnimations =
-        MediaQuery.disableAnimationsOf(context);
+    final disableAnimations = MediaQuery.disableAnimationsOf(context);
 
     Widget pastille = _PastilleBody(
       emotion: emotion,
@@ -62,19 +61,33 @@ class PastilleEmotion extends StatelessWidget {
       selectionne: selectionne,
     );
 
-    if (!disableAnimations && !desactive) {
-      final i = index % _flotDelay.length;
-      pastille = pastille
-          .animate(
-            onPlay: (c) => c.repeat(reverse: true),
-            delay: Duration(milliseconds: _flotDelay[i]),
-          )
-          .moveY(
-            begin: 0,
-            end: -4,
-            duration: Duration(milliseconds: _flotDuration[i]),
-            curve: Curves.easeInOut,
-          );
+    if (!disableAnimations) {
+      if (selectionne) {
+        // Pop prononcé à la sélection (rebond élastique) — la clé par émotion
+        // force le rejeu de l'animation quand une nouvelle pastille devient
+        // sélectionnée. Le halo (boxShadow) est porté par `_PastilleBody`.
+        pastille = pastille
+            .animate(key: ValueKey('selection-${emotion.cle}'))
+            .scaleXY(
+              begin: 0.82,
+              end: 1,
+              duration: const Duration(milliseconds: 450),
+              curve: Curves.elasticOut,
+            );
+      } else if (!desactive) {
+        final i = index % _flotDelay.length;
+        pastille = pastille
+            .animate(
+              onPlay: (c) => c.repeat(reverse: true),
+              delay: Duration(milliseconds: _flotDelay[i]),
+            )
+            .moveY(
+              begin: 0,
+              end: -4,
+              duration: Duration(milliseconds: _flotDuration[i]),
+              curve: Curves.easeInOut,
+            );
+      }
     }
 
     return Opacity(
@@ -84,9 +97,9 @@ class PastilleEmotion extends StatelessWidget {
             ? null
             : () {
                 unawaited(HapticFeedback.lightImpact());
-                context
-                    .read<SaisieHumeurBloc>()
-                    .add(EmotionSelectionnee(emotion.cle));
+                context.read<SaisieHumeurBloc>().add(
+                  EmotionSelectionnee(emotion.cle),
+                );
               },
         child: SizedBox(
           width: 96,
@@ -99,13 +112,11 @@ class PastilleEmotion extends StatelessWidget {
                 libelle,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: selectionne
-                          ? (couleur ?? AppColors.primary)
-                          : AppColors.textMuted,
-                      fontWeight: selectionne
-                          ? FontWeight.w600
-                          : FontWeight.normal,
-                    ),
+                  color: selectionne
+                      ? (couleur ?? AppColors.primary)
+                      : AppColors.textMuted,
+                  fontWeight: selectionne ? FontWeight.w600 : FontWeight.normal,
+                ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -163,14 +174,21 @@ class _PastilleBody extends StatelessWidget {
             : AppColors.surface,
         shape: BoxShape.circle,
         border: selectionne && couleur != null
-            ? Border.all(color: couleur!, width: 2.5)
+            ? Border.all(color: couleur!, width: 3)
             : null,
+        // Halo prononcé à la sélection : double lueur (proche + diffuse) pour
+        // l'effet « glow » de la maquette.
         boxShadow: selectionne && couleur != null
             ? [
                 BoxShadow(
-                  color: couleur!.withValues(alpha: 0.40),
-                  blurRadius: 12,
-                  spreadRadius: 2,
+                  color: couleur!.withValues(alpha: 0.55),
+                  blurRadius: 28,
+                  spreadRadius: 6,
+                ),
+                BoxShadow(
+                  color: couleur!.withValues(alpha: 0.28),
+                  blurRadius: 48,
+                  spreadRadius: 12,
                 ),
               ]
             : null,
