@@ -1,5 +1,5 @@
-import 'package:digiharmony_app/detox/view/detox_config_page.dart';
-import 'package:digiharmony_app/sens/view/sens_page.dart';
+import 'package:digiharmony_app/pages/detox/view/detox_config_page.dart';
+import 'package:digiharmony_app/pages/sens/view/sens_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'helpers/helpers.dart';

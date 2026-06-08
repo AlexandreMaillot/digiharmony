@@ -1,4 +1,4 @@
-import 'package:digiharmony_app/theme/theme_application.dart';
+import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 /// AppBar custom partagee : bouton retour (chevron) + titre centre + trailing.
@@ -41,7 +41,7 @@ class BarreOutils extends StatelessWidget implements PreferredSizeWidget {
         ? const SizedBox(width: 48)
         : IconButton(
             icon: const Icon(Icons.chevron_left),
-            color: ThemeApplication.foreground,
+            color: AppColors.text,
             tooltip: backLabel,
             onPressed: onBack,
           );
@@ -60,7 +60,7 @@ class BarreOutils extends StatelessWidget implements PreferredSizeWidget {
                 title ?? '',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: ThemeApplication.foreground,
+                  color: AppColors.text,
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),

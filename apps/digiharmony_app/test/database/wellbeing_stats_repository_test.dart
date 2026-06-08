@@ -1,14 +1,14 @@
-import 'package:digiharmony_app/database/base_de_donnees.dart';
-import 'package:digiharmony_app/database/depot_stats_bien_etre.dart';
+import 'package:digiharmony_app/data/local/app_database.dart';
+import 'package:digiharmony_app/data/local/depot_stats_bien_etre.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  late BaseDeDonnees db;
+  late AppDatabase db;
   late DepotStatsBienEtre repository;
 
   setUp(() {
-    db = BaseDeDonnees.forTesting(NativeDatabase.memory());
+    db = AppDatabase.forTesting(NativeDatabase.memory());
     repository = DepotDriftStatsBienEtre(db);
   });
 
@@ -17,20 +17,20 @@ void main() {
   });
 
   group('DepotDriftStatsBienEtre', () {
-    test('recordCompletedSession increments count per exercise', () async {
-      await repository.recordCompletedSession('breathing');
-      await repository.recordCompletedSession('breathing');
-      await repository.recordCompletedSession('senses');
+    test('enregistrerSeance incrémente le compteur par exercice', () async {
+      await repository.enregistrerSeance('breathing');
+      await repository.enregistrerSeance('breathing');
+      await repository.enregistrerSeance('senses');
 
-      expect(await repository.watchCompletedCount('breathing').first, 2);
-      expect(await repository.watchCompletedCount('senses').first, 1);
-      expect(await repository.watchCompletedCount('stretch').first, 0);
+      expect(await repository.observerNombreSeances('breathing').first, 2);
+      expect(await repository.observerNombreSeances('senses').first, 1);
+      expect(await repository.observerNombreSeances('stretch').first, 0);
     });
 
-    test('different exerciseIds do not collide', () async {
-      await repository.recordCompletedSession('detox');
-      expect(await repository.watchCompletedCount('detox').first, 1);
-      expect(await repository.watchCompletedCount('breathing').first, 0);
+    test('exerciceIds distincts ne se heurtent pas', () async {
+      await repository.enregistrerSeance('detox');
+      expect(await repository.observerNombreSeances('detox').first, 1);
+      expect(await repository.observerNombreSeances('breathing').first, 0);
     });
   });
 }

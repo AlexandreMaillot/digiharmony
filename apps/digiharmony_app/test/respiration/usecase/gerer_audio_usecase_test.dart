@@ -2,8 +2,8 @@
 // positif directives_ordering (deux sous-sections reconnues malgré le tri).
 // ignore_for_file: directives_ordering
 import 'package:core_package/core_package.dart';
-import 'package:digiharmony_app/respiration/donnees/donnees.dart';
-import 'package:digiharmony_app/respiration/domaine/usecase/usecase.dart';
+import 'package:digiharmony_app/pages/respiration/donnees/donnees.dart';
+import 'package:digiharmony_app/pages/respiration/domaine/usecase/usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

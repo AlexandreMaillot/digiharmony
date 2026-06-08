@@ -1,4 +1,4 @@
-import 'package:digiharmony_app/theme/theme_application.dart';
+import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 /// Pastille informative « guide audio / voix off disponible ».
@@ -21,19 +21,19 @@ class IndicationAudio extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: ThemeApplication.primary.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(ThemeApplication.radiusLarge),
+        color: AppColors.primary.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppRadii.card),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 18, color: ThemeApplication.primary),
+          Icon(icon, size: 18, color: AppColors.primary),
           const SizedBox(width: 8),
           Flexible(
             child: Text(
               label,
               style: const TextStyle(
-                color: ThemeApplication.muted,
+                color: AppColors.textMuted,
                 fontSize: 13,
               ),
             ),

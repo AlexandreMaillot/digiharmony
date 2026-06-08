@@ -1,6 +1,6 @@
 import 'package:core_package/core_package.dart';
-import 'package:digiharmony_app/respiration/bloc/respiration_bloc.dart';
-import 'package:digiharmony_app/respiration/domaine/usecase/usecase.dart';
+import 'package:digiharmony_app/pages/respiration/bloc/respiration_bloc.dart';
+import 'package:digiharmony_app/pages/respiration/domaine/usecase/usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';

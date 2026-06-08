@@ -1,4 +1,4 @@
-import 'package:digiharmony_app/theme/theme_application.dart';
+import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 /// Bouton « Recommencer » partage par les exercices.
@@ -27,13 +27,13 @@ class BoutonRecommencer extends StatelessWidget {
       icon: Icon(icon),
       label: Text(label),
       style: OutlinedButton.styleFrom(
-        foregroundColor: ThemeApplication.primary,
+        foregroundColor: AppColors.primary,
         side: BorderSide(
-          color: ThemeApplication.primary.withValues(alpha: 0.5),
+          color: AppColors.primary.withValues(alpha: 0.5),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(ThemeApplication.radiusMedium),
+          borderRadius: BorderRadius.circular(AppRadii.card),
         ),
       ),
     );

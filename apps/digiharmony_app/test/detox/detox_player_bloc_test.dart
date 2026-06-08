@@ -1,6 +1,6 @@
 import 'package:core_package/core_package.dart';
-import 'package:digiharmony_app/detox/bloc/detox_lecteur_bloc.dart';
-import 'package:digiharmony_app/detox/domaine/usecase/usecase.dart';
+import 'package:digiharmony_app/pages/detox/bloc/detox_lecteur_bloc.dart';
+import 'package:digiharmony_app/pages/detox/domaine/usecase/usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

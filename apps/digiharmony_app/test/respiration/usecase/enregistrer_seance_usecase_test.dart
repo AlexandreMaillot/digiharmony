@@ -1,4 +1,4 @@
-import 'package:digiharmony_app/respiration/domaine/usecase/usecase.dart';
+import 'package:digiharmony_app/pages/respiration/domaine/usecase/usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/pump_app.dart';

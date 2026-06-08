@@ -1,4 +1,4 @@
-import 'package:digiharmony_app/respiration/domaine/usecase/usecase.dart';
+import 'package:digiharmony_app/pages/respiration/domaine/usecase/usecase.dart';
 import 'package:digiharmony_app/voix_off/bloc/voix_off_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';

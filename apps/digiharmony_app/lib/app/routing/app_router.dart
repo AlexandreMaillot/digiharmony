@@ -1,8 +1,8 @@
 import 'dart:io';
-
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_page.dart';
 import 'package:digiharmony_app/pages/bienvenue/views/bienvenue_page.dart';
+import 'package:digiharmony_app/pages/bulles/view/bulles_page.dart';
 import 'package:digiharmony_app/pages/conseils/views/conseils_page.dart';
 import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
 import 'package:digiharmony_app/pages/parametres/views/parametres_page.dart';
@@ -125,6 +125,23 @@ abstract final class AppRouter {
         builder: (_) => RepositoryProvider<AppDatabase>.value(
           value: database,
           child: const ConseilsPage(),
+        ),
+      ),
+    );
+  }
+
+  /// Ouvre le hub des exercices de relaxation « Bulles »
+  /// (empilé, retour possible).
+  ///
+  /// La [AppDatabase] est transmise explicitement pour traverser la frontière
+  /// de route (DEC-FND-07). `push`. Pas de GoRouter.
+  static Future<void> versBulles(BuildContext context) {
+    final database = context.read<AppDatabase>();
+    return Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => RepositoryProvider<AppDatabase>.value(
+          value: database,
+          child: const BullesPage(),
         ),
       ),
     );

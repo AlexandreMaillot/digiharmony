@@ -1,4 +1,4 @@
-import 'package:digiharmony_app/theme/theme_application.dart';
+import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
@@ -31,7 +31,7 @@ class MiseEnPageCelebration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final reduceMotion = MediaQuery.of(context).disableAnimations;
-    final burst = Icon(icon, size: 72, color: ThemeApplication.success);
+    final burst = Icon(icon, size: 72, color: AppColors.successVert);
 
     return Center(
       child: Padding(
@@ -54,7 +54,7 @@ class MiseEnPageCelebration extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                color: ThemeApplication.foreground,
+                color: AppColors.text,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -64,7 +64,7 @@ class MiseEnPageCelebration extends StatelessWidget {
               body,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                color: ThemeApplication.muted,
+                color: AppColors.textMuted,
                 fontSize: 15,
               ),
             ),

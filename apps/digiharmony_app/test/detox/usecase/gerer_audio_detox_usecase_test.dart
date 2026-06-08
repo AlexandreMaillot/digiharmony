@@ -1,8 +1,8 @@
 // Les imports detox/donnees et detox/domaine déclenchent un faux positif
 // directives_ordering (deux sous-sections reconnues malgré le tri).
 // ignore_for_file: directives_ordering
-import 'package:digiharmony_app/detox/donnees/depot_audio_detox.dart';
-import 'package:digiharmony_app/detox/domaine/usecase/gerer_audio_detox_usecase.dart';
+import 'package:digiharmony_app/pages/detox/donnees/depot_audio_detox.dart';
+import 'package:digiharmony_app/pages/detox/domaine/usecase/gerer_audio_detox_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

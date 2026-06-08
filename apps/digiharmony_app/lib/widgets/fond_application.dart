@@ -1,4 +1,4 @@
-import 'package:digiharmony_app/theme/theme_application.dart';
+import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 /// Fond partage des ecrans : couleur bleu nuit + 2 halos radiaux decoratifs.
@@ -19,7 +19,7 @@ class FondApplication extends StatelessWidget {
   /// Contenu pose au-dessus du fond.
   final Widget child;
 
-  /// Couleur de fond (defaut = [ThemeApplication.bubbleBackground]).
+  /// Couleur de fond (defaut = [AppColors.backgroundDeep]).
   final Color? background;
 
   /// Couleur du 1er halo (defaut = primaire translucide).
@@ -30,10 +30,10 @@ class FondApplication extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bg = background ?? ThemeApplication.bubbleBackground;
-    final h1 = haloPrimary ?? ThemeApplication.primary.withValues(alpha: 0.18);
+    final bg = background ?? AppColors.backgroundDeep;
+    final h1 = haloPrimary ?? AppColors.primary.withValues(alpha: 0.18);
     final h2 =
-        haloSecondary ?? ThemeApplication.success.withValues(alpha: 0.12);
+        haloSecondary ?? AppColors.successVert.withValues(alpha: 0.12);
 
     return DecoratedBox(
       decoration: BoxDecoration(color: bg),

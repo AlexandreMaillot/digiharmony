@@ -1,5 +1,5 @@
 import 'package:core_package/core_package.dart';
-import 'package:digiharmony_app/detox/bloc/detox_config_bloc.dart';
+import 'package:digiharmony_app/pages/detox/bloc/detox_config_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:mocktail/mocktail.dart';

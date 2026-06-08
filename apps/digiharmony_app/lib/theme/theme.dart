@@ -47,6 +47,18 @@ abstract final class AppColors {
     Color(0xFFA8D24E),
     Color(0xFFF0C84A),
   ];
+
+  // ─── Tokens exercices bien-être (portés depuis nathan) ───────────────────
+
+  /// Vert vif « succès / validation » — glow cycles respiration, points Étirement.
+  ///
+  /// Alias de [signatureGradient]\[1\] (lime A8D24E).
+  static const Color successVert = Color(0xFFA8D24E);
+
+  /// Or « accent Sens » — barre progression, icône des sens 5-4-3-2-1.
+  ///
+  /// Alias de [signatureGradient]\[2\] (or F0C84A).
+  static const Color sensesAccentOr = Color(0xFFF0C84A);
 }
 
 /// Palette catégorielle des 7 émotions.

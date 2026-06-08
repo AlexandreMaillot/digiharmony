@@ -97,10 +97,7 @@ class AccueilView extends StatelessWidget {
                             TuileOutil(
                               label: l10n.homeToolBubble,
                               icone: Icons.auto_awesome,
-                              onTap: () => ouvrirPlaceholder(
-                                context,
-                                l10n.placeholderBulle,
-                              ),
+                              onTap: () => AppRouter.versBulles(context),
                             ),
                             const SizedBox(width: AppSpacing.md),
                             TuileOutil(

@@ -1,4 +1,4 @@
-import 'package:digiharmony_app/theme/theme_application.dart';
+import 'package:digiharmony_app/theme/theme.dart';
 import 'package:digiharmony_app/voix_off/bloc/voix_off_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +27,7 @@ class BoutonVoixOff extends StatelessWidget {
     final active = context.watch<VoixOffBloc>().state.active;
     return IconButton(
       icon: Icon(active ? Icons.volume_up : Icons.volume_off),
-      color: ThemeApplication.foreground,
+      color: AppColors.text,
       tooltip: active ? onLabel : offLabel,
       onPressed: () => context.read<VoixOffBloc>().add(const VoixOffBasculee()),
     );

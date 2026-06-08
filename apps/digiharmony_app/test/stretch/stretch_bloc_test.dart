@@ -2,9 +2,9 @@
 // directives_ordering (deux sous-sections reconnues malgré le tri).
 // ignore_for_file: directives_ordering
 import 'package:core_package/core_package.dart';
-import 'package:digiharmony_app/etirement/bloc/etirement_bloc.dart';
-import 'package:digiharmony_app/etirement/donnees/depot_audio_etirement.dart';
-import 'package:digiharmony_app/etirement/domaine/usecase/usecase.dart';
+import 'package:digiharmony_app/pages/etirement/bloc/etirement_bloc.dart';
+import 'package:digiharmony_app/pages/etirement/donnees/depot_audio_etirement.dart';
+import 'package:digiharmony_app/pages/etirement/domaine/usecase/usecase.dart';
 import 'package:digiharmony_app/voix_off/bloc/voix_off_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';

@@ -1113,6 +1113,300 @@ class UsagesEcranJournaliersCompanion
   }
 }
 
+class $SeancesBienEtreTable extends SeancesBienEtre
+    with TableInfo<$SeancesBienEtreTable, SeanceBienEtre> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SeancesBienEtreTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _exerciceIdMeta = const VerificationMeta(
+    'exerciceId',
+  );
+  @override
+  late final GeneratedColumn<String> exerciceId = GeneratedColumn<String>(
+    'exercise_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nombreSeancesMeta = const VerificationMeta(
+    'nombreSeances',
+  );
+  @override
+  late final GeneratedColumn<int> nombreSeances = GeneratedColumn<int>(
+    'completed_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _derniereSeanceLeMeta = const VerificationMeta(
+    'derniereSeanceLe',
+  );
+  @override
+  late final GeneratedColumn<DateTime> derniereSeanceLe =
+      GeneratedColumn<DateTime>(
+        'last_completed_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    exerciceId,
+    nombreSeances,
+    derniereSeanceLe,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'wellbeing_stats';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SeanceBienEtre> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('exercise_id')) {
+      context.handle(
+        _exerciceIdMeta,
+        exerciceId.isAcceptableOrUnknown(data['exercise_id']!, _exerciceIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_exerciceIdMeta);
+    }
+    if (data.containsKey('completed_count')) {
+      context.handle(
+        _nombreSeancesMeta,
+        nombreSeances.isAcceptableOrUnknown(
+          data['completed_count']!,
+          _nombreSeancesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_completed_at')) {
+      context.handle(
+        _derniereSeanceLeMeta,
+        derniereSeanceLe.isAcceptableOrUnknown(
+          data['last_completed_at']!,
+          _derniereSeanceLeMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {exerciceId};
+  @override
+  SeanceBienEtre map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SeanceBienEtre(
+      exerciceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}exercise_id'],
+      )!,
+      nombreSeances: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}completed_count'],
+      )!,
+      derniereSeanceLe: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_completed_at'],
+      ),
+    );
+  }
+
+  @override
+  $SeancesBienEtreTable createAlias(String alias) {
+    return $SeancesBienEtreTable(attachedDatabase, alias);
+  }
+}
+
+class SeanceBienEtre extends DataClass implements Insertable<SeanceBienEtre> {
+  /// Identifiant d'exercice (ex. 'breathing', 'senses', 'stretch', 'detox').
+  final String exerciceId;
+
+  /// Nombre de séances terminées.
+  final int nombreSeances;
+
+  /// Date de la dernière séance terminée (null si aucune).
+  final DateTime? derniereSeanceLe;
+  const SeanceBienEtre({
+    required this.exerciceId,
+    required this.nombreSeances,
+    this.derniereSeanceLe,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['exercise_id'] = Variable<String>(exerciceId);
+    map['completed_count'] = Variable<int>(nombreSeances);
+    if (!nullToAbsent || derniereSeanceLe != null) {
+      map['last_completed_at'] = Variable<DateTime>(derniereSeanceLe);
+    }
+    return map;
+  }
+
+  SeancesBienEtreCompanion toCompanion(bool nullToAbsent) {
+    return SeancesBienEtreCompanion(
+      exerciceId: Value(exerciceId),
+      nombreSeances: Value(nombreSeances),
+      derniereSeanceLe: derniereSeanceLe == null && nullToAbsent
+          ? const Value.absent()
+          : Value(derniereSeanceLe),
+    );
+  }
+
+  factory SeanceBienEtre.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SeanceBienEtre(
+      exerciceId: serializer.fromJson<String>(json['exerciceId']),
+      nombreSeances: serializer.fromJson<int>(json['nombreSeances']),
+      derniereSeanceLe: serializer.fromJson<DateTime?>(
+        json['derniereSeanceLe'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'exerciceId': serializer.toJson<String>(exerciceId),
+      'nombreSeances': serializer.toJson<int>(nombreSeances),
+      'derniereSeanceLe': serializer.toJson<DateTime?>(derniereSeanceLe),
+    };
+  }
+
+  SeanceBienEtre copyWith({
+    String? exerciceId,
+    int? nombreSeances,
+    Value<DateTime?> derniereSeanceLe = const Value.absent(),
+  }) => SeanceBienEtre(
+    exerciceId: exerciceId ?? this.exerciceId,
+    nombreSeances: nombreSeances ?? this.nombreSeances,
+    derniereSeanceLe: derniereSeanceLe.present
+        ? derniereSeanceLe.value
+        : this.derniereSeanceLe,
+  );
+  SeanceBienEtre copyWithCompanion(SeancesBienEtreCompanion data) {
+    return SeanceBienEtre(
+      exerciceId: data.exerciceId.present
+          ? data.exerciceId.value
+          : this.exerciceId,
+      nombreSeances: data.nombreSeances.present
+          ? data.nombreSeances.value
+          : this.nombreSeances,
+      derniereSeanceLe: data.derniereSeanceLe.present
+          ? data.derniereSeanceLe.value
+          : this.derniereSeanceLe,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SeanceBienEtre(')
+          ..write('exerciceId: $exerciceId, ')
+          ..write('nombreSeances: $nombreSeances, ')
+          ..write('derniereSeanceLe: $derniereSeanceLe')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(exerciceId, nombreSeances, derniereSeanceLe);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SeanceBienEtre &&
+          other.exerciceId == this.exerciceId &&
+          other.nombreSeances == this.nombreSeances &&
+          other.derniereSeanceLe == this.derniereSeanceLe);
+}
+
+class SeancesBienEtreCompanion extends UpdateCompanion<SeanceBienEtre> {
+  final Value<String> exerciceId;
+  final Value<int> nombreSeances;
+  final Value<DateTime?> derniereSeanceLe;
+  final Value<int> rowid;
+  const SeancesBienEtreCompanion({
+    this.exerciceId = const Value.absent(),
+    this.nombreSeances = const Value.absent(),
+    this.derniereSeanceLe = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SeancesBienEtreCompanion.insert({
+    required String exerciceId,
+    this.nombreSeances = const Value.absent(),
+    this.derniereSeanceLe = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : exerciceId = Value(exerciceId);
+  static Insertable<SeanceBienEtre> custom({
+    Expression<String>? exerciceId,
+    Expression<int>? nombreSeances,
+    Expression<DateTime>? derniereSeanceLe,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (exerciceId != null) 'exercise_id': exerciceId,
+      if (nombreSeances != null) 'completed_count': nombreSeances,
+      if (derniereSeanceLe != null) 'last_completed_at': derniereSeanceLe,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SeancesBienEtreCompanion copyWith({
+    Value<String>? exerciceId,
+    Value<int>? nombreSeances,
+    Value<DateTime?>? derniereSeanceLe,
+    Value<int>? rowid,
+  }) {
+    return SeancesBienEtreCompanion(
+      exerciceId: exerciceId ?? this.exerciceId,
+      nombreSeances: nombreSeances ?? this.nombreSeances,
+      derniereSeanceLe: derniereSeanceLe ?? this.derniereSeanceLe,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (exerciceId.present) {
+      map['exercise_id'] = Variable<String>(exerciceId.value);
+    }
+    if (nombreSeances.present) {
+      map['completed_count'] = Variable<int>(nombreSeances.value);
+    }
+    if (derniereSeanceLe.present) {
+      map['last_completed_at'] = Variable<DateTime>(derniereSeanceLe.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SeancesBienEtreCompanion(')
+          ..write('exerciceId: $exerciceId, ')
+          ..write('nombreSeances: $nombreSeances, ')
+          ..write('derniereSeanceLe: $derniereSeanceLe, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1120,6 +1414,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ConseilsTable conseils = $ConseilsTable(this);
   late final $UsagesEcranJournaliersTable usagesEcranJournaliers =
       $UsagesEcranJournaliersTable(this);
+  late final $SeancesBienEtreTable seancesBienEtre = $SeancesBienEtreTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1128,6 +1425,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     entreesHumeur,
     conseils,
     usagesEcranJournaliers,
+    seancesBienEtre,
   ];
 }
 
@@ -1736,6 +2034,180 @@ typedef $$UsagesEcranJournaliersTableProcessedTableManager =
       UsageEcranJournalier,
       PrefetchHooks Function()
     >;
+typedef $$SeancesBienEtreTableCreateCompanionBuilder =
+    SeancesBienEtreCompanion Function({
+      required String exerciceId,
+      Value<int> nombreSeances,
+      Value<DateTime?> derniereSeanceLe,
+      Value<int> rowid,
+    });
+typedef $$SeancesBienEtreTableUpdateCompanionBuilder =
+    SeancesBienEtreCompanion Function({
+      Value<String> exerciceId,
+      Value<int> nombreSeances,
+      Value<DateTime?> derniereSeanceLe,
+      Value<int> rowid,
+    });
+
+class $$SeancesBienEtreTableFilterComposer
+    extends Composer<_$AppDatabase, $SeancesBienEtreTable> {
+  $$SeancesBienEtreTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get exerciceId => $composableBuilder(
+    column: $table.exerciceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get nombreSeances => $composableBuilder(
+    column: $table.nombreSeances,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get derniereSeanceLe => $composableBuilder(
+    column: $table.derniereSeanceLe,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SeancesBienEtreTableOrderingComposer
+    extends Composer<_$AppDatabase, $SeancesBienEtreTable> {
+  $$SeancesBienEtreTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get exerciceId => $composableBuilder(
+    column: $table.exerciceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get nombreSeances => $composableBuilder(
+    column: $table.nombreSeances,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get derniereSeanceLe => $composableBuilder(
+    column: $table.derniereSeanceLe,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SeancesBienEtreTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SeancesBienEtreTable> {
+  $$SeancesBienEtreTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get exerciceId => $composableBuilder(
+    column: $table.exerciceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get nombreSeances => $composableBuilder(
+    column: $table.nombreSeances,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get derniereSeanceLe => $composableBuilder(
+    column: $table.derniereSeanceLe,
+    builder: (column) => column,
+  );
+}
+
+class $$SeancesBienEtreTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SeancesBienEtreTable,
+          SeanceBienEtre,
+          $$SeancesBienEtreTableFilterComposer,
+          $$SeancesBienEtreTableOrderingComposer,
+          $$SeancesBienEtreTableAnnotationComposer,
+          $$SeancesBienEtreTableCreateCompanionBuilder,
+          $$SeancesBienEtreTableUpdateCompanionBuilder,
+          (
+            SeanceBienEtre,
+            BaseReferences<
+              _$AppDatabase,
+              $SeancesBienEtreTable,
+              SeanceBienEtre
+            >,
+          ),
+          SeanceBienEtre,
+          PrefetchHooks Function()
+        > {
+  $$SeancesBienEtreTableTableManager(
+    _$AppDatabase db,
+    $SeancesBienEtreTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SeancesBienEtreTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SeancesBienEtreTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SeancesBienEtreTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> exerciceId = const Value.absent(),
+                Value<int> nombreSeances = const Value.absent(),
+                Value<DateTime?> derniereSeanceLe = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SeancesBienEtreCompanion(
+                exerciceId: exerciceId,
+                nombreSeances: nombreSeances,
+                derniereSeanceLe: derniereSeanceLe,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String exerciceId,
+                Value<int> nombreSeances = const Value.absent(),
+                Value<DateTime?> derniereSeanceLe = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SeancesBienEtreCompanion.insert(
+                exerciceId: exerciceId,
+                nombreSeances: nombreSeances,
+                derniereSeanceLe: derniereSeanceLe,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SeancesBienEtreTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SeancesBienEtreTable,
+      SeanceBienEtre,
+      $$SeancesBienEtreTableFilterComposer,
+      $$SeancesBienEtreTableOrderingComposer,
+      $$SeancesBienEtreTableAnnotationComposer,
+      $$SeancesBienEtreTableCreateCompanionBuilder,
+      $$SeancesBienEtreTableUpdateCompanionBuilder,
+      (
+        SeanceBienEtre,
+        BaseReferences<_$AppDatabase, $SeancesBienEtreTable, SeanceBienEtre>,
+      ),
+      SeanceBienEtre,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1749,4 +2221,6 @@ class $AppDatabaseManager {
         _db,
         _db.usagesEcranJournaliers,
       );
+  $$SeancesBienEtreTableTableManager get seancesBienEtre =>
+      $$SeancesBienEtreTableTableManager(_db, _db.seancesBienEtre);
 }
