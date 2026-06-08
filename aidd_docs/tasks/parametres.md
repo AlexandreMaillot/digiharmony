@@ -1,549 +1,618 @@
 ---
-page: Paramètres (SettingsPage)
-route: /settings (SettingsPage — écran plein écran, cible du bouton MENU / hamburger global ; chevron retour → parent Home/menu, par nom de route, non présumé)
-us: []
-shared_components: [DigiToolbar, AppBackground, AppTheme, LocaleCubit]
-i18n_keys: [settingsTitle, settingsSectionLanguage, settingsSectionPrivacy, settingsPrivacyNotice, settingsSectionProject, settingsOpenSourceTitle, settingsOpenSourceSubtitle, settingsWebsiteTitle, settingsWebsiteSubtitle, settingsErasmusNotice, settingsVersion]
-shared_components_extracted: [AppLocale (core_package — modèle statique pur : code locale + drapeau emoji + autonyme NON traduit), LocaleCubit (HydratedCubit<Locale>, FONDATION partagée — à créer si absente, pattern VoiceoverCubit), kSupportedAppLocales (liste statique des 8 locales en/fr/el/it/ro/tr/es/mk), SettingsSection / SettingsCard (présentation, candidat kit partagé), LanguageTile, ExternalLinkTile, PrivacyNoticeCard, ErasmusBanner]
-tests: aidd_docs/tasks/parametres.tests.md (à remplir par Kent en étape 5)
-created: 2026-06-05
-updated: 2026-06-05
+page: Paramètres
+slug: parametres
+route: ParametresPage (push via AppRouter.versParametres)
+feature_dir: apps/digiharmony_app/lib/pages/parametres/
+status: valide
+github:
+us:
+  - "US-PARAM-01 « Changer la langue de l'application » → À CRÉER via Erwin (milestone Phase 2 🟡)"
+  - "US-PARAM-02 « Consulter les infos confidentialité / projet (open source, site, Erasmus+) » → À CRÉER via Erwin (dépend de PARAM-01)"
+depends_on:
+  - "#3 Fondations (US-FND-01) — thème, AppRouter, i18n, HaloRespirant, LocaleBloc (HydratedBloc), LegalUrls"
+  - "#2 Accueil (US-HOME-01) — point d'entrée (icône réglages du header)"
+related:
+  - accueil-home.md
+  - temps-ecran.md
+  - tuto-notifs.md
+shared_components:
+  - AppTheme
+  - AppColors
+  - AppSpacing
+  - AppRadii
+  - AppRouter (ajout versParametres)
+  - HaloRespirant
+  - LocaleBloc / LocaleEvent (LocaleChange) / LocaleState  (EXISTANT — réutilisé, NON recréé)
+  - LegalUrls (config/legal_urls.dart — github + website EXISTANTS)
+  - url_launcher (canLaunchUrl / launchUrl — déjà au pubspec, pattern bloc_ligne_ecoute.dart)
+  - HapticFeedback
+i18n_keys:
+  - parametresTitre
+  - parametresSectionLangue
+  - parametresSectionConfidentialite
+  - parametresConfidentialiteCorps
+  - parametresSectionProjet
+  - parametresOpenSourceTitre
+  - parametresOpenSourceSousTitre
+  - parametresSiteTitre
+  - parametresSiteSousTitre
+  - parametresErasmusCorps
+  - parametresVersion
+  - parametresLienIndisponible
+  - parametresLangueActiveSemantique
+i18n_keys_existantes_reutilisees:
+  - reglagesTooltip       # tooltip de l'icône réglages (header Accueil) — déjà existant
+  - homeBrandName         # wordmark « DigiHarmony » (non traduit)
+i18n_NON_traduites:
+  - "Libellés natifs des 8 langues (English / Français / Ελληνικά / Italiano / Română / Türkçe / Español / Македонски) = endonymes, JAMAIS traduits (constante Dart, hors ARB)"
+tests: aidd_docs/tasks/parametres.tests.md (à remplir en Step 5 par Kent)
+created: 2026-06-06
+updated: 2026-06-06
 ---
 
-# Plan de page — « Paramètres » (SettingsPage)
+# Page Plan — « Paramètres »
 
-> Plan auto-suffisant pour éditeur IA. Conforme aux règles `aidd_docs/memory/` +
-> `aidd_docs/rules/` de DIGIHARMONY : Flutter, monorepo Melos 7
-> (`apps/digiharmony_app` + `packages/core_package`), **client-only, zéro collecte,
-> zéro réseau applicatif, zéro SDK analytics/tracking/Crashlytics**, vibration via
-> `HapticFeedback` uniquement, aucune permission au-delà de `PACKAGE_USAGE_STATS`,
-> i18n ARB gen-l10n 8 langues (repli `en`), **DM Sans en asset local** (jamais
-> `google_fonts` → réseau interdit).
+> **STATUT : `proposition_a_valider`.** Plan auto-suffisant pour l'éditeur IA. Cible :
+> `apps/digiharmony_app/`. App Flutter DIGIHARMONY, public mineur, Erasmus+, **SANS backend
+> ni Firebase, ZÉRO collecte**. L'écran **ne collecte rien**, **n'ajoute aucune permission** et
+> **n'ajoute aucune dépendance pub**. Son cœur fonctionnel = **changer la langue de l'app en direct**
+> via le **`LocaleBloc` existant** (déjà au-dessus de `MaterialApp`, persiste via HydratedBloc).
 >
-> 🌐 **PIÈCE MAÎTRESSE — le sélecteur de langue.** Cet écran est l'unique surface qui
-> pilote la **bascule de langue LIVE** de toute l'application via le **`LocaleCubit`
-> partagé** (HydratedBloc, posé au-dessus de `MaterialApp`). Taper une langue change
-> instantanément la langue de l'app entière et **persiste** le choix entre sessions.
->
-> ✅ **Liens externes via `url_launcher` — conformité « zéro réseau ».** Ouvrir une URL
-> dans le **navigateur du système** est une **délégation à l'OS**, PAS une requête réseau
-> émise par l'app ni du tracking. `url_launcher` est **déjà présent** au `pubspec`
-> (`url_launcher: ^6.3.2`) — dépendance **déjà acceptée**, rien à valider (cf. §7).
->
-> Cet écran **réutilise** les composants partagés `DigiToolbar`, `AppBackground`,
-> `AppTheme` (créés par `choisis-ta-bulle.md`, étendus par `respiration.md`/`detox.md`).
-> Il utilise le **fond STANDARD de l'app `#1F2C49`** — token réel `AppTheme.hubBackground`
-> (PAS le fond bulle `#16213C`). ⚠️ Voir §3 : le registry/temps-decran parlent d'un token
-> `appBackground`, mais le **token réellement présent dans le code** est `hubBackground`
-> (`Color(0xFF1F2C49)`). On s'aligne sur le code.
+> **Maquette Banani « Paramètres » (new_screen14) transmise par l'utilisateur = FAIT LOI** (les agents
+> n'atteignent pas Banani en arrière-plan ; la structure ci-dessous reprend la maquette fournie dans la
+> consigne). Les points encore flous (URLs exactes, source de la version, harmonisation des clés i18n)
+> sont regroupés en **§13 « Questions à valider »**. Tout ce qui est marqué 🟡 = à confirmer.
 
 ---
 
-## 1. Contexte de la page
+## 0. Garde-fous (FONT LOI — priment sur tout détail divergent ci-dessous)
+
+- **Sans backend, sans Firebase, zéro collecte.** Aucun SDK réseau/analytics/tracking/Crashlytics.
+  Changer de langue **n'envoie rien** : c'est un état local persistant (HydratedBloc, `LocaleBloc`).
+  L'ouverture du GitHub / du site se fait via le **navigateur système** (`url_launcher`, déjà présent) :
+  l'app **ne charge pas** ces pages, **ne journalise rien**.
+- **AUCUNE permission ajoutée.** Ouvrir une URL https via `url_launcher` (`LaunchMode.externalApplication`)
+  **ne requiert aucune permission**. La SEULE permission du projet reste `PACKAGE_USAGE_STATS` (non
+  utilisée ici). **N'ajoute aucune autre permission, aucun SDK.**
+- **AUCUNE dépendance pub ajoutée.** `url_launcher` est **déjà au pubspec** (vérifié, `^6.3.2`).
+  ⚠️ **`package_info_plus` n'est PAS au pubspec** (vérifié) → **ne PAS l'ajouter** : la version
+  s'affiche via une **constante** (DEC-PARAM-06). Pas de nouvelle dépendance, point.
+- **Réutiliser `LocaleBloc`, NE PAS recréer.** Le `LocaleBloc` existe déjà (`lib/locale/locale_bloc.dart`),
+  c'est un **`HydratedBloc`** (et non un Cubit — la consigne dit « LocaleCubit » mais le code réel est
+  `LocaleBloc` ; **le code fait foi**). Il est fourni **au-dessus de `MaterialApp`** (bootstrap). Le tap
+  sur une langue **dispatch `LocaleChange(Locale(code))`**. **Aucun nouveau Bloc** : l'écran est un
+  `StatelessWidget` qui lit l'état via `BlocBuilder<LocaleBloc, LocaleState>` et dispatch via
+  `context.read<LocaleBloc>().add(...)` (DEC-PARAM-02).
+- **Pas de Drift, pas de HydratedBloc dédié.** Aucune lecture/écriture Drift. La seule persistance est
+  celle **déjà** portée par `LocaleBloc` (langue). **Pas de codegen Drift** (aucune modif de schéma).
+- **i18n obligatoire** : aucune chaîne FR/EN en dur. Clés `parametres*` (§8) ajoutées dans **les 8**
+  ARB, `fr`+`en` réels, repli `en` (TODO) pour `el/it/ro/tr/es/mk`, puis `flutter gen-l10n`.
+  **EXCEPTION (DEC-PARAM-03)** : les **libellés des 8 langues = endonymes** (« Français », « Ελληνικά »,
+  « Македонски »…) ne sont **PAS traduits** ni mis en ARB — ce sont des **constantes Dart** (un nom de
+  langue s'écrit pareil quelle que soit la langue d'affichage). Le wordmark « DigiHarmony » reste non traduit.
+- **a11y reduced-motion** : `HaloRespirant` (et toute animation) désactivable via
+  `MediaQuery.disableAnimations`. Tap ≥ 48×48 dp (lignes de langue, liens projet, chevron).
+  Contraste AA. `HapticFeedback.selectionClick()` au choix d'une langue (pas de permission `VIBRATE`).
+- **Couleurs via le design system** (`AppColors`/thème) — **aucun hex en dur**. La langue **active** est
+  surlignée avec `AppColors.primary.withValues(alpha: 0.12)` (fond), texte `AppColors.text`, pastille
+  check `AppColors.primary`. `MoodColors` **interdit** ici (cet écran n'est pas un écran d'humeur).
+  Espacements `AppSpacing` (4/8/16/24/32), rayons `AppRadii` (card 24, button 12).
+- **Public mineur, ton bienveillant** (DEC-003 + design-system §garde-fous éthiques) : **pas de FOMO,
+  pas de score, pas de compte, pas d'identification.** La carte confidentialité **rassure** (« Aucune
+  donnée personnelle n'est enregistrée ni diffusée. Pas de compte, pas d'identification. »).
+- **Nommage FRANÇAIS** : dossier `lib/pages/parametres/`, classe `ParametresPage`/`ParametresView`.
+  Structure imposée (règle `0-flutter-pages-structure`) : `lib/pages/parametres/{views,widgets}`
+  (**pas** de dossier `bloc` — on réutilise `LocaleBloc`, DEC-PARAM-02). Méthode de route
+  `AppRouter.versParametres(context)`. Scaffolding technique reste anglais.
+- **Toolbar haute** présente (DEC-003 : toolbar partout **sauf** splash/accueil). Maquette : chevron
+  retour · titre « Paramètres » · **PAS de burger** (espaceur d'équilibre — confirmé maquette).
+- **Android : `minify`/`shrinkResources = false`** (déjà acté Fondations) — ne rien faire qui suppose
+  le contraire.
+
+---
+
+## 1. Contexte & objectif de la page
 
 | Élément | Valeur |
-| --- | --- |
-| Nom | « Paramètres » — langue de l'app, note de confidentialité, infos projet (open source, site, Erasmus+), version |
-| Widget page | `SettingsPage` (entrée + providers) + `SettingsView` (UI), fichier `lib/settings/view/settings_page.dart` |
-| Route logique | `/settings`, écran plein écran. **Cible du bouton MENU / hamburger global** (cf. §10). Chevron retour → parent (Home/menu) |
-| Parent | Accueil / Home (point d'entrée exact branché côté routing Home — référencé **par nom de route**, non présumé) |
-| Accès / rôles / auth | **Aucun** — app sans compte, sans identification. Accès libre |
-| Données affichées | **Langue courante** (cochée), **liste statique des 8 locales**, note de confidentialité (texte), 2 liens projet (GitHub, site), bandeau Erasmus+, **version de l'app** |
-| Source de données | **Langue** : `LocaleCubit` (HydratedBloc). **Liste des locales** : constante statique `kSupportedAppLocales` (code + drapeau emoji + autonyme). **Liens** : `LegalUrls` (déjà dans `lib/config/legal_urls.dart`). **Version** : constante de build (cf. §8). **Aucune** API, **aucune** DB, **aucune** permission |
-| Persistance | Uniquement la **langue** via `LocaleCubit` (HydratedBloc, déjà le mécanisme prévu pour la langue — DEC-002 : HydratedBloc = état léger, jamais le journal). Le reste est **statique** |
-| État applicatif | `LocaleCubit` (partagé, lecture + `setLocale`). Aucun Bloc/Cubit propre à l'écran |
-| États écran | **Nominal uniquement** : liste langue + sections. **Pas** d'empty / loading / error (cf. §5) |
-
-**Pourquoi aucun Bloc dédié à l'écran :** la seule donnée mutable est la langue, déjà gérée
-par le `LocaleCubit` partagé. Tout le reste est statique (constantes + i18n). Inutile d'ajouter
-un Cubit `SettingsCubit` — on lirait/écrirait simplement le `LocaleCubit`. **Ne pas en créer.**
+|---|---|
+| **But** | Donner à l'ado un **écran Paramètres** centré sur le **choix de la langue** (8 langues, bascule **en direct**), et l'**informer** sur la confidentialité (zéro collecte) et le projet (open source, site officiel, financement Erasmus+). |
+| **Cœur fonctionnel** | **Changer la langue de l'app EN DIRECT** via le **`LocaleBloc` existant** → la bascule est immédiate (le `MaterialApp` se reconstruit) et **persiste** (HydratedBloc). |
+| **Accès** | Aucune auth (app sans compte). Aucune permission. Écran **empilé** (`push`, retour possible). |
+| **Point d'entrée** | **Icône réglages `Icons.settings`** du **header de l'Accueil** (`accueil_view.dart`, `_Header`, **L224-228**). Elle ouvre aujourd'hui `ouvrirPlaceholder(context, l10n.placeholderReglages)` → **à recâbler** vers `AppRouter.versParametres(context)` (§6 + DEC-PARAM-08). Le `tooltip` `l10n.reglagesTooltip` est **conservé**. |
+| **Route** | Pas de GoRouter (cohérent `AppRouter`, DEC-FND-07). Nouvelle méthode `AppRouter.versParametres(context)` en **`push`**, calquée sur `versTutoNotifs`/`versSoutien` (écran sans DB à transmettre → `ParametresPage.route()`). |
+| **Retour** | Toolbar : chevron `Icons.chevron_left` → `Navigator.pop`. **Pas de burger** (maquette) → `actions` = `SizedBox` d'équilibre (titre reste centré). |
+| **Périmètre plateforme** | Android + iOS identiques (aucun natif, aucune permission). L'ouverture d'URL via `url_launcher` est multiplateforme ; échec → SnackBar neutre (DEC-PARAM-05). |
 
 ---
 
-## 2. User Stories liées
+## 2. Contrainte structurante n°1 — changement de langue via `LocaleBloc` (DEC-PARAM-01/02)
 
-**Aucune US backlog référencée fournie.** Le plan s'appuie sur les **décisions validées par
-l'utilisateur** (reportées en §13) qui font office de critères d'acceptation. À rattacher si une
-US existe (mettre à jour le champ `us:` de l'en-tête + du registry).
+### 2.1 Le mécanisme existant (à réutiliser, NE PAS recréer)
+
+`LocaleBloc` (`lib/locale/locale_bloc.dart`) — **vérifié dans le code** :
+
+```dart
+class LocaleBloc extends HydratedBloc<LocaleEvent, LocaleState> { ... }
+
+sealed class LocaleEvent { ... }
+final class LocaleChange extends LocaleEvent { const LocaleChange(this.locale); final Locale locale; }
+final class LocaleSysteme extends LocaleEvent { const LocaleSysteme(); }
+
+final class LocaleState extends Equatable { const LocaleState({this.locale}); final Locale? locale; }
+```
+
+- `LocaleState.locale == null` → **suivi de la langue système**. Une langue explicite → forcée.
+- Persistance **automatique** via HydratedBloc (`toJson`/`fromJson` déjà implémentés, repli sûr si code
+  non supporté). **Rien à persister de plus** côté Paramètres.
+- Le `LocaleBloc` est fourni **au-dessus de `MaterialApp`** (bootstrap) → il est accessible par
+  `context.read<LocaleBloc>()` / `context.watch` depuis n'importe quel écran empilé. **Aucun
+  `BlocProvider` à recréer** dans `ParametresPage` (DEC-PARAM-02).
+
+### 2.2 Conséquences pour l'écran Paramètres
+
+- L'écran **lit** la langue active via `BlocBuilder<LocaleBloc, LocaleState>` :
+  `final actif = state.locale?.languageCode ?? <code système courant>;` (voir §2.3 pour le « système »).
+- Le tap sur une langue **dispatch** `context.read<LocaleBloc>().add(LocaleChange(Locale(code)))`
+  + `HapticFeedback.selectionClick()`. La bascule est **immédiate** (le `MaterialApp` se reconstruit,
+  les libellés `parametres*` se retraduisent) et **persistée** (HydratedBloc). **Pas de bouton « valider »**,
+  **pas de SnackBar** (la bascule visible des textes = feedback suffisant — DEC-PARAM-04).
+- **Aucun nouveau Bloc, aucun nouvel event, aucune modif de `LocaleBloc`.** L'écran est `StatelessWidget`.
+
+### 2.3 Surlignage de la langue active & cas « suivi système » (DEC-PARAM-07)
+
+- La maquette surligne **la langue active**. Quand `state.locale != null`, c'est trivial : surligner le
+  code correspondant.
+- Quand `state.locale == null` (**suivi système**, état initial avant tout choix), la langue « active »
+  affichée = la langue **réellement résolue** par `MaterialApp` =
+  `Localizations.localeOf(context).languageCode` (la locale effective après résolution `supportedLocales`
+  + repli). C'est cette valeur qu'on surligne, pour que le check reflète **ce que l'utilisateur voit**.
+- **V1 : pas de ligne « Langue du système »** distincte dans la liste (la maquette ne la montre pas).
+  Choisir une langue **force** ce code (sort du suivi système). 🟡 Revenir au suivi système n'est **pas**
+  exposé en V1 (Q-PARAM-4) — l'event `LocaleSysteme` existe mais n'est pas câblé à un contrôle UI ici.
 
 ---
 
-## 3. Design — structure visuelle (fidèle à la maquette HTML/CSS fournie)
+## 3. Données affichées & sources
 
-Fond **`#1F2C49`** (fond STANDARD app = `AppTheme.hubBackground`, PAS `bubbleBackground #16213C`)
-\+ **halo radial cyan décoratif** (déjà rendu statiquement par `AppBackground`, compatible
-`reduceMotion` par construction).
+| Donnée | Source | Persistance |
+|---|---|---|
+| Langue active | `LocaleBloc` → `LocaleState.locale` (ou `Localizations.localeOf` si null, §2.3) | Persistée par HydratedBloc (existant) |
+| Liste des 8 langues (code + endonyme + drapeau) | **Constante Dart** `languesSupportees` (DEC-PARAM-03), alignée sur `AppLocalizations.supportedLocales` | — (statique) |
+| Texte confidentialité | i18n statique (`parametresConfidentialiteCorps`) | — |
+| Liens projet (libellés) | i18n statique (`parametresOpenSourceTitre`…) | — |
+| URLs GitHub / site | **`LegalUrls.github` / `LegalUrls.website`** (EXISTANTES, vérifiées) | — |
+| Version de l'app | **Constante** `kVersionApp` (DEC-PARAM-06) — `package_info_plus` ABSENT du pubspec | — |
 
-```
-┌──────────────────────────────────────────────┐
-│  [‹ 48x48]      Paramètres        [spacer 48] │  ← DigiToolbar (trailing=null)
-│                                                │
-│  LANGUE                                        │  ← label section (uppercase, muted)
-│  ┌──────────── Carte liste (#283A5E) ────────┐│
-│  │ 🇬🇧  English                               ││
-│  │ 🇫🇷  Français                          ✓  ││  ← SÉLECTIONNÉ : fond cyan translucide,
-│  │ 🇬🇷  Ελληνικά                              ││     texte foreground gras, check cyan
-│  │ 🇮🇹  Italiano                              ││
-│  │ 🇷🇴  Română                                ││
-│  │ 🇹🇷  Türkçe                                ││
-│  │ 🇪🇸  Español                               ││
-│  │ 🇲🇰  Македонски                            ││
-│  └────────────────────────────────────────────┘│
-│                                                │
-│  CONFIDENTIALITÉ                               │  ← label section
-│  ┌──🛡──────────────────────────────────────┐  │
-│  │ Aucune donnée personnelle n'est           │  │  ← shield-check cyan (Icons.verified_user)
-│  │ enregistrée ni diffusée. Pas de compte,   │  │     POINT CLÉ RGPD (texte i18n statique)
-│  │ pas d'identification.                     │  │
-│  └────────────────────────────────────────────┘ │
-│                                                │
-│  LE PROJET                                     │  ← label section
-│  ┌──────────── Carte liste (#283A5E) ────────┐│
-│  │ (</>) Code open source                ↗  ││  → ouvre repo GitHub (navigateur OS)
-│  │       GitHub · Licence GNU GPL            ││     icône Icons.code + Icons.open_in_new
-│  │ ──────────── séparateur ────────────       ││
-│  │ (🌐) digiharmony.org                  ↗  ││  → ouvre le site (navigateur OS)
-│  │       Site officiel du projet             ││     Icons.public + Icons.open_in_new
-│  └────────────────────────────────────────────┘│
-│  ┌──🇪🇺──────────────────────────────────────┐ │  ← bandeau Erasmus+
-│  │ Projet Erasmus+ — application gratuite,    │ │     carré bleu UE (emoji 🇪🇺)
-│  │ sans publicité                             │ │
-│  └────────────────────────────────────────────┘ │
-│                                                │
-│              DIGIHARMONY v1.0                  │  ← footer centré (muted)
-└──────────────────────────────────────────────┘
-```
+- **DEC-PARAM-03 (liste des langues = constante, endonymes non traduits)** : une constante Dart liste les
+  8 langues supportées avec, pour chacune : `code` (en/fr/el/it/ro/tr/es/mk), `endonyme` (nom natif),
+  `drapeau` (emoji 🇬🇧🇫🇷🇬🇷🇮🇹🇷🇴🇹🇷🇪🇸🇲🇰). **L'ordre suit la maquette** (en, fr, el, it, ro, tr, es, mk).
+  Les endonymes ne sont **PAS** en ARB (ne se traduisent pas). La liste **doit rester alignée** sur
+  `AppLocalizations.supportedLocales` (les 8 langues du projet) — garde-fou test (AC8).
+- **DEC-PARAM-06 (version via constante, pas de `package_info_plus`)** : afficher « DIGIHARMONY v1.0 » via
+  une **constante** (ex. `const kVersionApp = '1.0'` dans un fichier de config, ou réutiliser une constante
+  existante si présente). **Ne PAS ajouter `package_info_plus`** (viole « zéro nouvelle dépendance »). Le
+  libellé exact (avec/sans wordmark, format `v1.0` vs `1.0.0+1`) est à confirmer (Q-PARAM-3). 🟡
 
-**Ordre strict (haut → bas), à NE PAS réordonner :** Toolbar → section « LANGUE » (8 locales) →
-section « CONFIDENTIALITÉ » (carte shield) → section « LE PROJET » (carte 2 liens + bandeau
-Erasmus+) → footer version. La page **scrolle** (`SingleChildScrollView`) — contenu plus haut que
-l'écran possible.
+> **Pourquoi PAS Drift / pas de nouveau HydratedBloc ?** La seule donnée persistante (langue) est **déjà**
+> gérée par `LocaleBloc`. Tout le reste est **statique** (i18n + constantes). Aucun modèle relationnel,
+> aucune historisation → Drift **interdit ici**. Aucun flag → pas de nouveau HydratedBloc.
 
-### Tokens de design (mappés sur `AppTheme` — code réel)
-
-| Token (maquette) | Valeur | `AppTheme` (réel) | Rôle |
-| --- | --- | --- | --- |
-| fond app | `#1F2C49` | **`hubBackground`** | fond standard de cet écran (passé à `AppBackground(background:)`) |
-| surface | `#283A5E` | `surface` | cartes liste + carte confidentialité |
-| primary (cyan) | `#3FB8E6` | `primary` | langue sélectionnée (fond translucide + check), icônes section |
-| foreground | `#F2F6FB` | `foreground` | titres, texte sélectionné gras |
-| muted | `#A7B6CE` | `muted` | labels section, sous-titres, footer version, langues non sélectionnées |
-| accent sélection langue | cyan translucide (`primary` @ ~12–15 % alpha) | dérivé de `primary` | fond de la ligne langue active |
-| radius 8 / 12 / 16 / 24 | — | `radiusSmall=12`, `radiusMedium=20`, `radiusLarge=24` | ⚠️ pas de token `8` ni `16` exact. Utiliser `radiusSmall`(12) pour les lignes/icônes, `radiusLarge`(24) pour les cartes. Voir note ↓ |
-| police | **DM Sans** (asset local) | `AppTheme.fontFamily` | toute la typo (jamais google_fonts) |
-
-> ⚠️ **Radius** : la maquette cite 8/12/16/24 ; `AppTheme` n'expose que `12/20/24`. Pour rester
-> fidèle, soit **ajouter** `radiusXSmall = 8` (et `radiusMedium16 = 16`) à `AppTheme`, soit mapper sur
-> les rayons existants les plus proches. **Recommandation : mapper sur l'existant** (12 pour petits
-> éléments, 24 pour cartes) pour éviter d'élargir les tokens sans nécessité ; ajouter un token seulement
-> si le rendu diverge visiblement. À signaler, non bloquant.
-
-> ⚠️ **Drapeaux = emojis texte** (🇬🇧 🇫🇷 🇬🇷 🇮🇹 🇷🇴 🇹🇷 🇪🇸 🇲🇰 / 🇪🇺), **jamais des assets image**.
-> Rendus via `Text`. **Icônes Material only** : `Icons.verified_user` (shield-check), `Icons.code`
-> (GitHub — **PAS de package d'icônes de marque tiers**), `Icons.public` (globe), `Icons.open_in_new`
-> (external-link). Si un vrai logo GitHub est exigé plus tard → asset SVG **local** (`flutter_svg`),
-> jamais un package d'icônes de marque. Voir §3 note marque.
-
----
-
-## 4. Arborescence des widgets
+### 3.1 Modèle léger de langue (constante)
 
 ```
-SettingsPage  (lib/settings/view/settings_page.dart)
-└─ (pas de BlocProvider local — consomme le LocaleCubit fourni en amont de MaterialApp)
-   └─ SettingsView
-      └─ AppBackground(background: AppTheme.hubBackground)        ← #1F2C49 + halo cyan déco statique
-         └─ SafeArea
-            └─ Column
-               ├─ DigiToolbar(title: l10n.settingsTitle, trailing: null, onBack: Navigator.pop, backLabel: l10n.<back>)
-               └─ Expanded
-                  └─ SingleChildScrollView
-                     └─ Column (padding latéral)
-                        ├─ SettingsSection(label: l10n.settingsSectionLanguage)   ← « LANGUE »
-                        │   └─ SettingsCard(surface)
-                        │       └─ Column( for locale in kSupportedAppLocales →
-                        │            LanguageTile(
-                        │              locale,                         // AppLocale (code/flag/autonyme)
-                        │              selected: locale.code == currentLocale.languageCode,
-                        │              onTap: () => { HapticFeedback.selectionClick();
-                        │                             context.read<LocaleCubit>().setLocale(locale.toLocale()); },
-                        │            )
-                        │            (+ séparateurs entre lignes)
-                        │          )
-                        ├─ SettingsSection(label: l10n.settingsSectionPrivacy)    ← « CONFIDENTIALITÉ »
-                        │   └─ PrivacyNoticeCard(icon: Icons.verified_user, text: l10n.settingsPrivacyNotice)
-                        ├─ SettingsSection(label: l10n.settingsSectionProject)    ← « LE PROJET »
-                        │   ├─ SettingsCard(surface)
-                        │   │   ├─ ExternalLinkTile(
-                        │   │   │     leading: Icons.code, trailing: Icons.open_in_new,
-                        │   │   │     title: l10n.settingsOpenSourceTitle,        // « Code open source »
-                        │   │   │     subtitle: l10n.settingsOpenSourceSubtitle,  // « GitHub · Licence GNU GPL »
-                        │   │   │     onTap: () => openExternal(LegalUrls.github))
-                        │   │   ├─ Divider
-                        │   │   └─ ExternalLinkTile(
-                        │   │         leading: Icons.public, trailing: Icons.open_in_new,
-                        │   │         title: l10n.settingsWebsiteTitle,           // « digiharmony.org »
-                        │   │         subtitle: l10n.settingsWebsiteSubtitle,     // « Site officiel du projet »
-                        │   │         onTap: () => openExternal(LegalUrls.website))
-                        │   └─ ErasmusBanner(text: l10n.settingsErasmusNotice)   // bandeau + emoji 🇪🇺
-                        └─ Center(child: Text(l10n.settingsVersion(AppInfo.version)))  // « DIGIHARMONY v1.0 »
-```
-
-### Composants réutilisés (registry)
-
-| Composant | Origine | Usage ici |
-| --- | --- | --- |
-| `DigiToolbar` | choisis-ta-bulle (+ trailing respiration) | toolbar, `trailing: null` (spacer 48px à droite via `showMenu=false`), `onBack` → `Navigator.pop` |
-| `AppBackground` | choisis-ta-bulle (+ `background` respiration) | fond `#1F2C49` (`hubBackground`) + halo cyan déco statique |
-| `AppTheme` | choisis-ta-bulle (+ tokens detox/respiration) | `hubBackground`, `surface`, `primary`, `foreground`, `muted`, `radiusSmall/Large`, `fontFamily` |
-| `LocaleCubit` | **FONDATION partagée** (HydratedBloc) | lecture langue courante + `setLocale` (cf. §6) |
-| `LegalUrls` | `lib/config/legal_urls.dart` (déjà présent) | `LegalUrls.github`, `LegalUrls.website` (URLs réelles) |
-
-### Nouveaux composants (créés / fondés par ce plan)
-
-| Composant | Emplacement | Rôle |
-| --- | --- | --- |
-| `AppLocale` + `kSupportedAppLocales` | **core_package** `lib/src/locale/app_locale.dart` | modèle statique pur (code locale / drapeau emoji / autonyme NON traduit) + liste des 8 locales ordonnées en/fr/el/it/ro/tr/es/mk (cf. §7) |
-| `LocaleCubit` | app `lib/locale/cubit/locale_cubit.dart` | `HydratedCubit<Locale>` partagé — **à créer si absent** (n'existe pas encore dans le code ; suivre le pattern `VoiceoverCubit`). Posé au-dessus de `MaterialApp` (cf. §6) |
-| `SettingsSection` | app `lib/settings/widgets/settings_section.dart` | label uppercase muted + slot enfant (présentation) |
-| `SettingsCard` | app `lib/settings/widgets/settings_card.dart` | conteneur `surface` arrondi pour listes |
-| `LanguageTile` | app `lib/settings/widgets/language_tile.dart` | ligne langue : drapeau emoji + autonyme + état sélectionné (fond cyan translucide, gras, check) |
-| `ExternalLinkTile` | app `lib/settings/widgets/external_link_tile.dart` | ligne lien : icône ronde + titre + sous-titre + `Icons.open_in_new` ; `onTap` → ouverture URL |
-| `PrivacyNoticeCard` | app `lib/settings/widgets/privacy_notice_card.dart` | carte shield (texte i18n statique) |
-| `ErasmusBanner` | app `lib/settings/widgets/erasmus_banner.dart` | bandeau Erasmus+ + emoji 🇪🇺 (texte i18n statique) |
-| `AppInfo.version` | app `lib/config/app_info.dart` | constante de build exposant la version (cf. §8) |
-
-> 🔁 **Candidat refactor cross-page (non bloquant) :** `SettingsCard` / ligne « icône + titre +
-> sous-titre + chevron/trailing + HapticFeedback » est très proche de `ScreenTimeActionCard`
-> (temps-decran.md) et des motifs « ligne d'action » d'autres écrans. À promouvoir dans le kit partagé
-> `lib/wellbeing_shared/` (déjà proposé par etirement.md) **si** un 2ᵉ besoin se confirme. **Ne pas
-> extraire prématurément.**
-
----
-
-## 5. États de la page
-
-| État | Présence ici | Justification |
-| --- | --- | --- |
-| `loading` | ❌ | Aucune source asynchrone. Langue lue de façon synchrone depuis `LocaleCubit` (déjà hydraté). Constantes statiques |
-| `empty` | ❌ | Liste de langues = constante de 8 entrées toujours non vide |
-| `error` | ❌ | Pas d'I/O. **Échec d'ouverture d'URL = fallback silencieux** (cf. §7), pas un état d'écran |
-| `nominal` | ✅ | Liste langue (langue courante cochée) + sections confidentialité / projet + footer version |
-
-**Un seul état affiché : nominal.** La sélection de langue ne provoque **aucun** état de chargement —
-c'est une bascule synchrone du `LocaleCubit` qui reconstruit l'arbre (langue + check) instantanément.
-
----
-
-## 6. Sélecteur de langue — intégration `LocaleCubit` (pièce maîtresse)
-
-### 6.1 Le `LocaleCubit` (fondation partagée — à créer si absente)
-
-> ⚠️ **État réel du code :** au moment de ce plan, **aucun `LocaleCubit` n'existe** dans
-> `apps/digiharmony_app/lib`. Seul `VoiceoverCubit` (`lib/voiceover/cubit/voiceover_cubit.dart`)
-> existe comme modèle `HydratedCubit`. `app/view/app.dart` câble déjà `AppTheme.themeData`, un
-> `BlocProvider<VoiceoverCubit>` et un `RepositoryProvider<WellbeingStatsRepository>` au-dessus de
-> `MaterialApp` (home = `BubblesPage`), mais **sans `LocaleCubit` ni `MaterialApp.locale`**. **Ce plan
-> fonde donc le `LocaleCubit`** (ou le réutilise s'il a été créé entre-temps), strictement sur le
-> pattern `VoiceoverCubit`.
-
-`apps/digiharmony_app/lib/locale/cubit/locale_cubit.dart` :
-
-```
-/// Langue de l'app, persistée entre sessions (HydratedBloc).
-/// État léger UNIQUEMENT (DEC-002) — jamais le journal/agrégats.
-class LocaleCubit extends HydratedCubit<Locale> {
-  LocaleCubit() : super(const Locale('en'));   // défaut + repli = en
-
-  void setLocale(Locale locale) {
-    // garde-fou : n'accepter qu'une locale supportée (8 codes du projet)
-    if (kSupportedAppLocales.any((l) => l.code == locale.languageCode)) {
-      emit(locale);
-    }
-  }
-
-  @override
-  Locale fromJson(Map<String, dynamic> json) =>
-      Locale(json['languageCode'] as String? ?? 'en');
-
-  @override
-  Map<String, dynamic> toJson(Locale state) =>
-      <String, dynamic>{'languageCode': state.languageCode};
+LangueSupportee {
+  final String code;       // 'fr', 'en', ...   (== languageCode de supportedLocales)
+  final String endonyme;   // 'Français', 'English', 'Ελληνικά', ...  (NON traduit, DEC-PARAM-03)
+  final String drapeau;    // emoji '🇫🇷', '🇬🇧', ...
 }
+
+const List<LangueSupportee> languesSupportees = [ en, fr, el, it, ro, tr, es, mk ];  // ordre maquette
 ```
-
-### 6.2 Câblage au-dessus de `MaterialApp` (responsabilité de `app/view/app.dart`)
-
-- Ajouter `LocaleCubit` au **`BlocProvider` existant** d'`app/view/app.dart` (le passer en
-  `MultiBlocProvider` à côté de `VoiceoverCubit`), **au-dessus** de `MaterialApp`.
-- Câbler `MaterialApp.locale` = `context.watch<LocaleCubit>().state` (actuellement absent) →
-  **toute** l'app rebuild dans la nouvelle langue, **instantanément, sans redémarrage**.
-- `localizationsDelegates: AppLocalizations.localizationsDelegates`,
-  `supportedLocales: AppLocalizations.supportedLocales` (**déjà en place** dans `app.dart`).
-- ⚠️ Ce plan **ne réécrit pas** `app.dart` (hors périmètre Paramètres) mais **documente le contrat** :
-  sans `LocaleCubit` fourni + `MaterialApp.locale` câblé, la bascule live ne peut pas marcher. À fonder
-  avec le `LocaleCubit`.
-
-### 6.3 Comportement de l'écran Paramètres
-
-- L'écran **lit** la langue courante : `final current = context.watch<LocaleCubit>().state;`
-  La ligne dont `locale.code == current.languageCode` est rendue **sélectionnée**.
-- **Tap sur une langue** :
-  1. `HapticFeedback.selectionClick()`.
-  2. `context.read<LocaleCubit>().setLocale(Locale(locale.code))`.
-  3. → émission → `MaterialApp` rebuild → **toute l'app passe dans la nouvelle langue** (titres, labels,
-     y compris le titre « Paramètres » de cette page).
-  4. La pastille check **suit** l'état (la ligne nouvellement tapée devient cochée).
-- **Persistance automatique** par HydratedBloc : au prochain lancement, l'app démarre dans la langue choisie.
-
-### 6.4 Donnée statique des locales (autonymes NON traduits)
-
-- La liste affichée vient de `kSupportedAppLocales` (cf. §7) — **statique**, ordre **exactement**
-  en/fr/el/it/ro/tr/es/mk (= `AppLocalizations.supportedLocales`).
-- Chaque entrée : **code locale**, **drapeau emoji**, **autonyme** (nom de la langue dans sa propre
-  langue). ⚠️ **L'autonyme N'EST PAS traduit** : « Français » reste « Français », « Ελληνικά » reste
-  « Ελληνικά », etc., quelle que soit la langue d'UI courante. **Ne PAS** mettre les noms de langue dans
-  les ARB ; ce sont des constantes.
 
 ---
 
-## 7. Liens externes — `url_launcher` (conformité « zéro réseau »)
+## 4. Architecture & état (V1 sans nouveau Bloc — DEC-PARAM-02)
 
-### 7.1 Justification de conformité (à conserver tel quel)
+- **Pas de `ParametresBloc`.** L'unique état dynamique (langue active) est porté par le **`LocaleBloc`
+  existant**, lu via `BlocBuilder<LocaleBloc, LocaleState>`. Introduire un Bloc local serait du
+  sur-engineering et dupliquerait l'état de langue (anti-pattern). **DEC-PARAM-02.**
+- L'ouverture d'URL (GitHub/site) = simple action dans la View (méthode privée `_ouvrirUrl(context, url)`),
+  calquée **à l'identique** sur `bloc_ligne_ecoute.dart` (pattern projet vérifié) :
 
-Ouvrir une URL dans le **navigateur du système** (`launchUrl(..., mode: LaunchMode.externalApplication)`)
-**délègue** l'ouverture à une autre application (le navigateur de l'OS). **L'app DIGIHARMONY n'émet
-aucune requête réseau, ne télécharge rien, ne trace rien.** C'est une **délégation à l'OS**, pas un
-appel réseau applicatif → **compatible** avec « zéro collecte / zéro réseau applicatif ».
-`url_launcher` est un plugin standard, **déjà présent au `pubspec`** (`url_launcher: ^6.3.2`) :
-**dépendance déjà acceptée**, rien à ajouter ni à valider.
-
-### 7.2 Helper d'ouverture (avec gestion d'échec silencieuse)
-
-```
-Future<void> openExternal(String url) async {
-  HapticFeedback.selectionClick();                 // feedback tap
+```dart
+Future<void> _ouvrirUrl(BuildContext context, String url) async {
+  await HapticFeedback.selectionClick();
   final uri = Uri.parse(url);
-  // canLaunchUrl peut renvoyer false (aucune app capable d'ouvrir) → fallback silencieux
-  if (await canLaunchUrl(uri)) {
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  var succes = true;
+  try {
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      succes = false;
+    }
+  } on Exception {
+    succes = false;
   }
-  // Si échec/impossible : NE RIEN faire (pas de crash, pas de SnackBar bruyante).
-  // (Option future, non requise : SnackBar discrète « impossible d'ouvrir le lien ».)
+  if (!succes && context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(context.l10n.parametresLienIndisponible),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 }
 ```
 
-- URLs **réutilisées** depuis `LegalUrls` (déjà dans le code) :
-  - GitHub : `LegalUrls.github` = `https://github.com/AlexandreMaillot/digiharmony`.
-  - Site : `LegalUrls.website` = `https://digiharmony.org`.
-- ⚠️ **Ne PAS coder en dur** les URLs dans le widget : passer par `LegalUrls` (source unique).
-- **Gestion d'échec** : `canLaunchUrl == false` → **fallback silencieux** (ne pas planter, ne pas afficher
-  d'erreur bloquante). Cas réaliste sur appareil sans navigateur.
+> **Conformité `1-bloc-only-no-cubit`** : la règle interdit les **Cubits**, pas les `StatelessWidget`. On
+> consomme un **Bloc** (`LocaleBloc`). Aucun Cubit introduit. (Précédent acté : `tuto-notifs` DEC-TN-05 —
+> écran statique sans Bloc dédié.) Si une revue impose malgré tout un `ParametresBloc`, il serait un
+> simple relais vers `LocaleBloc` (déconseillé, Q-PARAM-5).
 
 ---
 
-## 8. Exposition de la version
+## 5. Vue(s) — structure visuelle (maquette Banani new_screen14 = FAIT LOI)
 
-**Recommandation par défaut : constante de build simple** (`AppInfo.version`), pour **éviter une
-dépendance** :
+> **Aucun hex en dur** : toutes les teintes = `AppColors`/`Theme.of(context)`. `MoodColors` **interdit**.
+> Espacements `AppSpacing`, rayons `AppRadii`. Ton bienveillant.
+
+### 5.1 `ParametresView` — squelette
 
 ```
-// apps/digiharmony_app/lib/config/app_info.dart
-class AppInfo {
-  const AppInfo._();
-  static const String version = '1.0';     // affiché : "DIGIHARMONY v1.0"
+Scaffold (backgroundColor: AppColors.background)
+ ├─ AppBar (toolbar DEC-003)
+ │   ├─ leading : IconButton chevron-left (Icons.chevron_left) → Navigator.pop  (≥ 48×48)
+ │   ├─ title  : Text(parametresTitre) « Paramètres » centré
+ │   └─ actions: [SizedBox(width: 48)]   // PAS de burger (maquette) — équilibre le leading
+ └─ Stack
+     ├─ HaloRespirant (décor de fond, common/widgets/halo_respirant.dart ; OFF si reduced motion)
+     └─ SafeArea > SingleChildScrollView > Padding(AppSpacing.lg) > Column (crossAxis stretch)
+          ├─ _SectionLangue()              // « Langue » + 8 lignes (cœur fonctionnel)
+          ├─ SizedBox(AppSpacing.xl)
+          ├─ _SectionConfidentialite()     // carte bouclier + texte rassurant
+          ├─ SizedBox(AppSpacing.xl)
+          ├─ _SectionProjet()              // open source · site · carte Erasmus+
+          ├─ SizedBox(AppSpacing.xl)
+          └─ _LigneVersion()               // « DIGIHARMONY v1.0 » centré, bodySmall textMuted
+```
+
+### 5.2 `_SectionLangue` (cœur fonctionnel)
+
+- En-tête de section `Text(parametresSectionLangue)` (« Langue »), `titleMedium`, `AppColors.text`.
+- `BlocBuilder<LocaleBloc, LocaleState>` → calcule `codeActif` (§2.3).
+- Liste des **8** `languesSupportees` (ordre maquette) — chaque ligne = widget `_LigneLangue` :
+  - **Drapeau** (emoji, `Text`) + **endonyme** (`bodyLarge`, `AppColors.text`).
+  - Si `langue.code == codeActif` → **surligné** : fond `AppColors.primary.withValues(alpha: 0.12)`,
+    rayon `AppRadii.buttonRadius`, **pastille check** (`Icons.check_circle`/`Icons.check`,
+    `AppColors.primary`) à droite. Sinon : fond transparent, pas de check.
+  - Tap (`InkWell`/`ListTile`, zone ≥ 48×48) →
+    `context.read<LocaleBloc>().add(LocaleChange(Locale(langue.code)))` + `HapticFeedback.selectionClick()`.
+    **Pas de SnackBar, pas de bouton valider** (DEC-PARAM-04) : les textes basculent immédiatement.
+  - a11y : `Semantics(selected: estActif, label: "<endonyme>" (+ parametresLangueActiveSemantique si actif))`.
+- **Aucune des 8 langues n'est désactivée** : toutes sont supportées par `supportedLocales` (repli `en`
+  pour les traductions manquantes, mais la **bascule** fonctionne pour les 8 — DEC-PARAM-09).
+
+### 5.3 `_SectionConfidentialite` (carte rassurante)
+
+- En-tête `Text(parametresSectionConfidentialite)` (« Confidentialité »), `titleMedium`.
+- Carte (`Container`/`Card`, fond `AppColors.surface`, rayon `AppRadii.cardRadius`, padding `AppSpacing.md`) :
+  - Icône bouclier `Icons.verified_user` (ou `Icons.shield`/`Icons.privacy_tip`), `AppColors.primary`.
+  - Texte `parametresConfidentialiteCorps` : « Aucune donnée personnelle n'est enregistrée ni diffusée.
+    Pas de compte, pas d'identification. » (`bodyMedium`, `AppColors.text`/`textMuted`).
+- Ton **rassurant**, cohérent zéro-collecte (renforce la promesse RGPD-par-absence).
+
+### 5.4 `_SectionProjet` (open source · site · Erasmus+)
+
+- En-tête `Text(parametresSectionProjet)` (« Le projet »), `titleMedium`.
+- **Lien « Code open source »** — widget `_LienProjet` (ListTile-like, ≥ 48×48) :
+  - icône `Icons.code` (ou logo GitHub Material `Icons.code`) à gauche.
+  - titre `parametresOpenSourceTitre` (« Code open source ») + sous-titre `parametresOpenSourceSousTitre`
+    (« GitHub · Licence GNU GPL ») `bodySmall textMuted`.
+  - icône `Icons.open_in_new` (external-link) à droite.
+  - tap → `_ouvrirUrl(context, LegalUrls.github)` (§4).
+- **Lien « digiharmony.org »** — `_LienProjet` :
+  - icône `Icons.public` (globe).
+  - titre `parametresSiteTitre` (« digiharmony.org ») + sous-titre `parametresSiteSousTitre`
+    (« Site officiel du projet »).
+  - icône `Icons.open_in_new` à droite.
+  - tap → `_ouvrirUrl(context, LegalUrls.website)` (§4).
+- **Carte Erasmus+** — `_CarteErasmus` (carte `AppColors.surface`, rayon card) :
+  - drapeau 🇪🇺 (emoji) + texte `parametresErasmusCorps` (« Projet Erasmus+ — application gratuite,
+    sans publicité. »). **Pas un lien** (mention informative). Optionnel : asset `logo_eu_funding.png`
+    (déjà au projet, footer) au lieu de l'emoji 🇪🇺 — 🟡 Q-PARAM-6.
+
+### 5.5 `_LigneVersion` (bas de page)
+
+- `Text(parametresVersion)` centré, `bodySmall`, `AppColors.textMuted`. Valeur ICU/placeholder
+  `{version}` → constante `kVersionApp` (DEC-PARAM-06). Ex. FR « DIGIHARMONY v{version} ».
+  Le segment « DIGIHARMONY » peut réutiliser `homeBrandName.toUpperCase()` (cohérence wordmark, §8). 🟡
+
+### 5.6 `HaloRespirant` & reduced motion
+
+- Réutiliser `common/widgets/halo_respirant.dart` (a11y-aware). Si `MediaQuery.disableAnimations == true`
+  → halo **statique**. Ne **jamais** `pumpAndSettle()` en test (piège testing.md) → wrapper
+  `MediaQuery(disableAnimations: true)`.
+
+---
+
+## 6. Navigation & recâblage Accueil
+
+### 6.1 Ajout `AppRouter.versParametres` (`lib/app/routing/app_router.dart`)
+
+Calqué sur `versTutoNotifs`/`versSoutien` (push, **pas** de DB à transmettre ; le `LocaleBloc` est déjà
+au-dessus de `MaterialApp` donc disponible dans le sous-arbre de route) :
+
+```dart
+/// Ouvre l'écran « Paramètres » (empilé, retour possible).
+///
+/// Le [LocaleBloc] est déjà fourni au-dessus de `MaterialApp` (bootstrap) :
+/// rien à transmettre à travers la frontière de route. `push`. Pas de GoRouter (DEC-FND-07).
+static Future<void> versParametres(BuildContext context) {
+  return Navigator.of(context).push(ParametresPage.route());
 }
 ```
 
-- Affichage : `l10n.settingsVersion(AppInfo.version)` → « DIGIHARMONY v1.0 » (placeholder `{version}`).
-- ⚠️ **Risque de divergence** : cette constante doit rester synchrone avec la `version:` du `pubspec.yaml`.
-  À maintenir manuellement (ou via un petit script de build) si on ne veut pas de dépendance.
+> `ParametresPage.route()` encapsule le `MaterialPageRoute<void>(builder: (_) => const ParametresPage())`.
+> `AppRouter.versParametres` reste le point d'entrée canonique. **Vérifier** que `LocaleBloc` traverse
+> bien la frontière `MaterialPageRoute` (il le fait : il est au-dessus de `MaterialApp`, donc de tous les
+> `Navigator`). Si un doute apparaît à l'implémentation, fournir `BlocProvider.value(value: context.read<LocaleBloc>())`
+> autour de `ParametresPage` — **mais ce ne devrait pas être nécessaire** (Q-PARAM-2).
 
-**Alternative (signalée, non retenue par défaut) : `package_info_plus`.** Lit la version réelle du build
-(toujours synchrone, pas de divergence). 100 % local (lit le bundle), pas de réseau → **conforme**. **Coût** :
-une dépendance de plus + lecture asynchrone (introduirait un micro état de chargement pour le footer).
-**Par défaut → constante simple** (footer purement décoratif, pas d'asynchrone). À basculer vers
-`package_info_plus` si le dev préfère la version automatique — **à valider** avant ajout.
+### 6.2 Recâblage du point d'entrée (`accueil_view.dart`, `_Header`, L224-228)
 
----
+Remplacer l'`onPressed` de l'`IconButton` réglages :
 
-## 9. reduceMotion (accessibilité)
-
-- Cet écran est **essentiellement statique** : pas d'animation lourde à neutraliser.
-- Le **halo radial cyan** du fond est rendu **statiquement** par `AppBackground` (aucune boucle
-  d'animation — compatible `reduceMotion` par construction).
-- Si une transition d'apparition (fade des cartes) était ajoutée : la **neutraliser** sous
-  `MediaQuery.disableAnimations` (rendu immédiat à l'état final). **Aucune information** ne dépend d'une
-  animation ici.
-
----
-
-## 10. Navigation & feedback haptique
-
-| Élément | Action | Cible | Feedback |
-| --- | --- | --- | --- |
-| Chevron retour (toolbar) | `Navigator.pop` | parent (Home / menu — **par nom de route**, non présumé) | — (comportement toolbar standard) |
-| Ligne langue (×8) | change la langue de l'app | `LocaleCubit.setLocale` (bascule live + persistance) | `HapticFeedback.selectionClick()` avant `setLocale` |
-| « Code open source » | ouvre URL navigateur OS | `LegalUrls.github` (`launchUrl` externe) | `HapticFeedback.selectionClick()` (dans `openExternal`) |
-| « digiharmony.org » | ouvre URL navigateur OS | `LegalUrls.website` (`launchUrl` externe) | `HapticFeedback.selectionClick()` (dans `openExternal`) |
-
-### Lien avec le MENU global (cohérence inter-écrans — à documenter, pas à recâbler ici)
-
-- `/settings` est **vraisemblablement la cible du bouton MENU / hamburger global** vu sur d'autres
-  écrans (ex. guide notifications) et du menu de l'app.
-- **Contrat documenté** : le hamburger global pousse la route **`/settings`** → `SettingsPage`.
-- ⚠️ **Ce plan ne recâble PAS** les autres écrans (toolbar `showMenu`/menu global). Il **signale** le lien
-  pour cohérence du routing. Le câblage effectif du hamburger → `/settings` se fait côté Home/menu global,
-  hors périmètre de ce plan.
-
----
-
-## 11. Internationalisation (clés ARB)
-
-Fichiers `lib/l10n/arb/app_*.arb`. **FR + EN remplis**, **placeholders el/it/ro/tr/es/mk** (valeur
-provisoire = texte EN, à traduire), repli `en`. Préfixe `settings*`.
-
-| Clé | FR | EN |
-| --- | --- | --- |
-| `settingsTitle` | Paramètres | Settings |
-| `settingsSectionLanguage` | Langue | Language |
-| `settingsSectionPrivacy` | Confidentialité | Privacy |
-| `settingsPrivacyNotice` | Aucune donnée personnelle n'est enregistrée ni diffusée. Pas de compte, pas d'identification. | No personal data is stored or shared. No account, no sign-in. |
-| `settingsSectionProject` | Le projet | The project |
-| `settingsOpenSourceTitle` | Code open source | Open source code |
-| `settingsOpenSourceSubtitle` | GitHub · Licence GNU GPL | GitHub · GNU GPL License |
-| `settingsWebsiteTitle` | digiharmony.org | digiharmony.org |
-| `settingsWebsiteSubtitle` | Site officiel du projet | Official project website |
-| `settingsErasmusNotice` | Projet Erasmus+ — application gratuite, sans publicité | Erasmus+ project — free app, no ads |
-| `settingsVersion` | DIGIHARMONY v{version} | DIGIHARMONY v{version} |
-
-> Notes :
-> - `settingsVersion` est un **format paramétré** (`placeholders` : `version`, typé `String`). Rendu :
->   « DIGIHARMONY v1.0 ». Le préfixe « DIGIHARMONY » est conservé dans la clé (identique FR/EN).
-> - `settingsWebsiteTitle` = « digiharmony.org » : nom de domaine, **identique** dans toutes les langues
->   (techniquement une clé i18n mais valeur stable).
-> - **Les NOMS de langue (autonymes) ne sont PAS dans les ARB** : ce sont des constantes
->   `kSupportedAppLocales` (cf. §7). « Français », « Ελληνικά », « Македонски »… restent identiques quelle
->   que soit la langue d'UI.
-> - `settingsPrivacyNotice` + `settingsErasmusNotice` = **textes i18n statiques** (jamais dynamiques).
->   La note de confidentialité est un argument central du projet (RGPD par absence de traitement).
-
----
-
-## 12. Modèle de données — `core_package` (donnée pure)
-
-`packages/core_package/lib/src/locale/app_locale.dart` (exporté via `core_package.dart`) :
-
-```
-/// Une langue supportée par l'app. Donnée pure, immuable, sans I/O, sans Flutter.
-class AppLocale {
-  final String code;      // code locale ISO: en, fr, el, it, ro, tr, es, mk
-  final String flag;      // drapeau emoji: 🇬🇧 🇫🇷 🇬🇷 🇮🇹 🇷🇴 🇹🇷 🇪🇸 🇲🇰
-  final String autonym;   // nom natif NON traduit: English, Français, Ελληνικά, ...
-  const AppLocale({required this.code, required this.flag, required this.autonym});
-  // == / hashCode (Equatable ou override)
-}
-
-/// Les 8 locales du projet, dans l'ORDRE de la maquette (= AppLocalizations.supportedLocales).
-const List<AppLocale> kSupportedAppLocales = [
-  AppLocale(code: 'en', flag: '🇬🇧', autonym: 'English'),
-  AppLocale(code: 'fr', flag: '🇫🇷', autonym: 'Français'),
-  AppLocale(code: 'el', flag: '🇬🇷', autonym: 'Ελληνικά'),
-  AppLocale(code: 'it', flag: '🇮🇹', autonym: 'Italiano'),
-  AppLocale(code: 'ro', flag: '🇷🇴', autonym: 'Română'),
-  AppLocale(code: 'tr', flag: '🇹🇷', autonym: 'Türkçe'),
-  AppLocale(code: 'es', flag: '🇪🇸', autonym: 'Español'),
-  AppLocale(code: 'mk', flag: '🇲🇰', autonym: 'Македонски'),
-];
+```dart
+// AVANT (L227) :
+onPressed: () => ouvrirPlaceholder(context, l10n.placeholderReglages),
+// APRÈS :
+onPressed: () => AppRouter.versParametres(context),
 ```
 
-- **Aucune dépendance Flutter/Android** dans `core_package` (pas de `Locale` Flutter ici → on stocke le
-  `code` `String`). La conversion vers `Locale('xx')` se fait côté app (`LanguageTile`/`LocaleCubit`).
-- ⚠️ **Cohérence d'ordre** : `kSupportedAppLocales` doit refléter `AppLocalizations.supportedLocales`
-  (`l10n/gen`). Toute divergence d'ordre/d'ensemble est un bug. (Test d'invariant suggéré, cf. §14.)
-- 🇬🇧 vs `en` : le drapeau anglais utilisé est le drapeau **UK** (🇬🇧) conformément à la maquette, bien que
-  le code locale soit `en`. Choix assumé (maquette).
+- `tooltip: l10n.reglagesTooltip` **conservé**. L'icône `Icons.settings` et le reste du `_Header` **ne
+  changent pas**. `l10n.placeholderReglages` n'est plus déclenché par le header (peut rester défini
+  ailleurs, hors périmètre).
+- ⚠️ **Dépendance d'intégration (Accueil #2)** : `accueil_view.dart` appartient au lot Accueil (mergé).
+  Modif **append-only de comportement, 1 ligne** (cf. DEC-J-... / DEC-TE-10 / DEC-SH-010 pour le
+  précédent — même pattern de recâblage placeholder → route). **DEC-PARAM-08.**
 
 ---
 
-## 13. Critères d'acceptation (tiennent lieu d'US — source des tests Kent)
+## 7. États de la page (synthèse)
 
-1. **AC-1** L'écran affiche, dans l'ordre exact : section « LANGUE » (8 locales en/fr/el/it/ro/tr/es/mk
-   avec drapeau emoji + autonyme), section « CONFIDENTIALITÉ » (carte shield), section « LE PROJET »
-   (2 liens + bandeau Erasmus+), footer « DIGIHARMONY v1.0 ».
-2. **AC-2** La langue **courante** (état du `LocaleCubit`) est la seule ligne marquée sélectionnée
-   (fond cyan translucide + texte gras + check cyan).
-3. **AC-3** Taper une langue : déclenche `HapticFeedback.selectionClick`, appelle
-   `LocaleCubit.setLocale`, fait **basculer la langue de toute l'app immédiatement** (le titre
-   « Paramètres » lui-même change), et déplace la pastille check sur la langue tapée.
-4. **AC-4** Le choix de langue **persiste** entre redémarrages (HydratedBloc).
-5. **AC-5** Les **autonymes ne sont pas traduits** : « Français » reste « Français » même quand l'UI est
-   en anglais (et inversement). Les noms de langue viennent de `kSupportedAppLocales`, pas des ARB.
-6. **AC-6** « Code open source » ouvre `LegalUrls.github` dans le **navigateur système**
-   (`launchUrl` externe) + `HapticFeedback.selectionClick` ; « digiharmony.org » ouvre `LegalUrls.website`
-   de la même façon.
-7. **AC-7** Si aucune app ne peut ouvrir l'URL (`canLaunchUrl == false`), l'app **ne plante pas** et ne
-   lance aucune ouverture (**fallback silencieux**).
-8. **AC-8** La note de confidentialité (« Aucune donnée personnelle… pas d'identification. ») et le
-   bandeau Erasmus+ sont visibles, en **texte i18n statique**.
-9. **AC-9** Le footer affiche la version via `settingsVersion({version})` alimentée par une **constante
-   de build** (`AppInfo.version`), sans dépendance réseau.
-10. **AC-10** **Aucune permission** ajoutée (au-delà de `PACKAGE_USAGE_STATS` déjà présente pour un autre
-    écran), **aucun SDK réseau/analytics**, **aucune** écriture Drift ; seule la **langue** est persistée
-    (HydratedBloc). `url_launcher` = délégation OS, pas de réseau applicatif.
-11. **AC-11** `AppLocale` est une donnée pure de `core_package` (sans Flutter/`dart:io`) ; l'ordre de
-    `kSupportedAppLocales` correspond à `AppLocalizations.supportedLocales`.
+| État | Déclencheur | Rendu |
+|---|---|---|
+| **nominal** | ouverture de la page | toolbar + halo + 3 sections + version ; langue active surlignée |
+| **langue changée** | tap sur une langue | `LocaleChange` dispatché → `MaterialApp` reconstruit → tous les libellés basculent + check déplacé (réactif, **sans** SnackBar) |
+| **lien indisponible** | échec `canLaunchUrl`/`launchUrl` (GitHub/site) | SnackBar `parametresLienIndisponible` (pas de crash) |
+| **reduced motion** | `MediaQuery.disableAnimations == true` | halo statique, reste inchangé |
+
+- **Pas d'état « chargement »** (langue lue de façon synchrone via `LocaleBloc`, contenu statique).
+  **Pas d'état « vide »** ni « erreur » bloquant. Aucune dépendance distante chargée par l'app.
 
 ---
 
-## 14. Découpage fichiers (indicatif, à confirmer par les règles d'architecture)
+## 8. i18n (clés ARB — 8 langues, repli `en`)
 
-```
-packages/core_package/lib/src/locale/app_locale.dart      (AppLocale + kSupportedAppLocales)
-packages/core_package/lib/core_package.dart               (export)
+> Ajouter dans **les 8** `lib/l10n/arb/app_<lang>.arb` (template `app_en.arb`), `fr`+`en` réels, repli
+> `en` (TODO traduction) pour `el/it/ro/tr/es/mk`. Puis `flutter gen-l10n`.
+> **Réutiliser** `reglagesTooltip` (tooltip header, déjà existant) et `homeBrandName` (wordmark, non
+> traduit). **Les endonymes des 8 langues NE sont PAS en ARB** (constantes Dart, DEC-PARAM-03).
 
-apps/digiharmony_app/lib/locale/
-└─ cubit/locale_cubit.dart                                (LocaleCubit — HydratedCubit<Locale>, FONDATION partagée si absente)
+| Clé | FR (référence) | EN |
+|---|---|---|
+| `parametresTitre` | « Paramètres » | "Settings" |
+| `parametresSectionLangue` | « Langue » | "Language" |
+| `parametresSectionConfidentialite` | « Confidentialité » | "Privacy" |
+| `parametresConfidentialiteCorps` | « Aucune donnée personnelle n'est enregistrée ni diffusée. Pas de compte, pas d'identification. » | "No personal data is stored or shared. No account, no identification." |
+| `parametresSectionProjet` | « Le projet » | "The project" |
+| `parametresOpenSourceTitre` | « Code open source » | "Open source code" |
+| `parametresOpenSourceSousTitre` | « GitHub · Licence GNU GPL » | "GitHub · GNU GPL license" |
+| `parametresSiteTitre` | « digiharmony.org » | "digiharmony.org" |
+| `parametresSiteSousTitre` | « Site officiel du projet » | "Official project website" |
+| `parametresErasmusCorps` | « Projet Erasmus+ — application gratuite, sans publicité. » | "Erasmus+ project — free app, no ads." |
+| `parametresVersion` | « DIGIHARMONY v{version} » | "DIGIHARMONY v{version}" |
+| `parametresLienIndisponible` | « Impossible d'ouvrir le lien. Tu peux le retrouver dans ton navigateur. » | "Couldn't open the link. You can find it in your browser." |
+| `parametresLangueActiveSemantique` | « Langue active » | "Active language" |
 
-apps/digiharmony_app/lib/config/
-├─ legal_urls.dart                                        (DÉJÀ présent — github / website réutilisés)
-└─ app_info.dart                                          (AppInfo.version, NOUVEAU)
-
-apps/digiharmony_app/lib/settings/
-├─ view/settings_page.dart                                (Page + récupération LocaleCubit)
-├─ view/settings_view.dart                                (UI nominale, scroll, sections)
-└─ widgets/
-   ├─ settings_section.dart                               (label uppercase + slot)
-   ├─ settings_card.dart                                  (conteneur surface)
-   ├─ language_tile.dart                                  (drapeau + autonyme + sélection + check)
-   ├─ external_link_tile.dart                             (icône + titre + sous-titre + open_in_new + onTap)
-   ├─ privacy_notice_card.dart                            (shield + texte i18n)
-   └─ erasmus_banner.dart                                 (bandeau Erasmus+ + 🇪🇺)
-
-apps/digiharmony_app/lib/l10n/arb/app_*.arb               (clés settings*)
-
-apps/digiharmony_app/lib/app/view/app.dart                (CONTRAT : LocaleCubit au-dessus de MaterialApp +
-                                                           MaterialApp.locale = LocaleCubit.state — à fonder si absent,
-                                                           hors périmètre Paramètres mais nécessaire à la bascule live)
-```
+- `parametresVersion` : **ICU** avec placeholder `{version}` (type `String`), valeur = `kVersionApp`
+  (DEC-PARAM-06). « digiharmony.org » est un nom de domaine → **identique** FR/EN (pas vraiment traduit).
+- Ton de **tous** les libellés : neutre/rassurant, **jamais** culpabilisant.
 
 ---
 
-## 15. Points à valider explicitement (signalés, non tranchés unilatéralement)
+## 9. Fichiers à créer / modifier
 
-- ⚠️ **`LocaleCubit` n'existe pas encore** dans le code (vérifié) : ce plan le **fonde** (pattern
-  `VoiceoverCubit`) ainsi que son câblage au-dessus de `MaterialApp` (`app/view/app.dart` est encore le
-  scaffold very_good). Si une fondation de langue a été créée entre-temps, **la réutiliser** plutôt que la
-  recréer.
-- ⚠️ **Token de fond** : la maquette/registry évoquent `appBackground` ; le **token réel** est
-  `AppTheme.hubBackground` (`#1F2C49`). On s'aligne sur le code. Renommer en `appBackground` serait un
-  refactor cross-page séparé (non fait ici).
-- ⚠️ **Radius 8/16** absents d'`AppTheme` (présents : 12/20/24). Recommandation : **mapper sur l'existant**
-  (12 / 24) ; ajouter `radiusXSmall=8` seulement si divergence visible.
-- ⚠️ **Version** : constante `AppInfo.version` (défaut) vs `package_info_plus` (auto, conforme, +1 dépendance
-  + asynchrone). Par défaut → constante. À trancher avec le dev.
-- ⚠️ **Icône GitHub** : `Icons.code` (Material générique) par défaut — **pas** de package d'icônes de
-  marque tiers. Asset SVG local possible si un vrai logo est exigé.
-- ⚠️ **Lien MENU global → `/settings`** : contrat documenté, câblage du hamburger fait côté Home/menu
-  (hors périmètre).
-- ⚠️ **Drapeau 🇬🇧 pour `en`** : drapeau UK retenu (maquette), bien que le code locale soit `en`.
+> **Fourni par Fondations / existant (NE PAS recréer)** : `theme.dart` (`AppColors`/`AppSpacing`/
+> `AppRadii`), `app_router.dart`, `common/widgets/halo_respirant.dart`, `l10n/`,
+> `lib/locale/locale_bloc.dart` (`LocaleBloc`/`LocaleChange`/`LocaleState`), `config/legal_urls.dart`
+> (`LegalUrls.github`/`website`). **Aucune dépendance pub** (`url_launcher` déjà présent ;
+> `package_info_plus` **PAS** à ajouter).
+
+**Créer (propre à `parametres`)** :
+- `lib/pages/parametres/views/parametres_page.dart` (`ParametresPage` + `static route()` ; rend
+  `ParametresView` ; **pas** de `BlocProvider` — `LocaleBloc` déjà au-dessus de `MaterialApp`).
+- `lib/pages/parametres/views/parametres_view.dart` (`ParametresView` : toolbar + halo + 3 sections +
+  version ; `_ouvrirUrl` ; lit/dispatch `LocaleBloc`).
+- `lib/pages/parametres/widgets/section_langue.dart` (`_SectionLangue` + `_LigneLangue`).
+- `lib/pages/parametres/widgets/section_confidentialite.dart`.
+- `lib/pages/parametres/widgets/section_projet.dart` (`_LienProjet` + `_CarteErasmus`).
+- `lib/pages/parametres/modeles/langue_supportee.dart` (`LangueSupportee` + `const languesSupportees`,
+  DEC-PARAM-03). 🟡 emplacement de `kVersionApp` à trancher (ici ou `lib/config/`, Q-PARAM-3).
+
+**Modifier** :
+- `lib/app/routing/app_router.dart` : **+** `versParametres(context)` (append-only, §6.1) + import
+  `ParametresPage`.
+- `lib/pages/accueil/views/accueil_view.dart` : **L227** `ouvrirPlaceholder(...)` →
+  `AppRouter.versParametres(context)` (1 ligne, §6.2, DEC-PARAM-08). `tooltip` conservé.
+- 8 × `lib/l10n/arb/app_<lang>.arb` : clés §8, puis `flutter gen-l10n`.
+- `lib/config/legal_urls.dart` : **AUCUNE modif** (github + website existent). 🟡 confirmer URLs (Q-PARAM-1).
+- `pubspec.yaml` : **AUCUNE modif** (aucune dépendance ajoutée).
+- `android/app/src/main/AndroidManifest.xml` : **AUCUNE modif** (aucune permission ; `url_launcher` https
+  ne requiert pas de `<queries>` pour `LaunchMode.externalApplication` https). 🟡 vérifier qu'aucune
+  `<queries>`/`<intent>` n'est requise selon la version d'`url_launcher` (Q-PARAM-7).
+- `aidd_docs/tasks/_registry.md` : ligne `parametres` (§12).
+
+> **N'ajouter AUCUNE dépendance pub.** **Pas de codegen Drift** (aucune modif de schéma).
+
+---
+
+## 10. Conformité contraintes projet (garde-fous)
+
+- ✅ Zéro backend / Firebase / SDK réseau / analytics / Crashlytics. Langue = état local persistant
+  (`LocaleBloc`/HydratedBloc). Liens ouverts via navigateur système (`url_launcher`), rien chargé/journalisé.
+- ✅ **Aucune permission ajoutée** (ouverture https `url_launcher` sans permission). `PACKAGE_USAGE_STATS` non utilisée ici.
+- ✅ **Aucune dépendance pub ajoutée** (`url_launcher` déjà présent ; `package_info_plus` écarté → constante, DEC-PARAM-06).
+- ✅ **`LocaleBloc` réutilisé**, pas recréé ; **aucun nouveau Bloc**, aucun Cubit (DEC-PARAM-02).
+- ✅ **Pas de Drift, pas de nouveau HydratedBloc** (seule persistance = langue, déjà gérée).
+- ✅ i18n 8 langues, repli `en`, aucune chaîne en dur ; endonymes des langues = constantes non traduites (DEC-PARAM-03) ; wordmark « DigiHarmony » non traduit.
+- ✅ a11y : `MediaQuery.disableAnimations` (halo), tap ≥ 48×48, `Semantics(selected)` sur les langues, `HapticFeedback.selectionClick`.
+- ✅ Couleurs via `AppColors`/thème (jamais hex en dur) ; surlignage actif `primary.withValues(alpha: 0.12)` ; `MoodColors` **interdit**.
+- ✅ Ton bienveillant / rassurant : carte confidentialité « zéro donnée, pas de compte » ; pas de FOMO/score.
+- ✅ Toolbar haute (chevron · titre · **pas de burger** = espaceur), DEC-003.
+- ✅ Vibration via `HapticFeedback` (pas de permission `VIBRATE`).
+- ✅ Android `minify`/`shrinkResources = false` (inchangé).
+
+---
+
+## 11. User Stories (dépendance — À CRÉER via Erwin)
+
+> **Aucune US n'existe** pour cette page (Erwin non joignable en arrière-plan ; à créer et valider).
+
+- **US-PARAM-01 « Changer la langue de l'application »** (milestone **Phase 2** 🟡), couvrant : icône
+  réglages Accueil → page, liste des 8 langues (drapeau + endonyme), surlignage de l'active, bascule
+  **en direct** via `LocaleBloc`, persistance, a11y, i18n.
+- **US-PARAM-02 « Consulter confidentialité / projet »**, couvrant : carte confidentialité rassurante,
+  lien open source (GitHub/GPL), lien site officiel, mention Erasmus+, ouverture via navigateur système,
+  gestion d'échec bienveillante, version de l'app.
+
+**Critères d'acceptation à inscrire (source des tests Kent — Step 5)** :
+- AC1 : ouverture de la page → toolbar (chevron · « Paramètres » · **pas de burger**) + 3 sections + version.
+- AC2 : les **8** langues affichées (drapeau + endonyme), dans l'ordre maquette (en, fr, el, it, ro, tr, es, mk).
+- AC3 : la **langue active est surlignée** (fond `primary` α0.12 + check) ; cohérente avec `LocaleState` (ou locale résolue si suivi système, §2.3).
+- AC4 : tap sur une langue → `LocaleBloc` reçoit `LocaleChange(Locale(code))` (vérifiable via Bloc test/`add`) → libellés basculent (réactif) **sans** SnackBar ni bouton valider.
+- AC5 : choix d'une langue **persiste** (HydratedBloc — réouverture conserve le choix) : couvert par le comportement existant de `LocaleBloc` (test de régression léger).
+- AC6 : tap « Code open source » → `launchUrl(LegalUrls.github, externalApplication)` (vérifiable via mock/abstraction `url_launcher`).
+- AC7 : tap « digiharmony.org » → `launchUrl(LegalUrls.website, externalApplication)`.
+- AC8 : échec d'ouverture (`canLaunchUrl == false`/exception) → SnackBar `parametresLienIndisponible`, **pas de crash**.
+- AC9 : `languesSupportees` **alignée** sur `AppLocalizations.supportedLocales` (même ensemble de codes) — test garde-fou.
+- AC10 : icône réglages Accueil → `AppRouter.versParametres` (et **non** `ouvrirPlaceholder`).
+- AC11 : **zéro persistance ajoutée** : aucune écriture Drift, aucun nouveau HydratedBloc (seul `LocaleBloc` existant utilisé).
+- AC12 : **aucune permission ajoutée** au manifeste (le manifeste ne contient que `PACKAGE_USAGE_STATS`) ; **aucune dépendance pub ajoutée** (pas de `package_info_plus`).
+- AC13 : libellés `parametres*` traduits 8 langues (repli `en`) ; endonymes des langues non traduits ; wordmark « DigiHarmony » non traduit ; aucune chaîne en dur.
+- AC14 : a11y — langues annoncées avec `selected`, cibles ≥ 48×48 ; `disableAnimations == true` → halo statique.
+- AC15 : carte confidentialité présente (texte rassurant « zéro donnée / pas de compte ») ; carte Erasmus+ présente.
+
+---
+
+## 12. Registry & coordination
+
+- Ajouter dans `aidd_docs/tasks/_registry.md` :
+  `| [parametres.md](./parametres.md) | Paramètres (choix langue 8 via LocaleBloc en direct + confidentialité + projet open source/site/Erasmus+) | US-PARAM-01/02 (à créer) | Phase 2 🟡 | Fondations (#3), Accueil (#2), LocaleBloc | parametres.tests.md ⏳ | proposition_a_valider |`
+- **Composants consommés** : `AppTheme`/`AppColors`/`AppSpacing`/`AppRadii`, `AppRouter`,
+  `HaloRespirant`, **`LocaleBloc`** (existant), **`LegalUrls`** (existant), `url_launcher`,
+  `HapticFeedback`. **Introduit ici (réutilisable)** : `LangueSupportee` + `languesSupportees` (constante),
+  `kVersionApp` (constante version).
+- **Coordination** :
+  - `accueil_view.dart` = recâblage **1 ligne** (placeholder → route), après merge Accueil (#2) — même
+    pattern que DEC-TE-10 / DEC-SH-010 (`temps-ecran`/`noter-humeur`). **DEC-PARAM-08.**
+  - `app_router.dart` = ajout `versParametres` **append-only**.
+  - **Pas de collision Drift** (aucune modif schéma). **Pas de collision pubspec** (aucune dépendance).
+  - **Pas de collision MainActivity** (aucun MethodChannel, contrairement à `temps-ecran`/`tuto-notifs`).
+
+---
+
+## 13. Questions à valider
+
+> ✅ **TRANCHÉES (2026-06-06) — plan `valide`** :
+> - **Q-PARAM-3/6 (version)** : **dynamique via `package_info_plus`** (à ajouter au pubspec, règle `4-package-installation`) — lecture de la vraie version à l'exécution.
+> - **Q-PARAM-4 (langue système)** : **non** — uniquement les 8 langues explicites (maquette) ; `LocaleSysteme` reste dormant.
+> - **Q-PARAM-6/9 (visuel UE)** : **logo officiel bundlé `assets/images/logo_eu_funding.png`** (pas l'emoji).
+> - **Q-PARAM-1 (liens)** : **GitHub seul** (`LegalUrls.github`, licence GNU GPLv3) ; **masquer `digiharmony.org`** tant que le site n'est pas confirmé en ligne (pas de lien mort). Le lien site sera réactivé plus tard.
+> - **Q-PARAM-2 (LocaleBloc via MaterialPageRoute)** : détail d'implémentation — fournir `BlocProvider.value(LocaleBloc)` au push si besoin ; à vérifier au câblage.
+> - **Q-PARAM-7 (`<queries>` Android url_launcher)** : vérifier au câblage (probablement déjà géré via soutien) ; ajouter le bloc `<queries>` si nécessaire.
+>
+> ⚠️ Note : `package_info_plus` = **nouvelle dépendance** (dérogation assumée par l'utilisateur pour une version juste).
+
+### Historique des questions (résolues — traçabilité)
+> joignables en arrière-plan ; structure visuelle = maquette fournie par l'utilisateur, font loi).
+
+- **Q-PARAM-1 (URLs exactes)** : `LegalUrls.github` = `https://github.com/AlexandreMaillot/digiharmony`
+  et `LegalUrls.website` = `https://digiharmony.org` (vérifiés dans le code). Sont-ce **bien** les URLs
+  définitives à utiliser (dépôt public, domaine actif) ? La licence affichée est « GNU GPL » → confirmer
+  qu'elle correspond à la licence réelle du dépôt.
+- **Q-PARAM-2 (portée `LocaleBloc` à travers la route)** : V1 suppose que `LocaleBloc` (au-dessus de
+  `MaterialApp`) est accessible dans le sous-arbre du `MaterialPageRoute` de `ParametresPage` — c'est le
+  cas standard Flutter. Confirmer à l'implémentation ; sinon `BlocProvider.value(context.read<LocaleBloc>())`
+  autour de la page (fallback documenté §6.1).
+- **Q-PARAM-3 (source & format de la version)** : `package_info_plus` **absent** du pubspec → version via
+  **constante** `kVersionApp` (DEC-PARAM-06). Confirmer : (a) valeur (« 1.0 » ? sync avec `pubspec.yaml`
+  `version:` ?), (b) format affiché (« DIGIHARMONY v1.0 » ? avec build number ?), (c) emplacement de la
+  constante (`lib/config/` ?). **Si** la version dynamique réelle est exigée → décision séparée d'ajouter
+  `package_info_plus` (viole « zéro nouvelle dépendance » — à arbitrer explicitement).
+- **Q-PARAM-4 (retour au suivi système)** : V1 n'expose **pas** de contrôle « Langue du système »
+  (`LocaleSysteme`) ; choisir une langue force ce code. Faut-il une 9ᵉ entrée « Système / Automatique »
+  en tête de liste (qui dispatcherait `LocaleSysteme`) ? (la maquette ne la montre pas).
+- **Q-PARAM-5 (Bloc dédié ?)** : V1 = `StatelessWidget` consommant `LocaleBloc` (pas de `ParametresBloc`,
+  DEC-PARAM-02). La revue veut-elle malgré tout un `ParametresBloc` pour homogénéité (déconseillé :
+  relais inutile, duplication d'état de langue) ?
+- **Q-PARAM-6 (visuel Erasmus+)** : mention via emoji 🇪🇺 + texte, ou via l'asset `logo_eu_funding.png`
+  (déjà présent dans le projet) ? (la maquette montre 🇪🇺).
+- **Q-PARAM-7 (`<queries>` Android pour `url_launcher`)** : selon la version d'`url_launcher`/cible SDK,
+  l'ouverture https en `externalApplication` peut nécessiter un bloc `<queries><intent>` au manifeste
+  (déjà présent ? `soutien` ouvre tel:/https: via le même package → probablement déjà géré). Vérifier
+  qu'aucun ajout manifeste n'est requis (sinon = ajout `<queries>`, **pas** une permission).
+- **Q-PARAM-8 (milestone)** : supposé **Phase 2** 🟡 (cohérent `temps-ecran`/`tuto-notifs`). À confirmer.
+- **Q-PARAM-9 (endonymes & drapeaux)** : libellés natifs proposés : English, Français, Ελληνικά,
+  Italiano, Română, Türkçe, Español, Македонски. Drapeaux emoji 🇬🇧🇫🇷🇬🇷🇮🇹🇷🇴🇹🇷🇪🇸🇲🇰. Confirmer
+  l'orthographe des endonymes et le choix 🇬🇧 vs 🇺🇸 pour l'anglais (recommandé : 🇬🇧).
+
+---
+
+## 14. Décisions tranchées (DEC-PARAM)
+
+| ID | Décision |
+|---|---|
+| DEC-PARAM-01 | Cœur fonctionnel = **changer la langue en direct**. Bascule immédiate (`MaterialApp` reconstruit) + persistée (HydratedBloc). Pas de bouton « valider », pas de SnackBar de confirmation (la bascule des textes = feedback). |
+| DEC-PARAM-02 | **Réutiliser `LocaleBloc` existant** (HydratedBloc — **pas** un Cubit, le code fait foi malgré « LocaleCubit » dans la consigne). **Aucun nouveau Bloc/Cubit, aucune modif de `LocaleBloc`.** L'écran est un `StatelessWidget` qui `BlocBuilder<LocaleBloc, LocaleState>` (lecture) + `add(LocaleChange(...))` (écriture). |
+| DEC-PARAM-03 | **Liste des 8 langues = constante Dart** (`languesSupportees`), endonymes (noms natifs) **NON traduits / hors ARB** ; doit rester **alignée** sur `AppLocalizations.supportedLocales`. Ordre = maquette (en, fr, el, it, ro, tr, es, mk). |
+| DEC-PARAM-04 | Tap langue → `LocaleChange(Locale(code))` + `HapticFeedback.selectionClick()`. Feedback = bascule visible des libellés + déplacement du check. **Pas** de confirmation explicite. |
+| DEC-PARAM-05 | Liens projet ouverts via **`url_launcher`** (`canLaunchUrl` + `launchUrl(externalApplication)`), pattern **identique** à `bloc_ligne_ecoute.dart`. Échec → SnackBar `parametresLienIndisponible` (bienveillant, pas de crash). |
+| DEC-PARAM-06 | Version affichée via **constante `kVersionApp`** — **`package_info_plus` NON ajouté** (zéro nouvelle dépendance). Valeur/format/emplacement à confirmer (Q-PARAM-3). |
+| DEC-PARAM-07 | Langue « active » surlignée = `LocaleState.locale?.languageCode` ; si `null` (suivi système) → `Localizations.localeOf(context).languageCode` (locale réellement résolue). Surlignage : fond `AppColors.primary.withValues(alpha: 0.12)` + check `primary`. |
+| DEC-PARAM-08 | Point d'entrée = **icône réglages du header Accueil** (`accueil_view.dart` `_Header` **L227**) : recâbler `ouvrirPlaceholder(placeholderReglages)` → `AppRouter.versParametres(context)` (1 ligne, append-only, `tooltip reglagesTooltip` conservé). Dépendance d'intégration Accueil (#2). |
+| DEC-PARAM-09 | Les **8** langues sont **toutes** sélectionnables (toutes dans `supportedLocales`) ; le repli `en` concerne les **traductions** manquantes (`el/it/ro/tr/es/mk`), **pas** la bascule de langue qui fonctionne pour les 8. |
+| DEC-PARAM-10 | **Pas de Drift, pas de nouveau HydratedBloc, aucune permission, aucune dépendance pub.** Manifeste & pubspec inchangés. Pas de MethodChannel (≠ `temps-ecran`/`tuto-notifs`). |
+| DEC-PARAM-11 | Navigation `AppRouter.versParametres` en **`push`** (DEC-FND-07, pas de GoRouter), via `ParametresPage.route()`. Toolbar : chevron · titre · **pas de burger** (espaceur d'équilibre). |
+
+---
+
+## 15. Auto-challenge (points signalés)
+
+- ✅ **Consigne dit « LocaleCubit » mais le code réel est `LocaleBloc`** (HydratedBloc, vérifié
+  `lib/locale/locale_bloc.dart`). → Le plan s'aligne sur le **code** (DEC-PARAM-02). Pas de Cubit créé
+  (conforme `1-bloc-only-no-cubit`).
+- ✅ **`package_info_plus` ABSENT du pubspec** (vérifié) → version via **constante** (DEC-PARAM-06),
+  pas de nouvelle dépendance. Si version dynamique exigée → décision explicite séparée (Q-PARAM-3).
+- ✅ **`url_launcher` présent** (`^6.3.2`) et **déjà utilisé** (`bloc_ligne_ecoute.dart`) avec le pattern
+  `canLaunchUrl`/`launchUrl(externalApplication)` + SnackBar d'échec → **réutilisé à l'identique** (DEC-PARAM-05).
+- ✅ **`LegalUrls.github` / `website` existent** (vérifié `config/legal_urls.dart`) → pas de nouvelle
+  constante d'URL à créer (Q-PARAM-1 = simple confirmation).
+- ✅ **Point d'entrée localisé** : `accueil_view.dart` `_Header` **L224-228**, `IconButton` `Icons.settings`
+  → `ouvrirPlaceholder(placeholderReglages)`. Recâblage 1 ligne (DEC-PARAM-08).
+- ⚠️ **`LocaleBloc` à travers la frontière de route** : standard Flutter (au-dessus de `MaterialApp` ⇒
+  disponible partout) ; fallback `BlocProvider.value` documenté si besoin (Q-PARAM-2). À re-vérifier au
+  branchement réel.
+- ⚠️ **Surlignage en mode « suivi système »** (`locale == null`) : ne pas surligner « rien » — surligner
+  la locale **résolue** par `Localizations.localeOf` (DEC-PARAM-07), sinon l'utilisateur ne voit aucun check.
+- ⚠️ **Drapeaux emoji** : rendu dépend de la police système ; 🇲🇰 / 🇪🇺 peuvent ne pas s'afficher sur
+  certaines ROMs Android (fallback = lettres régionales). Acceptable V1 ; alternative = picto neutre. 🟡
+- ⚠️ **Tests + halo animé** : `HaloRespirant` (boucle) → ne **jamais** `pumpAndSettle()` (piège
+  testing.md) ; wrapper `MediaQuery(disableAnimations: true)`.
+- ⚠️ **Tester `url_launcher` sans natif** : ne pas invoquer le vrai `launchUrl` en test widget →
+  abstraire/mocker (façade légère `OuvreurLien` ou override de plateforme) pour AC6/AC7/AC8. 🟡 décider
+  de l'abstraction à l'implémentation (cohérent avec le précédent `bloc_ligne_ecoute.dart`).
+- 🟡 **Design + US non confirmés par Erwin/Banani en direct** : maquette fournie par l'utilisateur =
+  faisant loi ; §13 reste ouvert. Plan `proposition_a_valider`.
+- 🔁 **Réutilisations** : `LocaleBloc` (langue), `LegalUrls` (URLs), `url_launcher` (pattern soutien),
+  `HaloRespirant`, toolbar (calquée app), `AppRouter`. **Aucune duplication, aucune nouvelle dépendance.**

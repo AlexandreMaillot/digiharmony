@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:digiharmony_app/database/base_de_donnees.dart';
-import 'package:digiharmony_app/database/depot_stats_bien_etre.dart';
+import 'package:digiharmony_app/data/local/app_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -24,35 +24,51 @@ class AppBlocObserver extends BlocObserver {
   }
 }
 
-/// Dependances globales construites au bootstrap et fournies a l'app.
-class AppDependencies {
-  /// {@macro app_dependencies}
-  const AppDependencies({required this.statsRepository});
-
-  /// Agregat local des seances bien-etre (Drift).
-  final DepotStatsBienEtre statsRepository;
+/// Construit le storage HydratedBloc avec split web/mobile.
+Future<Storage> _defaultStorageBuilder() async {
+  if (kIsWeb) {
+    return HydratedStorage.build(
+      storageDirectory: HydratedStorageDirectory.web,
+    );
+  }
+  final dir = await getApplicationDocumentsDirectory();
+  return HydratedStorage.build(
+    storageDirectory: HydratedStorageDirectory(dir.path),
+  );
 }
 
+/// Initialise le socle puis lance l'application.
+///
+/// Ordre **critique** (DEC-FND-05) : `HydratedBloc.storage` est affecté
+/// **avant** `runApp` (donc avant tout bloc hydraté `Locale`/`Bienvenue`),
+/// sinon ces blocs lèvent à la construction. La base Drift unique est ouverte
+/// ici et fournie à l'app via [builder].
+///
+/// [storageBuilder] et [databaseBuilder] sont **injectables** pour les tests
+/// (storage mocké + base Drift en mémoire) afin d'éviter tout I/O disque réel ;
+/// en production, les fabriques par défaut sont utilisées.
 Future<void> bootstrap(
-  FutureOr<Widget> Function(AppDependencies deps) builder,
-) async {
+  FutureOr<Widget> Function(AppDatabase database) builder, {
+  Future<Storage> Function()? storageBuilder,
+  AppDatabase Function()? databaseBuilder,
+}) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   FlutterError.onError = (details) {
-    log(details.exceptionAsString(), stackTrace: details.stack);
+    final stack = details.stack;
+    log(
+      details.exceptionAsString(),
+      stackTrace: stack is StackTrace ? stack : null,
+    );
   };
 
   Bloc.observer = const AppBlocObserver();
 
-  // Persistance legere (langue, flag voix off, selection Detox).
-  HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: HydratedStorageDirectory(
-      (await getApplicationDocumentsDirectory()).path,
-    ),
-  );
+  // 1) Storage HydratedBloc — AVANT tout bloc hydraté (hydrated_bloc 11).
+  HydratedBloc.storage = await (storageBuilder ?? _defaultStorageBuilder)();
 
-  // Lecture audio en arriere-plan (SEUL ecran Detox-player l'utilise) — joue
-  // un asset local, aucune URL/reseau. Echec non bloquant.
+  // 2) Lecture audio en arrière-plan (écran Détox-lecteur) — joue un asset
+  // local, aucune URL/réseau. Échec non bloquant.
   try {
     await JustAudioBackground.init(
       androidNotificationChannelId: 'com.digiharmony.audio',
@@ -66,10 +82,8 @@ Future<void> bootstrap(
     );
   }
 
-  final database = BaseDeDonnees();
-  final deps = AppDependencies(
-    statsRepository: DepotDriftStatsBienEtre(database),
-  );
+  // 3) Base Drift unique (ouverture paresseuse ; warm-up mesuré par le Splash).
+  final database = (databaseBuilder ?? AppDatabase.new)();
 
-  runApp(await builder(deps));
+  runApp(await builder(database));
 }

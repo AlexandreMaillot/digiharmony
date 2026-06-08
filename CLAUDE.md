@@ -60,10 +60,10 @@ Détails complets dans le memory bank (`aidd_docs/memory/`, chargé ci-dessous) 
 résumées ici que les contraintes structurantes qui nécessitent de croiser plusieurs fichiers.
 
 - **Client-only, zéro collecte.** App Flutter monolithique, 100 % locale, **sans backend ni Firebase**. RGPD par absence de traitement. N'ajoute jamais de SDK réseau/analytics/tracking/Crashlytics ni de permission au-delà de `PACKAGE_USAGE_STATS`. Vibration via `HapticFeedback` (pas de permission `VIBRATE`).
-- **Deux couches de persistance locales distinctes — ne pas mélanger.** `Drift` (SQLite) = journal d'humeur, conseils, agrégats (relationnel, réactif via `watch()`). `HydratedBloc` = état léger persistant (langue via `LocaleCubit`, flags onboarding/tuto). **Le journal ne va JAMAIS dans HydratedBloc** ; le compteur « 7 émotions négatives consécutives » est **dérivé** de Drift, jamais dupliqué. Voir `DEC-001`/`DEC-002`.
+- **Deux couches de persistance locales distinctes — ne pas mélanger.** `Drift` (SQLite) = journal d'humeur, conseils, agrégats (relationnel, réactif via `watch()`). `HydratedBloc` = état léger persistant (langue via `LocaleBloc`, flags onboarding/tuto). **Le journal ne va JAMAIS dans HydratedBloc** ; le compteur « 7 émotions négatives consécutives » est **dérivé** de Drift, jamais dupliqué. Voir `DEC-001`/`DEC-002`.
 - **Monorepo Melos 7 = pub workspaces.** `resolution: workspace` dans chaque membre, un seul `pubspec.lock` racine. Ne fige pas `test ^x` dans un package membre (conflit avec le `test_api` épinglé par `flutter_test` → utiliser `test: any`).
 - **3 flavors** (`development`/`staging`/`production`) avec entrypoints `lib/main_<flavor>.dart` ; **aucun** ne pointe vers une API.
-- **i18n** gen-l10n / ARB, 8 langues (`en/fr/el/it/ro/tr/es/mk`, repli `en`), bascule live via `LocaleCubit` au-dessus de `MaterialApp`.
+- **i18n** gen-l10n / ARB, 8 langues (`en/fr/el/it/ro/tr/es/mk`, repli `en`), bascule live via `LocaleBloc` au-dessus de `MaterialApp`.
 - **Android release : `minify`/`shrinkResources` doivent rester `false`** (sinon R8 strippe les libs natives Drift/sqlite3). Keystore + `key.properties` sont gitignorés — ne jamais committer.
 
 ## Memory Management
@@ -77,6 +77,7 @@ Project docs, memory, specs, and plans live in `aidd_docs/`.
 @aidd_docs/memory/codebase-map.md
 @aidd_docs/memory/coding-assertions.md
 @aidd_docs/memory/deployment.md
+@aidd_docs/memory/design-system.md
 @aidd_docs/memory/project-brief.md
 @aidd_docs/memory/project-overview.md
 @aidd_docs/memory/testing.md

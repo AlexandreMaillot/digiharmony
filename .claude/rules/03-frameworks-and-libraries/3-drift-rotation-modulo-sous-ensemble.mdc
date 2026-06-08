@@ -1,0 +1,44 @@
+---
+description: Rotation déterministe « % count » sur une table Drift seedée — filtrer au sous-ensemble voulu, sinon étendre la table casse silencieusement les consommateurs existants
+globs: apps/*/lib/**/*.dart
+alwaysApply: true
+---
+
+Principe:
+- Une sélection déterministe du type `index = joursDepuisEpoch % rows.length` (ex. « conseil du jour »)
+  dépend du **contenu** de la table. **Étendre** une table seedée (ajout de lignes d'un nouveau type)
+  change `rows.length` → le modulo tombe sur des lignes **non prévues** par le consommateur historique.
+- C'est une régression **silencieuse** : pas d'erreur, juste un mauvais résultat (ou un repli `default`
+  trompeur côté UI). Particulièrement traître si les tests **mockent** la méthode de sélection (le vrai
+  modulo n'est jamais exercé).
+
+Règles:
+- La rotation doit porter sur le **sous-ensemble exact** voulu, pas sur toute la table : filtrer en SQL
+  (`WHERE type_carte NOT IN (...)`) avec un **ordre stable** (`ORDER BY ordre, id`), puis
+  `% sousEnsemble.length`.
+- Si plusieurs consommateurs doivent rester **cohérents** (ex. tuile Accueil = 1ʳᵉ carte du deck),
+  factoriser le sous-ensemble + l'ordre dans **un helper partagé** (ex. `cartesGeneriquesOrdonnees()`) que
+  tous appellent — jamais deux calculs `%` divergents.
+- Tester le **vrai** chemin sur une base mémoire (`AppDatabase.forTesting`, **non mocké**) : vérifier que la
+  clé renvoyée appartient toujours au sous-ensemble attendu et reste cohérente entre consommateurs, sur
+  plusieurs jours (rotation). Ne pas se contenter d'un mock de la méthode.
+- Tout écran qui résout la clé renvoyée doit couvrir **toutes** les clés possibles du sous-ensemble (pas de
+  `default` qui masque une clé hors périmètre).
+
+Anti-pattern (régression à l'extension de la table):
+```dart
+// conseilDuJour : la table Conseils passe de 7 à 18 lignes (ajout cartes émotion)
+final all = await select(conseils).get();
+return all[joursDepuisEpoch % all.length].cleConseil; // peut renvoyer une clé émotion → UI repli tipDay01
+```
+
+Correct:
+```dart
+Future<List<Conseil>> cartesGeneriquesOrdonnees() => (select(conseils)
+      ..where((t) => t.typeCarte.isNotIn(['emotion']))
+      ..orderBy([(t) => OrderingTerm(expression: t.ordre), (t) => OrderingTerm(expression: t.id)]))
+    .get();
+// conseilDuJour ET composerDeck partagent ce helper + le même % → cohérence garantie
+```
+
+Contexte projet : régression `conseilDuJour` détectée en review (DEC-CO-11).

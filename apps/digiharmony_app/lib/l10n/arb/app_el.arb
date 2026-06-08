@@ -1,237 +1,903 @@
 {
     "@@locale": "el",
-    "counterAppBarTitle": "Μετρητής",
+    "placeholderComingSoon": "Coming soon",
+    "placeholderBienvenue": "Welcome",
+    "placeholderAccueil": "Home",
+    "homeBrandName": "DigiHarmony",
+    "homeGreeting": "Hello ",
+    "homeGreetingSubtitle": "How are you feeling today?",
+    "heroMoodQuestion": "How are you feeling today?",
+    "heroMoodInvite": "Take a moment for yourself.",
+    "heroLogMoodCta": "Log my mood",
+    "heroSeeJournal": "See my journal",
+    "heroMoodTodayPrefix": "Today you are feeling",
+    "heroMoodLoggedAt": "Mood logged at {heure}",
+    "homeToolBubble": "Choose your bubble",
+    "homeToolDailyTip": "Tip of the day",
+    "homePauseCta": "Take a break",
+    "homeScreenTime": "My screen time",
+    "moodHappy": "Happy",
+    "moodCalm": "Calm",
+    "moodDynamic": "Dynamic",
+    "moodSad": "Sad",
+    "moodAngry": "Angry",
+    "moodNervous": "Nervous",
+    "moodTired": "Tired",
+    "tipDay01": "Take a few deep breaths to reset your mind.",
+    "tipDay02": "Drink a glass of water and stretch for two minutes.",
+    "tipDay03": "Write down one thing you are grateful for today.",
+    "tipDay04": "Step outside for five minutes of fresh air.",
+    "tipDay05": "Put your phone down and enjoy a moment of silence.",
+    "tipDay06": "Smile at someone  it can brighten both your days.",
+    "tipDay07": "Be kind to yourself. You are doing your best.",
+    "splashTagline": "Digital well-being · Erasmus+",
+    "placeholderJournal": "My journal",
+    "placeholderBulle": "Choose your bubble",
+    "placeholderConseil": "Tip of the day",
+    "placeholderPause": "Take a break",
+    "placeholderTempsEcran": "My screen time",
+    "placeholderNoterHumeur": "Log my mood",
+    "placeholderReglages": "Settings",
+    "reglagesTooltip": "Settings",
+    "saisieHumeurTitre": "How are you feeling today?",
+    "saisieHumeurSousTitre": "A single tap  that's all it takes.",
+    "saisieHumeurSelectionne": "You selected: {emotion}",
+    "saisieHumeurEnregistrementEnCours": "Saving",
+    "saisieHumeurEnregistree": "Mood saved",
+    "saisieHumeurAnnuler": "Undo",
+    "saisieHumeurDonneesLocales": "Your data stays on your device",
+    "journalTitle": "My journal",
+    "journalSegmentDay": "Day",
+    "journalSegmentWeek": "Week",
+    "journalSegmentMonth": "Month",
+    "journalDayMoodPrefix": "Today you are feeling",
+    "journalDayTipLabel": "Tip of the day",
+    "journalDayDoExerciseCta": "Do the exercise",
+    "journalDayEditMoodLink": "Edit my mood",
+    "journalDayEmptyTitle": "No mood logged yet today",
+    "journalDayEmptyBody": "Whenever you feel ready, you can note how you feel.",
+    "journalDayEmptyCta": "Log my mood",
+    "journalWeekTitle": "This week",
+    "journalWeekNoEntry": "·",
+    "journalWeekSummary": "You logged your mood on {count} of 7 days.",
+    "journalWeekSummaryEmpty": "No mood logged this week yet.",
+    "journalMonthPrevTooltip": "Previous month",
+    "journalMonthNextTooltip": "Next month",
+    "journalMonthSectionTitle": "This month at a glance",
+    "journalMonthSummary": "A gentle look back over your month.",
+    "journalMonthSummaryEmpty": "No mood logged this month yet.",
+    "journalMonthFrequencyLine": "{label}: {count, plural, =1{1 day} other{{count} days}}",
+    "journalCalendarDaySemantics": "Day {day}",
+    "journalCalendarDayMoodSemantics": "Day {day}: {mood}",
+    "journalExerciseComingSoon": "This exercise is coming soon.",
+    "journalLocalDataNote": "Your data stays on this device.",
+    "soutienTitre": "The last few days seem hard.",
+    "soutienAccroche": "You're not alone.",
+    "soutienParagraphe": "What you feel is real, and it's okay to go through hard times. Taking care of yourself starts with one small step.",
+    "soutienCtaConfiance": "Talk to someone you trust",
+    "soutienCtaRespiration": "Try a guided breathing",
+    "soutienPlusTard": "Later",
+    "soutienAucuneRelance": "No reminders  at your own pace",
+    "soutienConfianceTitre": "Talk to someone you trust",
+    "soutienConfianceParagraphe": "You can talk to a parent, a teacher, a friend or a trusted adult. You don't have to carry it all alone.",
+    "soutienConfiancePiste01": "Talk to a close friend you trust",
+    "soutienConfiancePiste02": "Talk to a family member",
+    "soutienConfiancePiste03": "Reach out to a trusted adult at school (counsellor, school nurse)",
+    "soutienConfiancePiste04": "Write down what you feel before talking about it",
+    "soutienConfiancePiste05": "Choose a calm moment to bring it up",
+    "soutienErreurLien": "Unable to open this link.",
+    "soutienLigneTitre": "Helpline",
+    "soutienLigneDispo": "Available 24/7",
+    "tempsEcranIntro": "Here is your screen time today",
+    "tempsEcranAujourdhui": "today",
+    "tempsEcranCetteSemaine": "this week",
+    "tempsEcranEtMaintenant": "WHAT NOW?",
+    "tempsEcranFairePause": "Take a break",
+    "tempsEcranFairePauseSousTitre": "Start a Detox session now",
+    "tempsEcranCouperNotifs": "Silence my notifications",
+    "tempsEcranCouperNotifsSousTitre": "Quick guide to reduce interruptions",
+    "tempsEcranPermissionTitre": "To see your screen time",
+    "tempsEcranPermissionExplication": "DigiHarmony needs access to your phone's usage statistics. This data is read only on your device and is never sent anywhere.",
+    "tempsEcranPermissionCta": "Enable access in settings",
+    "tempsEcranPermissionRassurance": "You can revoke this access anytime in settings.",
+    "tempsEcranChargement": "Reading",
+    "tempsEcranTotalAujourdhui": "Today",
+    "tempsEcranAucuneDonnee": "No data for today yet",
+    "tempsEcranAucuneDonneeAide": "Check back a little later today.",
+    "tempsEcranTopApps": "Your apps",
+    "tempsEcranAppAutres": "Others",
+    "tempsEcranErreur": "Can't read screen time right now.",
+    "tempsEcranReessayer": "Try again",
+    "tempsEcranIndisponiblePlateforme": "Screen time is only available on Android for now.",
+    "tempsEcranMessageBienveillant": "Noticing your screen time is already taking care of yourself.",
+    "tempsEcranDonneesLocales": "This data stays on your device and is never sent.",
+    "tempsEcranDureeHeuresMinutes": "{heures} h {minutes} min",
+    "tempsEcranDureeMinutes": "{minutes} min",
+    "tempsEcranAppSemantique": "{app}: {duree}",
+    "tempsEcranIosAutorisationTitre": "To see your screen time",
+    "tempsEcranIosAutorisationExplication": "DigiHarmony uses Apple Screen Time. This data stays in your iPhone: the app can't see it, nothing is sent.",
+    "tempsEcranIosAutorisationCta": "Allow",
+    "tempsEcranIosDonneesSysteme": "This data stays in your iPhone; the app can't see it.",
+    "tutoNotifsTitre": "Reduce my notifications",
+    "tutoNotifsIntro": "Fewer notifications, more calm.",
+    "tutoNotifsEncouragement": "Every notification you turn off is one less interruption. Take your time.",
+    "tutoNotifsRassurance": "DigiHarmony never sends you notifications. This is about your other apps.",
+    "tutoNotifsIosEtape1Titre": "Open Settings",
+    "tutoNotifsIosEtape1Corps": "Find the gear icon on your home screen or in your app library.",
+    "tutoNotifsIosEtape2Titre": "Tap \"Notifications\"",
+    "tutoNotifsIosEtape2Corps": "Scroll down to the \"Notifications\" section and tap it.",
+    "tutoNotifsIosEtape3Titre": "Pick a distracting app",
+    "tutoNotifsIosEtape3Corps": "Choose an app that interrupts you often  social media, messaging, games.",
+    "tutoNotifsIosEtape4Titre": "Turn off or group",
+    "tutoNotifsIosEtape4Corps": "Turn notifications off, or enable \"Scheduled Summary\" to get them once a day.",
+    "tutoNotifsIosEtape5Titre": "Repeat for each app",
+    "tutoNotifsIosEtape5Corps": "Take 23 minutes to go through your apps one by one. Every bit of quiet counts.",
+    "tutoNotifsAndroidEtape1Titre": "Open Settings",
+    "tutoNotifsAndroidEtape1Corps": "Find the gear icon in your app drawer or by swiping down from the top of the screen.",
+    "tutoNotifsAndroidEtape2Titre": "Go to Apps",
+    "tutoNotifsAndroidEtape2Corps": "Look for \"Apps\", \"App management\" or \"Installed apps\" depending on your phone.",
+    "tutoNotifsAndroidEtape3Titre": "Select an app",
+    "tutoNotifsAndroidEtape3Corps": "Choose a distracting app and open its settings from the list.",
+    "tutoNotifsAndroidEtape4Titre": "Notifications  Turn off",
+    "tutoNotifsAndroidEtape4Corps": "Tap \"Notifications\" in the app's settings, then turn off the non-essential categories.",
+    "tutoNotifsAndroidEtape5Titre": "Do Not Disturb mode",
+    "tutoNotifsAndroidEtape5Corps": "Turn on \"Do Not Disturb\" from the quick settings to create calm, interruption-free windows.",
+    "parametresTitre": "Settings",
+    "parametresSectionLangue": "Language",
+    "parametresSectionConfidentialite": "Privacy",
+    "parametresConfidentialiteCorps": "No personal data is stored or shared. No account, no identification.",
+    "parametresSectionProjet": "The project",
+    "parametresOpenSourceTitre": "Open source code",
+    "parametresOpenSourceSousTitre": "GitHub · GNU GPL license",
+    "parametresErasmusCorps": "Erasmus+ project  free app, no ads.",
+    "parametresVersion": "DIGIHARMONY v{version}",
+    "parametresLienIndisponible": "Couldn't open the link. You can find it in your browser.",
+    "parametresLangueActiveSemantique": "Active language",
+    "conseilsTitre": "Tips",
+    "conseilsRetourTooltip": "Back",
+    "conseilsHintPrecedent": "previous",
+    "conseilsHintSuivant": "next",
+    "conseilsTagConseilPratique": "Practical tip",
+    "conseilsTagEmotion": "Emotion",
+    "conseilsTagRespiration": "Breathing",
+    "conseilsTagEnergie": "Energy",
+    "conseilsTagGratitude": "Gratitude",
+    "conseilsTagGrandAir": "Fresh air",
+    "conseilsTagDeconnexion": "Unplug",
+    "conseilsTagLien": "Connection",
+    "conseilsTagBienveillance": "Self-kindness",
+    "conseilsTagPresence": "Presence",
+    "conseilsTagEstimeDeSoi": "Self-worth",
+    "conseilsTagRelations": "Relationships",
+    "conseilsTagEspace": "Space",
+    "conseilsEmotionHeadline": "When you feel {emotion}",
+    "@conseilsEmotionHeadline": {
+        "placeholders": {
+            "emotion": {
+                "type": "String"
+            }
+        }
+    },
+    "conseilsEmotionCta": "Try breathing",
+    "conseilsEmotionRespirationBientot": "The breathing exercise is coming soon.",
+    "conseilsCompteurSemantique": "Card {index} of {total}",
+    "@conseilsCompteurSemantique": {
+        "placeholders": {
+            "index": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "conseilsCarteSemantique": "Tip {index} of {total}",
+    "@conseilsCarteSemantique": {
+        "placeholders": {
+            "index": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "tipDay01Do1": "Take a few deep breaths and notice how you feel",
+    "tipDay01Do2": "Find a quiet spot and simply breathe for a minute",
+    "tipDay01Do3": "Be gentle with yourself when you feel stressed",
+    "tipDay01Dont1": "Don't push through without pausing to breathe",
+    "tipDay01Dont2": "Don't dismiss how your body feels right now",
+    "tipDay02Do1": "Drink a full glass of water when you feel low energy",
+    "tipDay02Do2": "Stretch your arms and shoulders gently for two minutes",
+    "tipDay02Do3": "Step away from your screen and move your body",
+    "tipDay02Dont1": "Don't ignore signs of tiredness — your body is speaking",
+    "tipDay02Dont2": "Don't stay still for hours without a small break",
+    "tipDay03Do1": "Write down one small thing that went well today",
+    "tipDay03Do2": "Notice something you appreciated, however small",
+    "tipDay03Do3": "Share your gratitude with someone you care about",
+    "tipDay03Dont1": "Don't force positivity — just notice what felt okay",
+    "tipDay03Dont2": "Don't compare your day to what others share online",
+    "tipDay04Do1": "Step outside, even for just five minutes",
+    "tipDay04Do2": "Look up at the sky and take a slow, deep breath",
+    "tipDay04Do3": "Leave your phone behind and enjoy the fresh air",
+    "tipDay04Dont1": "Don't scroll while you're outside — let yourself be present",
+    "tipDay04Dont2": "Don't rush — a short walk counts just as much",
+    "tipDay05Do1": "Put your phone in another room for a little while",
+    "tipDay05Do2": "Notice how it feels to have a moment of quiet",
+    "tipDay05Do3": "Use the silence to think, draw, or just rest",
+    "tipDay05Dont1": "Don't fill every quiet moment with a screen",
+    "tipDay05Dont2": "Don't feel the need to always be reachable",
+    "tipDay06Do1": "Smile at a friend, classmate, or someone you meet today",
+    "tipDay06Do2": "Say something kind — a small word can change someone's day",
+    "tipDay06Do3": "Let yourself feel the warmth of a genuine connection",
+    "tipDay06Dont1": "Don't replace real smiles with emoji-only conversations",
+    "tipDay06Dont2": "Don't underestimate how much a kind gesture matters",
+    "tipDay07Do1": "Speak to yourself the way you'd speak to a good friend",
+    "tipDay07Do2": "Acknowledge your efforts, even when things are hard",
+    "tipDay07Do3": "Give yourself permission to have an imperfect day",
+    "tipDay07Dont1": "Don't be harder on yourself than you'd be on others",
+    "tipDay07Dont2": "Don't wait to feel perfect before being kind to yourself",
+    "conseilRappelPresentCitation1": "Scroll later,",
+    "conseilRappelPresentCitation2": "live now.",
+    "conseilRappelPresentSousTexte": "The present moment will not come back. The feed will always be there.",
+    "conseilRappelPresentDo1": "Put your phone down and notice what's around you",
+    "conseilRappelPresentDo2": "Engage fully in the conversation or activity in front of you",
+    "conseilRappelPresentDo3": "Let yourself enjoy the moment without documenting it",
+    "conseilRappelPresentDont1": "Don't check your feed during moments that matter",
+    "conseilRappelPresentDont2": "Don't let the scroll replace living the moment",
+    "conseilRappelLikesCitation1": "You are not",
+    "conseilRappelLikesCitation2": "your like count.",
+    "conseilRappelLikesSousTexte": "Your worth has nothing to do with numbers online.",
+    "conseilRappelLikesDo1": "Remind yourself that likes measure reach, not your value",
+    "conseilRappelLikesDo2": "Share what feels true to you, not what gets the most likes",
+    "conseilRappelLikesDo3": "Celebrate your real-life moments away from the screen",
+    "conseilRappelLikesDont1": "Don't measure your worth by how many likes you get",
+    "conseilRappelLikesDont2": "Don't post just to get validation — your voice matters as it is",
+    "conseilPratiqueInteractionsHeadline": "Manage your interactions",
+    "conseilPratiqueInteractionsDo1": "Set a time limit for social apps",
+    "conseilPratiqueInteractionsDo2": "Reply when you feel ready, not right away",
+    "conseilPratiqueInteractionsDo3": "Turn off non-essential notifications",
+    "conseilPratiqueInteractionsDont1": "Do not check your phone right after waking up",
+    "conseilPratiqueInteractionsDont2": "Do not scroll while talking to someone",
+    "conseilPratiqueEspaceHeadline": "Create breathing room",
+    "conseilPratiqueEspaceDo1": "Leave your phone in another room during meals",
+    "conseilPratiqueEspaceDo2": "Read or journal for 10 minutes before bed",
+    "conseilPratiqueEspaceDo3": "Take a screen-free walk outside",
+    "conseilPratiqueEspaceDont1": "Do not use your phone as an alarm clock",
+    "conseilPratiqueEspaceDont2": "Do not scroll in bed before sleeping",
+    "conseilEmotionAngryDo1": "Take a break before responding",
+    "conseilEmotionAngryDo2": "Write down what you feel without sending it",
+    "conseilEmotionAngryDo3": "Step away from the screen for a few minutes",
+    "conseilEmotionAngryDont1": "Do not reply when you feel overwhelmed",
+    "conseilEmotionAngryDont2": "Do not post something you might regret",
+    "conseilEmotionSadDo1": "Reach out to someone you trust",
+    "conseilEmotionSadDo2": "Listen to music that matches how you feel",
+    "conseilEmotionSadDo3": "Allow yourself to rest without guilt",
+    "conseilEmotionSadDont1": "Do not compare your life to what you see online",
+    "conseilEmotionSadDont2": "Do not stay alone with heavy feelings for too long",
+    "conseilEmotionNervousDo1": "Take three slow deep breaths",
+    "conseilEmotionNervousDo2": "Focus on one thing at a time",
+    "conseilEmotionNervousDo3": "Put the phone down and go for a short walk",
+    "conseilEmotionNervousDont1": "Do not scroll endlessly when you feel anxious",
+    "conseilEmotionNervousDont2": "Do not compare your anxiety to others highlight reels",
+    "conseilEmotionTiredDo1": "Give yourself permission to rest",
+    "conseilEmotionTiredDo2": "Put your phone away an hour before bed",
+    "conseilEmotionTiredDo3": "Drink water and stretch gently",
+    "conseilEmotionTiredDont1": "Do not push through exhaustion with more scrolling",
+    "conseilEmotionTiredDont2": "Do not feel guilty for taking a break",
+    "conseilEmotionHappyDo1": "Share your joy with someone you care about",
+    "conseilEmotionHappyDo2": "Note one thing that made you smile today",
+    "conseilEmotionHappyDo3": "Use this energy to do something creative",
+    "conseilEmotionHappyDont1": "Do not lose this moment chasing more likes",
+    "conseilEmotionHappyDont2": "Do not let social media steal your good mood",
+    "conseilEmotionCalmDo1": "Enjoy this peaceful moment you deserve it",
+    "conseilEmotionCalmDo2": "Use this stillness to be present",
+    "conseilEmotionCalmDo3": "Take a mindful breath and appreciate the quiet",
+    "conseilEmotionCalmDont1": "Do not rush to fill the silence with screens",
+    "conseilEmotionCalmDont2": "Do not scroll out of habit when you feel at peace",
+    "conseilEmotionDynamicDo1": "Channel this energy into something meaningful",
+    "conseilEmotionDynamicDo2": "Move your body go for a walk or dance",
+    "conseilEmotionDynamicDo3": "Start that project you have been putting off",
+    "conseilEmotionDynamicDont1": "Do not waste this momentum on mindless scrolling",
+    "conseilEmotionDynamicDont2": "Do not let notifications derail your flow",
     "bubblesTitle": "Bubbles to soothe you",
+    "@bubblesTitle": {
+        "description": "Bubbles hub title"
+    },
     "bubblesSubtitle": "Choose based on how you feel",
+    "@bubblesSubtitle": {
+        "description": "Bubbles hub subtitle"
+    },
     "bubblesRespirationLabel": "Breathing",
+    "@bubblesRespirationLabel": {
+        "description": "Breathing bubble label"
+    },
     "bubblesRespirationHint": "when you're stressed or angry",
+    "@bubblesRespirationHint": {
+        "description": "Breathing bubble hint"
+    },
     "bubblesRespirationDuration": "1–2 min",
+    "@bubblesRespirationDuration": {
+        "description": "Breathing bubble duration"
+    },
     "bubblesSensesLabel": "Senses",
+    "@bubblesSensesLabel": {
+        "description": "Senses bubble label"
+    },
     "bubblesSensesHint": "when anxiety rises",
+    "@bubblesSensesHint": {
+        "description": "Senses bubble hint"
+    },
     "bubblesSensesDuration": "~3 min",
+    "@bubblesSensesDuration": {
+        "description": "Senses bubble duration"
+    },
     "bubblesStretchLabel": "Stretching",
+    "@bubblesStretchLabel": {
+        "description": "Stretch bubble label"
+    },
     "bubblesStretchHint": "when your body is tense",
+    "@bubblesStretchHint": {
+        "description": "Stretch bubble hint"
+    },
     "bubblesStretchDuration": "1 min",
+    "@bubblesStretchDuration": {
+        "description": "Stretch bubble duration"
+    },
     "bubblesDetoxLabel": "Detox",
+    "@bubblesDetoxLabel": {
+        "description": "Detox bubble label"
+    },
     "bubblesDetoxHint": "when you really want to disconnect",
+    "@bubblesDetoxHint": {
+        "description": "Detox bubble hint"
+    },
     "bubblesDetoxDuration": "you choose",
+    "@bubblesDetoxDuration": {
+        "description": "Detox bubble duration"
+    },
     "bubblesOfflineHint": "Tap to begin — everything happens offline",
+    "@bubblesOfflineHint": {
+        "description": "Bubbles footer offline hint"
+    },
     "bubblesToolbarBack": "Back",
+    "@bubblesToolbarBack": {
+        "description": "Back button a11y label"
+    },
     "breathingTitle": "Breathing",
+    "@breathingTitle": {
+        "description": "Breathing page title"
+    },
     "breathingPhaseInhale": "Breathe in…",
+    "@breathingPhaseInhale": {
+        "description": "Inhale phase label"
+    },
     "breathingPhaseHold": "Hold…",
+    "@breathingPhaseHold": {
+        "description": "Hold phase label"
+    },
     "breathingPhaseExhale": "Breathe out…",
+    "@breathingPhaseExhale": {
+        "description": "Exhale phase label"
+    },
     "breathingSecondsValue": "{count} seconds",
+    "@breathingSecondsValue": {
+        "description": "Duration label under the breathing bubble",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
     "breathingCycleProgress": "Cycle {current} of {total}",
+    "@breathingCycleProgress": {
+        "description": "Cycle progress indicator",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
     "breathingVoiceoverHint": "Voice guidance available — optional",
+    "@breathingVoiceoverHint": {
+        "description": "Voiceover hint"
+    },
     "breathingRestart": "Restart",
+    "@breathingRestart": {
+        "description": "Restart button"
+    },
     "breathingVoiceoverOnLabel": "Voice guidance on",
+    "@breathingVoiceoverOnLabel": {
+        "description": "Voiceover on a11y"
+    },
     "breathingVoiceoverOffLabel": "Voice guidance off",
+    "@breathingVoiceoverOffLabel": {
+        "description": "Voiceover off a11y"
+    },
     "breathingPauseHint": "Tap the bubble to pause",
+    "@breathingPauseHint": {
+        "description": "Pause hint"
+    },
     "breathingResumeHint": "Paused — tap to resume",
+    "@breathingResumeHint": {
+        "description": "Resume hint"
+    },
     "breathingCelebrationTitle": "Well done!",
+    "@breathingCelebrationTitle": {
+        "description": "Celebration title"
+    },
     "breathingCelebrationBody": "You completed your breathing session.",
+    "@breathingCelebrationBody": {
+        "description": "Celebration body"
+    },
     "breathingCelebrationDone": "Done",
+    "@breathingCelebrationDone": {
+        "description": "Celebration done button"
+    },
     "breathingExitDialogTitle": "Leave the session?",
+    "@breathingExitDialogTitle": {
+        "description": "Exit dialog title"
+    },
     "breathingExitDialogBody": "Your progress for this session won't be saved.",
+    "@breathingExitDialogBody": {
+        "description": "Exit dialog body"
+    },
     "breathingExitDialogConfirm": "Leave",
+    "@breathingExitDialogConfirm": {
+        "description": "Exit dialog confirm"
+    },
     "breathingExitDialogCancel": "Stay",
+    "@breathingExitDialogCancel": {
+        "description": "Exit dialog cancel"
+    },
     "breathingToolbarBack": "Back",
+    "@breathingToolbarBack": {
+        "description": "Back a11y"
+    },
     "sensesTitle": "The senses",
+    "@sensesTitle": {
+        "description": "Senses page title"
+    },
     "sensesStepProgress": "Step {current} of {total}",
+    "@sensesStepProgress": {
+        "description": "Accessibility label for the 5-step indicator",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
     "sensesCountValue": "{count}",
+    "@sensesCountValue": {
+        "description": "Large count digit",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
     "sensesStepSeeLabel": "things you see",
+    "@sensesStepSeeLabel": {
+        "description": "See step label"
+    },
     "sensesStepSeeInstruction": "Look around and name five things you can see.",
+    "@sensesStepSeeInstruction": {
+        "description": "See step instruction"
+    },
     "sensesStepTouchLabel": "you can touch",
+    "@sensesStepTouchLabel": {
+        "description": "Touch step label"
+    },
     "sensesStepTouchInstruction": "Notice four things you can feel against your skin.",
+    "@sensesStepTouchInstruction": {
+        "description": "Touch step instruction"
+    },
     "sensesStepHearLabel": "you hear",
+    "@sensesStepHearLabel": {
+        "description": "Hear step label"
+    },
     "sensesStepHearInstruction": "Close your eyes. Listen to nearby sounds, then distant ones.",
+    "@sensesStepHearInstruction": {
+        "description": "Hear step instruction"
+    },
     "sensesStepSmellLabel": "you can smell",
+    "@sensesStepSmellLabel": {
+        "description": "Smell step label"
+    },
     "sensesStepSmellInstruction": "Identify two scents around you, even faint ones.",
+    "@sensesStepSmellInstruction": {
+        "description": "Smell step instruction"
+    },
     "sensesStepTasteLabel": "you can taste",
+    "@sensesStepTasteLabel": {
+        "description": "Taste step label"
+    },
     "sensesStepTasteInstruction": "Focus on one taste in your mouth right now.",
+    "@sensesStepTasteInstruction": {
+        "description": "Taste step instruction"
+    },
     "sensesRecapDone": "{count} {label}",
+    "@sensesRecapDone": {
+        "description": "Recap chip for an already completed step",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "label": {
+                "type": "String"
+            }
+        }
+    },
     "sensesAudioHint": "Audio guide — ~3 min — optional",
+    "@sensesAudioHint": {
+        "description": "Audio hint"
+    },
     "sensesNext": "Next",
+    "@sensesNext": {
+        "description": "Next button"
+    },
     "sensesPrevious": "Previous",
+    "@sensesPrevious": {
+        "description": "Previous button"
+    },
     "sensesRestart": "Start over",
+    "@sensesRestart": {
+        "description": "Restart button"
+    },
     "sensesVoiceoverOnLabel": "Voice guidance on",
+    "@sensesVoiceoverOnLabel": {
+        "description": "Voiceover on a11y"
+    },
     "sensesVoiceoverOffLabel": "Voice guidance off",
+    "@sensesVoiceoverOffLabel": {
+        "description": "Voiceover off a11y"
+    },
     "sensesCelebrationTitle": "Well grounded!",
+    "@sensesCelebrationTitle": {
+        "description": "Celebration title"
+    },
     "sensesCelebrationBody": "You completed the 5-4-3-2-1 grounding exercise.",
+    "@sensesCelebrationBody": {
+        "description": "Celebration body"
+    },
     "sensesCelebrationDone": "Done",
+    "@sensesCelebrationDone": {
+        "description": "Celebration done button"
+    },
     "sensesExitDialogTitle": "Leave the session?",
+    "@sensesExitDialogTitle": {
+        "description": "Exit dialog title"
+    },
     "sensesExitDialogBody": "Your progress for this session won't be saved.",
+    "@sensesExitDialogBody": {
+        "description": "Exit dialog body"
+    },
     "sensesExitDialogConfirm": "Leave",
+    "@sensesExitDialogConfirm": {
+        "description": "Exit dialog confirm"
+    },
     "sensesExitDialogCancel": "Stay",
+    "@sensesExitDialogCancel": {
+        "description": "Exit dialog cancel"
+    },
     "sensesToolbarBack": "Back",
+    "@sensesToolbarBack": {
+        "description": "Back a11y"
+    },
     "stretchTitle": "Stretch",
+    "@stretchTitle": {
+        "description": "Stretch page title"
+    },
     "stretchPhonePrompt": "Put your phone down, follow the voice",
+    "@stretchPhonePrompt": {
+        "description": "Phone prompt"
+    },
     "stretchSegmentAnchorLabel": "Grounding",
+    "@stretchSegmentAnchorLabel": {
+        "description": "Anchor segment label"
+    },
     "stretchSegmentAnchorInstruction": "Sit comfortably, plant your feet, take a slow breath.",
+    "@stretchSegmentAnchorInstruction": {
+        "description": "Anchor instruction"
+    },
     "stretchSegmentNeckShouldersLabel": "Neck & shoulders",
+    "@stretchSegmentNeckShouldersLabel": {
+        "description": "Neck segment label"
+    },
     "stretchSegmentNeckShouldersInstruction": "Gently tilt your head toward your right shoulder. Hold for 5 seconds. Switch sides.",
+    "@stretchSegmentNeckShouldersInstruction": {
+        "description": "Neck instruction"
+    },
     "stretchSegmentHandsLabel": "Hands",
+    "@stretchSegmentHandsLabel": {
+        "description": "Hands segment label"
+    },
     "stretchSegmentHandsInstruction": "Open and close your hands slowly, then circle your wrists both ways.",
+    "@stretchSegmentHandsInstruction": {
+        "description": "Hands instruction"
+    },
     "stretchSegmentRestEyesLabel": "Rest your eyes",
+    "@stretchSegmentRestEyesLabel": {
+        "description": "Rest eyes segment label"
+    },
     "stretchSegmentRestEyesInstruction": "Look at something far away, then close your eyes and breathe.",
+    "@stretchSegmentRestEyesInstruction": {
+        "description": "Rest eyes instruction"
+    },
     "stretchTimeRange": "{start} – {end}",
+    "@stretchTimeRange": {
+        "description": "Segment time range",
+        "placeholders": {
+            "start": {
+                "type": "String"
+            },
+            "end": {
+                "type": "String"
+            }
+        }
+    },
     "stretchElapsed": "{time} elapsed",
+    "@stretchElapsed": {
+        "description": "Global elapsed time",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
     "stretchRemaining": "{time} left",
+    "@stretchRemaining": {
+        "description": "Global remaining time",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
     "stretchSegmentStatusDone": "Done",
+    "@stretchSegmentStatusDone": {
+        "description": "Segment status done a11y"
+    },
     "stretchSegmentStatusActive": "In progress",
+    "@stretchSegmentStatusActive": {
+        "description": "Segment status active a11y"
+    },
     "stretchSegmentStatusUpcoming": "Upcoming",
+    "@stretchSegmentStatusUpcoming": {
+        "description": "Segment status upcoming a11y"
+    },
     "stretchAudioHint": "Relaxing music + voice — optional",
+    "@stretchAudioHint": {
+        "description": "Audio hint"
+    },
     "stretchRestart": "Restart",
+    "@stretchRestart": {
+        "description": "Restart button"
+    },
     "stretchPauseHint": "Tap the guide to pause",
+    "@stretchPauseHint": {
+        "description": "Pause hint"
+    },
     "stretchResumeHint": "Paused — tap to resume",
+    "@stretchResumeHint": {
+        "description": "Resume hint"
+    },
     "stretchCelebrationTitle": "Well done!",
+    "@stretchCelebrationTitle": {
+        "description": "Celebration title"
+    },
     "stretchCelebrationBody": "You completed your stretching routine.",
+    "@stretchCelebrationBody": {
+        "description": "Celebration body"
+    },
     "stretchCelebrationDone": "Done",
+    "@stretchCelebrationDone": {
+        "description": "Celebration done button"
+    },
     "stretchExitDialogTitle": "Leave the session?",
+    "@stretchExitDialogTitle": {
+        "description": "Exit dialog title"
+    },
     "stretchExitDialogBody": "Your progress for this session won't be saved.",
+    "@stretchExitDialogBody": {
+        "description": "Exit dialog body"
+    },
     "stretchExitDialogConfirm": "Leave",
+    "@stretchExitDialogConfirm": {
+        "description": "Exit dialog confirm"
+    },
     "stretchExitDialogCancel": "Stay",
+    "@stretchExitDialogCancel": {
+        "description": "Exit dialog cancel"
+    },
     "stretchVoiceoverOnLabel": "Voice guidance on",
+    "@stretchVoiceoverOnLabel": {
+        "description": "Voiceover on a11y"
+    },
     "stretchVoiceoverOffLabel": "Voice guidance off",
+    "@stretchVoiceoverOffLabel": {
+        "description": "Voiceover off a11y"
+    },
     "stretchToolbarBack": "Back",
+    "@stretchToolbarBack": {
+        "description": "Back a11y"
+    },
     "detoxTitle": "Detox",
+    "@detoxTitle": {
+        "description": "Detox setup title"
+    },
     "detoxSetupHeading": "Prepare your break",
+    "@detoxSetupHeading": {
+        "description": "Setup heading"
+    },
     "detoxSetupSubtitle": "Choose an atmosphere and a duration",
+    "@detoxSetupSubtitle": {
+        "description": "Setup subtitle"
+    },
     "detoxSectionAmbiance": "ATMOSPHERE",
+    "@detoxSectionAmbiance": {
+        "description": "Atmosphere section label"
+    },
     "detoxSectionDuration": "DURATION",
+    "@detoxSectionDuration": {
+        "description": "Duration section label"
+    },
     "detoxAmbianceWaterLabel": "Water",
+    "@detoxAmbianceWaterLabel": {
+        "description": "Water ambiance label"
+    },
     "detoxAmbianceWaterDesc": "Stream, gentle rain",
+    "@detoxAmbianceWaterDesc": {
+        "description": "Water ambiance desc"
+    },
     "detoxAmbianceSeaLabel": "Sea",
+    "@detoxAmbianceSeaLabel": {
+        "description": "Sea ambiance label"
+    },
     "detoxAmbianceSeaDesc": "Waves, sea breeze",
+    "@detoxAmbianceSeaDesc": {
+        "description": "Sea ambiance desc"
+    },
     "detoxAmbianceWhiteNoiseLabel": "White noise",
+    "@detoxAmbianceWhiteNoiseLabel": {
+        "description": "White noise label"
+    },
     "detoxAmbianceWhiteNoiseDesc": "Textured silence",
+    "@detoxAmbianceWhiteNoiseDesc": {
+        "description": "White noise desc"
+    },
     "detoxAmbianceForestLabel": "Forest",
+    "@detoxAmbianceForestLabel": {
+        "description": "Forest ambiance label"
+    },
     "detoxAmbianceForestDesc": "Birds, foliage",
+    "@detoxAmbianceForestDesc": {
+        "description": "Forest ambiance desc"
+    },
     "detoxDurationMinutes": "{count} min",
+    "@detoxDurationMinutes": {
+        "description": "Duration chip label",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
     "detoxDurationDefaultBadge": "DEFAULT",
+    "@detoxDurationDefaultBadge": {
+        "description": "Default duration badge"
+    },
     "detoxRecap": "{ambiance} · {duration} min",
+    "@detoxRecap": {
+        "description": "Live recap chip",
+        "placeholders": {
+            "ambiance": {
+                "type": "String"
+            },
+            "duration": {
+                "type": "int"
+            }
+        }
+    },
     "detoxStart": "Start my break",
+    "@detoxStart": {
+        "description": "Start break button"
+    },
     "detoxToolbarBack": "Back",
+    "@detoxToolbarBack": {
+        "description": "Back a11y"
+    },
     "detoxPlayerTitle": "Your break",
+    "@detoxPlayerTitle": {
+        "description": "Player title"
+    },
     "detoxPlayerAmbianceBadge": "{ambiance}",
+    "@detoxPlayerAmbianceBadge": {
+        "description": "Ambiance badge",
+        "placeholders": {
+            "ambiance": {
+                "type": "String"
+            }
+        }
+    },
     "detoxPlayerBloomTitle": "The more you let go, the more it blooms",
+    "@detoxPlayerBloomTitle": {
+        "description": "Bloom title"
+    },
     "detoxPlayerBloomSubtitle": "You're on a break. Well done.",
+    "@detoxPlayerBloomSubtitle": {
+        "description": "Bloom subtitle"
+    },
     "detoxPlayerTimeRemaining": "{time} remaining",
+    "@detoxPlayerTimeRemaining": {
+        "description": "Remaining time",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
     "detoxPlayerTotalTime": "{time}",
+    "@detoxPlayerTotalTime": {
+        "description": "Total time",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
     "detoxPlayerAirplaneTip": "Don't touch your phone — airplane mode recommended",
+    "@detoxPlayerAirplaneTip": {
+        "description": "Airplane tip"
+    },
     "detoxPlayerEnd": "End the break",
+    "@detoxPlayerEnd": {
+        "description": "End break button"
+    },
     "detoxPlayerEndConfirmTitle": "End the break?",
+    "@detoxPlayerEndConfirmTitle": {
+        "description": "End confirm title"
+    },
     "detoxPlayerEndConfirmBody": "Your break isn't over yet. It won't be counted.",
+    "@detoxPlayerEndConfirmBody": {
+        "description": "End confirm body"
+    },
     "detoxPlayerEndConfirmConfirm": "End",
+    "@detoxPlayerEndConfirmConfirm": {
+        "description": "End confirm"
+    },
     "detoxPlayerEndConfirmCancel": "Keep going",
+    "@detoxPlayerEndConfirmCancel": {
+        "description": "End cancel"
+    },
     "detoxPlayerCelebrationTitle": "Break complete",
+    "@detoxPlayerCelebrationTitle": {
+        "description": "Celebration title"
+    },
     "detoxPlayerCelebrationBody": "You took a real break. Nicely done.",
+    "@detoxPlayerCelebrationBody": {
+        "description": "Celebration body"
+    },
     "detoxPlayerCelebrationDone": "Done",
+    "@detoxPlayerCelebrationDone": {
+        "description": "Celebration done"
+    },
     "detoxPlayerToolbarBack": "Back",
+    "@detoxPlayerToolbarBack": {
+        "description": "Back a11y"
+    },
     "detoxPlayerMediaTitle": "Detox break",
-    "adviceTitle": "Advice",
-    "adviceEmotionLabel": "Emotion",
-    "adviceDoSectionLabel": "Do",
-    "adviceAvoidSectionLabel": "Avoid",
-    "adviceTryBreathing": "Try breathing",
-    "advicePrev": "previous",
-    "adviceNext": "next",
-    "adviceApply": "I'll apply this advice",
-    "adviceAppliedConfirmation": "Well done, take care of yourself",
-    "adviceCardTitleAnger": "When you feel angry…",
-    "adviceDoAnger1": "Take a break before replying",
-    "adviceDoAnger2": "Breathe deeply 3 times",
-    "adviceDoAnger3": "Write what you feel — without sending",
-    "adviceAvoidAnger1": "Don't post in the heat of the moment",
-    "adviceAvoidAnger2": "Avoid online confrontations",
-    "adviceCardTitleSadness": "When you feel sad…",
-    "adviceDoSadness1": "Talk to someone you trust",
-    "adviceDoSadness2": "Move your body a little",
-    "adviceDoSadness3": "Do one small kind thing for yourself",
-    "adviceAvoidSadness1": "Don't scroll endlessly",
-    "adviceAvoidSadness2": "Avoid isolating yourself all day",
-    "adviceCardTitleFear": "When you feel afraid…",
-    "adviceDoFear1": "Name what scares you",
-    "adviceDoFear2": "Focus on what you can control",
-    "adviceDoFear3": "Breathe slowly and steadily",
-    "adviceAvoidFear1": "Don't feed worst-case scenarios",
-    "adviceAvoidFear2": "Avoid alarming content online",
-    "adviceCardTitleStress": "When you feel stressed…",
-    "adviceDoStress1": "Take things one step at a time",
-    "adviceDoStress2": "Take a short screen-free break",
-    "adviceDoStress3": "Drink some water and stretch",
-    "adviceAvoidStress1": "Don't take on everything at once",
-    "adviceAvoidStress2": "Avoid skipping sleep",
-    "adviceCardTitleLoneliness": "When you feel lonely…",
-    "adviceDoLoneliness1": "Reach out to one person",
-    "adviceDoLoneliness2": "Join an activity you enjoy",
-    "adviceDoLoneliness3": "Be gentle with yourself",
-    "adviceAvoidLoneliness1": "Don't compare yourself online",
-    "adviceAvoidLoneliness2": "Avoid waiting for others to reach out",
+    "@detoxPlayerMediaTitle": {
+        "description": "Lockscreen media title"
+    },
     "notifGuideBrand": "DigiHarmony",
-    "notifGuideTitle": "Mute my notifications",
-    "notifGuideSubtitle": "Fewer notifications, more calm.",
-    "notifGuideTip": "Each notification removed is one less interruption. Take your time.",
-    "notifGuideOtherPhone": "See for another phone",
-    "notifGuideMenuTooltip": "Menu",
-    "notifGuideBackLabel": "Back",
-    "notifGuideStep1Title": "Open Settings",
-    "notifGuideStep1Body": "Find the gear icon on your home screen or in your app library.",
-    "notifGuideStep2Title": "Tap \"Notifications\"",
-    "notifGuideStep2Body": "Scroll to the \"Notifications\" section and tap it.",
-    "notifGuideStep3Title": "Pick a distracting app",
-    "notifGuideStep3Body": "Choose an app that interrupts you often — social media, messaging, games.",
-    "notifGuideStep4Title": "Turn off or group",
-    "notifGuideStep4Body": "Turn notifications off, or enable \"Scheduled summary\" to get them once a day.",
-    "notifGuideStep5Title": "Repeat for each app",
-    "notifGuideStep5Body": "Take 2–3 minutes to go through your apps one by one. Every bit of quiet counts.",
-    "notifGuideStep1TitleIos": "Open Settings",
-    "notifGuideStep1BodyIos": "Find the grey \"Settings\" icon on your home screen or via search.",
-    "notifGuideStep2TitleIos": "Tap \"Notifications\"",
-    "notifGuideStep2BodyIos": "In Settings, open the \"Notifications\" section.",
-    "notifGuideStep3TitleIos": "Pick a distracting app",
-    "notifGuideStep3BodyIos": "Choose an app that interrupts you often — social media, messaging, games.",
-    "notifGuideStep4TitleIos": "Turn off or schedule",
-    "notifGuideStep4BodyIos": "Turn off \"Allow Notifications\", or use \"Scheduled Summary\" to group them.",
-    "notifGuideStep5TitleIos": "Repeat for each app",
-    "notifGuideStep5BodyIos": "Take 2–3 minutes to go through your apps one by one. Every bit of quiet counts.",
-    "screenTimeTitle": "My screen time",
-    "screenTimeTodaySubtitle": "Here's your screen time today",
-    "screenTimeTodayLabel": "today",
-    "screenTimeWeekLabel": "this week",
-    "screenTimePrivacyNotice": "This data is read on your phone only. Nothing is sent.",
-    "screenTimeNextSection": "And now?",
-    "screenTimeActionBreakTitle": "Take a break",
-    "screenTimeActionBreakSubtitle": "Start a Detox session now",
-    "screenTimeActionNotificationsTitle": "Mute my notifications",
-    "screenTimeActionNotificationsSubtitle": "Quick guide to reduce interruptions",
-    "screenTimePermissionTitle": "Allow screen time access",
-    "screenTimePermissionBody": "To show your screen time, allow DIGIHARMONY to read your phone usage. Nothing is sent.",
-    "screenTimePermissionCta": "Allow access",
-    "screenTimeUnsupportedTitle": "Available on Android only",
-    "screenTimeUnsupportedBody": "This feature uses a screen time measure available only on Android.",
-    "screenTimeErrorBody": "Couldn't read your screen time right now.",
-    "screenTimeRetryCta": "Retry",
-    "screenTimeDurationHm": "{hours}h{minutes}m",
-    "screenTimeWeekday1": "M",
-    "screenTimeWeekday2": "T",
-    "screenTimeWeekday3": "W",
-    "screenTimeWeekday4": "T",
-    "screenTimeWeekday5": "F",
-    "screenTimeWeekday6": "S",
-    "screenTimeWeekday7": "S",
-    "screenTimeToolbarBack": "Back",
-    "settingsTitle": "Settings",
-    "settingsSectionLanguage": "Language",
-    "settingsSectionPrivacy": "Privacy",
-    "settingsPrivacyNotice": "No personal data is stored or shared. No account, no sign-in.",
-    "settingsSectionProject": "The project",
-    "settingsOpenSourceTitle": "Open source code",
-    "settingsOpenSourceSubtitle": "GitHub · GNU GPL License",
-    "settingsWebsiteTitle": "digiharmony.org",
-    "settingsWebsiteSubtitle": "Official project website",
-    "settingsErasmusNotice": "Erasmus+ project — free app, no ads",
-    "settingsVersion": "DIGIHARMONY v{version}",
-    "settingsToolbarBack": "Back"
+    "@notifGuideBrand": {
+        "description": "Brand label"
+    }
 }

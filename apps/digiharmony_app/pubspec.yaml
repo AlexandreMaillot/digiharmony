@@ -11,11 +11,11 @@ environment:
 dependencies:
   app_usage: ^4.1.0
   bloc: ^9.2.0
-  cached_network_image: ^3.4.1
+  bloc_concurrency: ^0.3.0
   core_package:
     path: ../../packages/core_package
   drift: ^2.33.0
-  equatable: ^2.0.7
+  equatable: ^2.0.8
   flow_builder: ^0.1.0
   flutter:
     sdk: flutter
@@ -28,6 +28,7 @@ dependencies:
   intl: ^0.20.2
   just_audio: ^0.10.5
   just_audio_background: ^0.0.1-beta.17
+  package_info_plus: ^8.3.0
   path: ^1.9.1
   path_provider: ^2.1.5
   shared_preferences: ^2.5.5
@@ -40,27 +41,33 @@ dev_dependencies:
   bloc_tools: ^0.1.0-dev.24
   build_runner: ^2.15.0
   drift_dev: ^2.33.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.4
   flutter_test:
     sdk: flutter
   json_serializable: ^6.14.0
   mocktail: ^1.0.5
+  plugin_platform_interface: any
+  sqlite3: any
+  url_launcher_platform_interface: any
   very_good_analysis: ^10.2.0
 
 flutter:
   generate: true
   uses-material-design: true
   assets:
+    - assets/images/
     - assets/audio/respiration/
     - assets/audio/senses/
     - assets/audio/etirements/
     - assets/audio/detox/
-  # Police DM Sans : a deposer dans assets/fonts/ (DMSans-Regular.ttf,
-  # DMSans-Bold.ttf). Tant que les .ttf sont absents, la declaration `fonts:`
-  # reste commentee pour ne pas casser le build ; le theme reference
-  # `fontFamily: 'DM Sans'` et retombe gracieusement sur la police systeme.
-  # fonts:
-  #   - family: DM Sans
-  #     fonts:
-  #       - asset: assets/fonts/DMSans-Regular.ttf
-  #       - asset: assets/fonts/DMSans-Bold.ttf
-  #         weight: 700
+  fonts:
+    - family: DMSans
+      fonts:
+        - asset: assets/fonts/DMSans-Regular.ttf
+        - asset: assets/fonts/DMSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/DMSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/DMSans-Bold.ttf
+          weight: 700

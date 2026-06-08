@@ -1,606 +1,746 @@
 ---
-page: Conseils (AdvicePage)
-route: /advice (carrousel de conseils par émotion — atteint depuis Journal/Home)
-us: []
-shared_components: [DigiToolbar, AppBackground, AppTheme]
-i18n_keys: [adviceTitle, adviceEmotionLabel, adviceDoSectionLabel, adviceAvoidSectionLabel, adviceTryBreathing, advicePrev, adviceNext, adviceApply, adviceAppliedConfirmation, adviceCardTitleAnger, adviceCardTitleSadness, adviceCardTitleFear, adviceCardTitleStress, adviceCardTitleLoneliness, adviceDoAnger1, adviceDoAnger2, adviceDoAnger3, adviceAvoidAnger1, adviceAvoidAnger2, adviceDoSadness1, adviceDoSadness2, adviceDoSadness3, adviceAvoidSadness1, adviceAvoidSadness2, adviceDoFear1, adviceDoFear2, adviceDoFear3, adviceAvoidFear1, adviceAvoidFear2, adviceDoStress1, adviceDoStress2, adviceDoStress3, adviceAvoidStress1, adviceAvoidStress2, adviceDoLoneliness1, adviceDoLoneliness2, adviceDoLoneliness3, adviceAvoidLoneliness1, adviceAvoidLoneliness2]
-shared_components_extracted: [EmotionAdvice/AdviceCatalog (core_package — catalogue statique = SOURCE DE VÉRITÉ), NegativeEmotion enum (core_package), AppTheme tokens couleurs émotions (angerRed/sadnessBlue/fearViolet/stressOrange/lonelinessTeal)]
-tests: aidd_docs/tasks/conseils.tests.md (à remplir par Kent en étape 5)
-created: 2026-06-05
-updated: 2026-06-05
+page: Conseils
+slug: conseils
+route: ConseilsPage (push via AppRouter.versConseils)
+feature_dir: apps/digiharmony_app/lib/pages/conseils/
+status: implemente
+github:
+us:
+  - "US-CO-01 « Parcourir le deck de conseils » (à créer via Erwin — milestone Phase 2 🟡)"
+  - "US-CO-02 « Voir un conseil adapté à mon humeur » (à créer via Erwin — dépend de #6)"
+depends_on:
+  - "#3 Fondations (US-FND-01) — thème, Drift, AppRouter, i18n, HaloRespirant, ParticulesFlottantes"
+  - "#6 Noter mon humeur — table EntreesHumeur (lecture, pour les cartes émotion)"
+related:
+  - "#2 Accueil — point d'entrée (tuile « Conseil du jour », homeToolDailyTip)"
+  - journal.md (conseil du jour + emotionsCanoniques)
+  - soutien.md (CTA respiration / Détox = stub partagé)
+shared_components:
+  - AppTheme
+  - AppColors
+  - MoodColors.byKey
+  - AppSpacing
+  - AppRadii
+  - AppRouter (ajout versConseils)
+  - AppDatabase (Conseils + EntreesHumeur — LECTURE ; +2 lectures, +seed étendu)
+  - emotionsCanoniques / emojiPourCode / valencePour / libelleEmotion
+  - HaloRespirant (décor fond, a11y-aware)
+  - ParticulesFlottantes (particules ambiantes, a11y-aware)
+  - ouvrirPlaceholder (common/placeholder_screen.dart) — stub respiration/Détox
+i18n_keys:
+  - conseilsTitre
+  - conseilsRetourTooltip
+  - conseilsHintPrecedent
+  - conseilsHintSuivant
+  - conseilsTagEquilibre
+  - conseilsTagRappel
+  - conseilsTagConseilPratique
+  - conseilsTagEmotion
+  - conseilsEmotionHeadline
+  - conseilsEmotionCta
+  - conseilsEmotionRespirationBientot
+  - conseilsCompteurSemantique
+  - conseilsCarteSemantique
+  - "conseilsContenu* (corpus de cartes — voir §7.2, PLACEHOLDERS à valider partenaires)"
+i18n_keys_existantes_reutilisees:
+  - "tipDay01..tipDay07 (conseils du jour existants — réinjectés comme cartes rappel/conseil)"
+  - moodHappy / moodCalm / moodDynamic / moodSad / moodAngry / moodNervous / moodTired
+  - homeToolDailyTip (libellé tuile Accueil — point d'entrée)
+tests: aidd_docs/tasks/conseils.tests.md (à remplir en Step 5 par Kent)
+created: 2026-06-06
+updated: 2026-06-06
 ---
 
-# Plan de page — « Conseils » (AdvicePage)
+# Page Plan — « Conseils » (deck de cartes swipables)
 
-> Plan auto-suffisant pour éditeur IA. Conforme aux règles `aidd_docs/memory/` +
-> `aidd_docs/rules/` de DIGIHARMONY : Flutter, monorepo Melos 7, **client-only,
-> zéro collecte, zéro réseau, zéro SDK analytics/tracking**, aucune permission
-> au-delà de `PACKAGE_USAGE_STATS`, vibration via `HapticFeedback` uniquement,
-> pas de backend ni Firebase, i18n ARB gen-l10n 8 langues (repli `en`),
-> **DM Sans en asset local (PAS `google_fonts`)**, **icônes Material only**,
-> aucun asset image (cartes empilées via `Stack`).
->
-> Carrousel de **5 cartes de conseils, une par émotion négative**. Réutilise les
-> briques partagées `DigiToolbar`, `AppBackground`, `AppTheme` créées par les
-> plans bulles. CTA « Essayer la respiration » → **`/bubble/breathing`**
-> (`BreathingPage`, déjà planifié dans `respiration.md`).
-
----
-
-## 0. Réconciliation architecture — OÙ VIVENT LES CONSEILS ? (décision justifiée)
-
-Le memory bank crée une ambiguïté à lever explicitement :
-
-- `architecture.md` / `project-brief.md` : **Drift** stocke « journal d'humeur,
-  **conseils**, agrégats » ; **DEC-001/DEC-002** : le journal va dans Drift
-  (relationnel, réactif `watch()`), l'état léger persistant dans HydratedBloc,
-  et le **super-conseil** (7 émotions négatives consécutives) est **DÉRIVÉ de
-  Drift, jamais dupliqué**.
-
-Il faut distinguer **deux choses qui portent le même mot « conseil »** :
-
-| Notion | Nature | Où elle vit |
-| --- | --- | --- |
-| **Catalogue de conseils** (contenu fixe par émotion : titres, listes à-faire / à-éviter) | **Donnée de référence FIXE**, identique pour tous, jamais éditée par l'utilisateur, traduite en 8 langues | **Statique dans `core_package`** (clés i18n) — **SOURCE DE VÉRITÉ UNIQUE** |
-| **Faits liés aux conseils** (un conseil *a été appliqué*, le *super-conseil* a été déclenché) | **Données comportementales/agrégats**, datées, requêtables, dérivées du journal | **Drift** (DEC-001), quand le journal sera planifié |
-
-**DÉCISION RETENUE (à respecter par l'éditeur IA) :**
-
-1. **Le CATALOGUE de conseils est un catalogue statique `const` dans
-   `core_package`** (`AdviceCatalog.all`), portant des **clés i18n** (jamais du
-   texte en dur). C'est la **source de vérité unique**. Justification : contenu
-   de référence figé, multilingue, sans état — exactement le même pattern que
-   `BubbleCategory.all`, `StretchRoutine.defaultRoutine`, `DetoxAmbiance` déjà
-   en place dans `core_package`. Le mettre en Drift créerait une **duplication
-   de la vérité** (violation directe de la règle « ne pas dupliquer la vérité »
-   de DEC-001/DEC-002) et imposerait du codegen + des migrations pour de la
-   donnée morte.
-
-2. **SI** une feature future exige que le catalogue soit interrogeable en SQL
-   (jointures avec le journal, agrégats « conseil le plus consulté », etc.),
-   alors on **SEED** ce catalogue dans Drift **au 1er lancement, à partir de la
-   source statique `core_package`**. Le seed est une **projection en lecture
-   seule** ; la **source de vérité reste le catalogue statique**. On ne **JAMAIS**
-   édite le contenu côté Drift, on **re-seed** depuis `core_package`. → Ce seed
-   **n'est PAS implémenté par ce plan** (pas de besoin SQL ici) ; il est
-   documenté comme point d'extension §11.
-
-3. **Ce que cet écran ne fait PAS** (et qu'il ne doit pas faire) : aucune
-   écriture Drift, aucune dérivation du super-conseil, aucune lecture du
-   journal. L'écran est **autonome** et lit **uniquement** `AdviceCatalog.all`.
+> **STATUT : `proposition_a_valider`.** Plan auto-suffisant pour l'éditeur IA. Cible :
+> `apps/digiharmony_app/`. App DIGIHARMONY, public mineur, Erasmus+, **SANS backend ni Firebase,
+> ZÉRO collecte**. Maquette Banani `new_screen13` (« Conseils ») **récupérée et confirmée** (deck 3
+> types de cartes : rappel / emotion / conseil). **Le contenu des cartes = PLACEHOLDERS à valider
+> partenaires** (rien n'est figé comme définitif). Les points ouverts sont en **§13 Questions à
+> valider** ; la **logique de sélection/composition du deck** (attente n°1 de l'utilisateur) est
+> tranchée en **DEC-CO-03 à DEC-CO-06** avec alternatives + raison.
 
 ---
 
-## 1. Contexte de la page
+## 0. Garde-fous (FONT LOI — priment sur tout détail divergent ci-dessous)
+
+- **Sans backend, sans Firebase, zéro collecte.** Aucun SDK réseau/analytics/tracking/Crashlytics.
+  Lecture 100 % locale (Drift). Aucune permission ajoutée. Aucun appel réseau.
+- **Lecture Drift seule** : la page **ne fait que LIRE** `Conseils` (corpus) et `EntreesHumeur`
+  (humeur récente, pour prioriser les cartes émotion). **Aucune écriture.** (DEC-CO-09 : **aucun CTA
+  « J'applique »** — supprimé, inutile.)
+- **AUCUN score / classement / streak / FOMO / comparaison / boucle de rétention** (DEC-003 +
+  design-system §garde-fous éthiques). Le compteur de cartes (dots) est un **indicateur de position**,
+  **jamais** un score ou une progression à « compléter ». Pas de « X conseils appliqués », pas de
+  badge, pas de pourcentage.
+- **Public mineur, ton bienveillant** : le contenu des cartes est **doux, non culpabilisant, non
+  injonctif agressif**. Do's/Don'ts formulés avec bienveillance. → **Tout le corpus est PLACEHOLDER à
+  valider par les partenaires Erasmus+ avant figement** (DEC-CO-10).
+- **Émotions = 7 canoniques** (DEC-003) : `happy/calm/dynamic/sad/angry/nervous/tired`. Source de
+  vérité unique = `emotionsCanoniques` (`lib/pages/saisie_humeur/modeles/emotion_canonique.dart`).
+  **Couleur d'une carte émotion = `MoodColors.byKey[code]` UNIQUEMENT** — JAMAIS le hex du mockup
+  (le mockup met `#E5392B` pour Colère en dur : à **remplacer** par `MoodColors.angry`). Libellé via
+  `libelleEmotion(l10n, code)`. Emoji via `emojiPourCode(code)`.
+- **Couleurs (chrome / accents de carte rappel & conseil)** via tokens `AppColors` UNIQUEMENT — JAMAIS
+  de hex en dur. Le mockup encode des accents bruts (`#3FB8E6`, `#A8D24E`, `#F0C84A`, `#8A3FD1`) → à
+  **mapper sur tokens** : cyan `AppColors.primary`, lime `AppColors.signatureGradient[1]`, or
+  `AppColors.accentGold`, violet **= n'existe pas dans le chrome** → voir DEC-CO-07 (l'accent violet
+  du mockup pour une carte *conseil* serait une couleur d'émotion `MoodColors.nervous` détournée du
+  chrome → **interdit**). On restreint donc les accents des cartes rappel/conseil à la palette chrome.
+- **i18n obligatoire** : aucune chaîne FR/EN en dur. Clés `conseils*`/`conseil*` réelles fr+en, repli
+  `en` (TODO) pour `el/it/ro/tr/es/mk`. Le corpus de cartes vit **dans les ARB** (jamais de texte en
+  dur dans le dataset Dart — le dataset ne porte que des **clés**, comme la table `Conseils`).
+- **a11y reduced-motion** : `MediaQuery.maybeOf(context)?.disableAnimations`. Si `true` →
+  **particules OFF, halo statique, animations d'entrée/swipe OFF** (rendu statique). Tap ≥ 48×48 dp.
+  **Swipe accessible** : navigation aussi possible **sans geste** (flèches/zones tap + actions de
+  défilement sémantiques) pour lecteurs d'écran / motricité réduite (DEC-CO-08).
+- **Bloc-only** (Cubit interdit, règle `1-bloc-only-no-cubit`) ; transformers explicites ; `State`
+  `Equatable` avec enum `status`. Un **seul** `ConseilsBloc` qui **compose le deck** depuis Drift +
+  dataset. Suffixes `Event`/`State` autorisés (dérogation).
+- **Nommage FRANÇAIS** : dossier `lib/pages/conseils/`, classes `ConseilsPage`/`ConseilsView`/
+  `ConseilsBloc`/`ConseilsState`/`ConseilsEvent`. Structure imposée (`0-flutter-pages-structure`) :
+  `lib/pages/conseils/{bloc,views,widgets,modeles}`. Scaffolding technique reste anglais.
+- **Android : `minify`/`shrinkResources = false`** (déjà acté Fondations).
+
+---
+
+## 1. Contexte & objectif
 
 | Élément | Valeur |
-| --- | --- |
-| Nom | « Conseils » — carrousel de cartes de conseils, **une carte par émotion négative** |
-| Widget page | `AdvicePage` (entrée + providers) + `AdviceView` (UI), fichier `lib/advice/view/advice_page.dart` |
-| Route logique | `advice`, conceptuellement `/advice` — écran autonome plein écran |
-| Parent | **Journal d'humeur / Home** (pas encore planifié) → chevron retour ramène au parent **par nom de route** (ne pas présumer le widget parent) |
-| Accès / rôles / auth | **Aucun** — app sans compte, sans identification, sans permission. Accès libre |
-| Données affichées | Pour la carte courante : couleur émotion, titre, liste à-faire (3), liste à-éviter (2), exercice associé. **Toutes dérivées de `AdviceCatalog.all` (statique, en mémoire)** |
-| Persistance | **AUCUNE.** Lecture seule d'un catalogue `const`. Pas de Drift, pas de HydratedBloc sur cet écran |
-| État applicatif | **`AdvicePageController` (`PageController`)** pour le carrousel + index courant local. **Pas de Bloc requis** (état purement UI/navigation, pas d'état métier mutable persistant — cf. §13) |
-| Contrat d'entrée | `AdviceArgs { String? initialEmotionId }` — **optionnel** : ouvre directement sur l'émotion donnée (utilisé plus tard par le Journal). `null` ⇒ ouvre sur la 1ʳᵉ carte (mode catalogue) |
-| États écran | (a) **nominal** (carte affichée), (b) **navigation entre cartes** (prev/next/swipe/dots synchronisés). **Pas d'empty ni d'error** (catalogue statique non vide). Repli défini §8 pour `initialEmotionId` inconnu |
-
-**Mode par défaut = CATALOGUE** (toutes les émotions négatives, librement
-parcourues, écran autonome). Le mode **CONTEXTUEL** (filtré sur l'émotion du
-jour saisie dans le journal) n'est **pas** implémenté ici : il se ramène au mode
-catalogue + `initialEmotionId` (voir §7 et §11).
+|---|---|
+| **But** | Offrir à l'ado un **deck de conseils bienveillants** sur le bien-être numérique, parcourable par **swipe** (ou flèches a11y), mêlant des **rappels** (citations courtes), des **conseils pratiques** (Do's/Don'ts) et — quand une humeur a été notée — une **carte émotion contextuelle** adaptée à ce qu'il ressent. |
+| **Accès** | Aucune auth (app sans compte). Empilée (`push`) depuis la **tuile « Conseil du jour »** de l'Accueil (`TuileOutil` `homeToolDailyTip`, `accueil_view.dart` ~L105-115), aujourd'hui câblée sur `ouvrirPlaceholder(context, l10n.placeholderConseil)` → **à recâbler** vers `AppRouter.versConseils(context)` (§6). |
+| **Route** | Pas de GoRouter (DEC-FND-07). Nouvelle méthode `AppRouter.versConseils(context)` en **`push`** (retour chevron), calquée sur `versJournal` (transmet `AppDatabase` à travers la frontière de route). |
+| **Retour** | Toolbar haute : chevron `Icons.chevron_left` → `Navigator.pop`. Titre « Conseils » centré, espaceur à droite (**pas de menu/burger** — conforme mockup). |
+| **Milestone** | **Phase 2** 🟡. Dépend de Fondations (#3) + Noter mon humeur (#6, pour l'humeur des cartes émotion). |
 
 ---
 
-## 2. User Stories liées
+## 2. La maquette (Banani `new_screen13`) — éléments visuels confirmés
 
-**Aucune US backlog référencée fournie.** Le plan s'appuie sur les **décisions /
-défauts validés par l'utilisateur** (reportés en §13) qui font office de
-critères d'acceptation. À rattacher si une US existe (mettre à jour le champ
-`us:` de l'en-tête + du registry).
+Fond profond `#16213C` = `AppColors.backgroundDeep`. **Particules ambiantes** (3) + **halo de fond**
+teinté par l'accent de la carte active (désactivables reduced-motion).
 
-Critères d'acceptation dérivés des décisions (source des tests Kent) :
+1. **Toolbar** : chevron retour (48×48) · titre « Conseils » · espaceur 48 (pas de burger).
+2. **Compteur de cartes (dots)** : un point par carte ; **carte active = pilule élargie** (largeur ~20
+   vs 6) ; **couleur du point actif = accent de la carte active** ; inactifs = `textMuted @22%`.
+3. **Deck de cartes swipables** (largeur max ~335, rayon 24 = `AppRadii.card`, fond `#283A5E` =
+   `AppColors.surface`, bordure `accent @30%`) avec :
+   - **peek de la carte suivante** derrière (scale 0.93, translateY +14, fond surface) ;
+   - **bord de la carte précédente** à gauche (bande 32px, opacité 0.45).
+   - Décor interne par carte : 2 « clouds » radiaux teintés accent + streak d'accent en haut (4px).
+   - **3 types de cartes** :
+     - **`rappel`** : tag (icône + libellé court, ex. « Équilibre »/« Rappel ») · **grande citation 2
+       lignes** (~48px ; ligne 2 en couleur d'accent) · sous-texte (`textMuted`, max ~260px).
+     - **`emotion`** : tag « Émotion » (**accent = couleur de l'émotion**) · headline « Quand tu te
+       sens {émotion}… » · **Do's** (puce ✓ ronde accent) · **Don'ts** (puce ✗ ronde grise) · **CTA**
+       « Essayer la respiration » (bouton plein accent, 44px) → **STUB** respiration/Détox.
+     - **`conseil`** : tag « Conseil pratique » · headline · Do's/Don'ts (mêmes puces). Pas de CTA.
+4. **Hint swipe** : « précédent ‹ | › suivant » (très atténué).
 
-- **AC-1** : Le carrousel affiche **5 cartes, une par émotion négative**
-  (`NegativeEmotion.values`), dans l'ordre du catalogue.
-- **AC-2** : Chaque carte affiche : barre d'accent couleur émotion, label
-  « ÉMOTION », titre, **3** items « À FAIRE » (puce check, cercle couleur
-  émotion), **2** items « À ÉVITER » (puce x, cercle gris), CTA « Essayer la
-  respiration » (fond couleur émotion).
-- **AC-3** : Navigation **prev/next** (chevrons), **swipe horizontal** et **dots**
-  sont **synchronisés** (même `PageController`).
-- **AC-4** : Le **dot actif** est une **barre allongée rouge** (`#E5392B`,
-  cf. design) ; les autres sont des points.
-- **AC-5** : `HapticFeedback.selectionClick()` sur **chaque** changement de carte
-  (prev, next, swipe), sur **« Essayer la respiration »** et sur **« J'applique
-  ce conseil »**.
-- **AC-6** : **« Essayer la respiration »** navigue vers **`/bubble/breathing`**
-  (`BreathingPage`). L'émotion courante PEUT être passée en contexte
-  (optionnel, non requis — cf. §6).
-- **AC-7** : **« J'applique ce conseil »** : `HapticFeedback` + **confirmation
-  brève** (SnackBar/feedback) puis **retour à l'écran précédent**. **Aucune
-  écriture Drift** (point d'extension documenté §11).
-- **AC-8** : Le **chevron retour** ramène au **parent par nom de route** (ne
-  présume pas le widget parent).
-- **AC-9** : `initialEmotionId` fourni ⇒ le carrousel **ouvre sur cette carte** ;
-  `initialEmotionId` `null` ou **inconnu** ⇒ ouvre sur la **1ʳᵉ carte** (repli
-  catalogue, §8).
-- **AC-10** : Tout texte visible provient de l'**ARB** (gen-l10n), **aucune
-  chaîne en dur**.
-- **AC-11** : Si `reduceMotion` actif → animations **décoratives**
-  (swipe-hint, clouds, particules, emotion-glow) **désactivées** ; la
-  **navigation, l'affichage, les dots restent fonctionnels**.
-- **AC-12** : **Zéro réseau / zéro collecte / aucun asset image** : cartes
-  empilées via `Stack`, aucune permission au-delà de `PACKAGE_USAGE_STATS`.
+> ⚠️ **Suppression du CTA bas du mockup** : le bouton plein « J'applique ce conseil » du mockup
+> **n'est PAS repris** (DEC-CO-09 — inutile : il n'écrivait rien, pas de score/historique anti-rétention).
+> L'écran se termine sur le hint swipe ; la navigation entre cartes suffit.
+
+> ⚠️ **Le mockup met les accents en hex brut** (`#E5392B`, `#3FB8E6`, `#A8D24E`, `#F0C84A`, `#8A3FD1`).
+> **À NE PAS reproduire** : voir §0 + DEC-CO-07. Couleur émotion ⇒ `MoodColors.byKey` ; accents
+> rappel/conseil ⇒ palette **chrome** (`primary` / `signatureGradient[1]` lime / `accentGold`).
 
 ---
 
-## 3. Design (capturé depuis le HTML/CSS fourni) → mapping widgets
+## 3. ⚠️ LE POINT DUR — logique de SÉLECTION / COMPOSITION du deck
 
-Écran mobile, fond bulle `#16213C`, halo radial rouge central léger,
-**3 particules flottantes** (décoratives). Structure haut → bas :
+> **C'est l'attente explicite n°1.** « En fonction de quoi les conseils apparaissent ». Tout est
+> **déterministe et local** (zéro collecte, testable). On distingue **(a)** d'où viennent les cartes
+> (modèle de données), **(b)** comment chaque sous-ensemble est choisi, **(c)** comment le deck final
+> est composé/ordonné, **(d)** le cas « aucune humeur notée ».
 
-### Toolbar (haut)
-| Élément design | Widget | Comportement |
-| --- | --- | --- |
-| Bouton retour (chevron-left, 48×48) | `DigiToolbar.onBack` | §6 — retour parent par nom de route |
-| Titre centré « Conseils » (bold) | `DigiToolbar.title` = `l10n.adviceTitle` | DM Sans bold |
-| **PAS de bouton à droite** (spacer 48px) | `DigiToolbar` **sans `trailing`**, `showMenu = false` | équilibre visuel (spacer auto, cf. code `DigiToolbar`) |
+### 3.1 Décision globale — déterminisme local (DEC-CO-03)
 
-### Indicateur de cartes (dots)
-| Élément design | Widget | Donnée |
-| --- | --- | --- |
-| 5 points, l'actif = **barre allongée rouge `#E5392B`** | `_AdviceDots(current, total)` | `current = pageIndex`, `total = NegativeEmotion.values.length`. **Couleur barre active = couleur de l'émotion courante** (le design montre rouge car carte « colère » active ; généraliser à la couleur émotion) |
+**Le deck est composé de façon DÉTERMINISTE par jour, sans aléatoire non reproductible.** Même
+ancrage que `conseilDuJour` : `joursDepuisEpoch = jourNormalise.difference(epoch(1970)).inDays`. Pour
+une date et un état d'humeur donnés, **le deck est toujours identique** (rejouable, testable, cohérent
+avec l'esprit zéro-collecte / non-addictif : pas de « tire encore pour voir du neuf »).
 
-### Carte centrale (swipeable) — `_AdviceCard`
-Cartes suivantes en **« peek »** derrière (`bg-card-peek`) → rendues via `Stack`
-+ `PageView` (`viewportFraction < 1` pour laisser voir les cartes voisines).
+- **Alternatives écartées** :
+  - *Aléatoire par session* (`Random()`) : non reproductible → intestable proprement, et crée une
+    boucle « refresh pour du nouveau contenu » (mini-FOMO) → contraire DEC-003. ❌
+  - *Aléatoire seedé sur le jour* (`Random(joursDepuisEpoch)`) : reproductible, mais surcoût et ordre
+    moins lisible qu'une rotation modulaire explicite. ❌ (la rotation `%` suffit et est déjà le
+    pattern maison `conseilDuJour`).
+- **Raison du choix** : cohérence avec l'existant (`conseilDuJour`), testabilité parfaite (helper
+  pur), zéro mécanique de rétention.
 
-| Élément design | Widget | Donnée (par carte) |
-| --- | --- | --- |
-| Barre d'accent haute, couleur émotion | `Container` (4px, `advice.color`) | `EmotionAdvice.color` |
-| Label « ÉMOTION » + icône heart (couleur émotion) | `Row` : `Icon(Icons.favorite, color: advice.color)` + `Text(l10n.adviceEmotionLabel)` | label = `adviceEmotionLabel` (« Émotion ») |
-| Titre « Quand tu te sens en colère… » | `Text` | `l10n` résolu depuis `advice.titleKey` (§9) |
-| Section « À FAIRE » (3 items, puce **check** dans cercle **couleur émotion**) | `_AdviceList(items, accent: advice.color, icon: Icons.check)` | 3 clés `advice.doKeys` |
-| Section « À ÉVITER » (2 items, puce **x** dans cercle **gris**) | `_AdviceList(items, accent: AppTheme.muted, icon: Icons.close)` | 2 clés `advice.avoidKeys` |
-| CTA carte « Essayer la respiration » (fond couleur émotion, icône **wind**) | `_TryBreathingButton(color: advice.color)` icône `Icons.air` | `l10n.adviceTryBreathing` → §6 |
+### 3.2 Cartes ÉMOTION — priorité contextuelle selon l'humeur (DEC-CO-04)
 
-> Labels de sections « À FAIRE » / « À ÉVITER » = clés `adviceDoSectionLabel` /
-> `adviceAvoidSectionLabel`.
+**Une carte émotion contextuelle est placée EN TÊTE du deck si — et seulement si — une humeur a été
+notée pour le jour courant, ET que cette émotion possède une carte émotion dans le corpus.**
 
-### Contrôles carrousel (sous la carte)
-| Élément design | Widget | Comportement |
-| --- | --- | --- |
-| « précédent » (chevron-left) | `_CarouselNavButton(Icons.chevron_left, label: l10n.advicePrev)` | `controller.previousPage(...)` + `HapticFeedback.selectionClick()`. **Désactivé** sur la 1ʳᵉ carte |
-| séparateur | `_Separator` (trait `AppTheme.muted`) | décoratif |
-| « suivant » (chevron-right) | `_CarouselNavButton(Icons.chevron_right, label: l10n.adviceNext)` | `controller.nextPage(...)` + `HapticFeedback.selectionClick()`. **Désactivé** sur la dernière carte |
+- **Source** : `AppDatabase.observerDerniereHumeurDuJour()` (déjà existant, réactif `watch()`) →
+  `EntreeHumeur?`. On lit **le `codeEmotion` du jour** (la dernière saisie du jour).
+- **Mapping** : `codeEmotion` (∈ `emotionsCanoniques`) → carte émotion correspondante du corpus
+  (`CarteConseil` de type `emotion` portant ce `codeEmotion`).
+- **Couleur** : `MoodColors.byKey[codeEmotion]` (jamais le hex mockup). Headline = `conseilsEmotionHeadline`
+  avec placeholder `{emotion}` = `libelleEmotion(l10n, code)`.
+- **Portée V1** : on cible **les 7 émotions canoniques** ; le corpus fournit **au moins les 4 émotions
+  négatives** (`sad/angry/nervous/tired` — les plus utiles à accompagner) + idéalement les 3
+  positives (`happy/calm/dynamic`) en cartes « entretien » bienveillantes. 🟡 Q-CO-3 : couvre-t-on les
+  7 ou seulement les 4 négatives en V1 ? **Reco : les 7** (cohérence ; contenu placeholder).
+- **« Humeur récente » V1 = humeur DU JOUR** (pas une tendance multi-jours). Justification : simple,
+  déterministe, aligné sur la donnée déjà exposée (`observerDerniereHumeurDuJour`). Une **tendance**
+  (ex. émotion négative dominante des 7 derniers jours) est **hors V1** (DEC-CO-04, voir §11 / Q-CO-4)
+  — elle nécessiterait un agrégat supplémentaire et complexifierait le déterminisme.
 
-### CTA bas (large)
-| Élément design | Widget | Comportement |
-| --- | --- | --- |
-| « J'applique ce conseil » (fond cyan `#3FB8E6`, icône **check**) | `_ApplyButton` icône `Icons.check`, fond `AppTheme.primary` | §6 — feedback + retour. `l10n.adviceApply` |
+> **Alternatives écartées** : (i) prioriser selon la **valence** plutôt que l'émotion exacte (« si
+> négatif, montrer une carte de réconfort générique ») → moins pertinent que cibler l'émotion précise ;
+> gardé en **repli** si l'émotion n'a pas de carte dédiée (DEC-CO-06). (ii) Insérer **plusieurs** cartes
+> émotion → bruyant ; V1 = **une seule** carte émotion contextuelle, en tête.
 
-### Tokens design → `AppTheme`
-| Token | Valeur | Source |
-| --- | --- | --- |
-| `background` (fond bulle) | `#16213C` | `AppTheme.bubbleBackground` (existant) |
-| `surface` (cartes) | `#283A5E` | `AppTheme.surface` (existant) |
-| `foreground` | `#F2F6FB` | `AppTheme.foreground` (existant) |
-| `muted` (puce « à éviter » grise) | `#A7B6CE` | `AppTheme.muted` (existant) |
-| cyan (CTA bas) | `#3FB8E6` | `AppTheme.primary` (existant) |
-| vert | `#A8D24E` | `AppTheme.success` (existant) |
-| jaune | `#F0C84A` | `AppTheme.sensesAccent` (existant) |
-| **couleur émotion colère** | `#E5392B` | **NOUVEAU** → `AppTheme.angerRed` |
-| **couleurs des 4 autres émotions** | voir §5 | **NOUVEAUX** tokens (cf. §5) |
-| Police | `DM Sans` | asset local (existant) |
-| radius | 12 / 16 / 24 | `AppTheme.radiusSmall`(12) / **16 à ajouter** ou réutiliser `radiusMedium`(20) / `radiusLarge`(24) |
+### 3.3 Cartes RAPPEL / CONSEIL génériques — rotation déterministe quotidienne (DEC-CO-05)
 
-> ⚠️ Le design cite `radius 12/16/24`. `AppTheme` expose `radiusSmall=12`,
-> `radiusMedium=20`, `radiusLarge=24`. **Décision** : réutiliser
-> `radiusSmall`(12) et `radiusLarge`(24) ; pour le 16, ajouter
-> `AppTheme.radiusCard = 16` **ou** utiliser `radiusMedium` si la tolérance
-> visuelle est acceptable. Recommandé : ajouter `radiusCard = 16` pour fidélité.
+Les cartes **rappel** et **conseil** (bien-être numérique générique, non liées à l'humeur) sont
+choisies par **rotation déterministe quotidienne**, exactement comme `conseilDuJour` :
 
-### Icônes (Material only, zéro dépendance ajoutée)
-| Design (lucide) | Material |
-| --- | --- |
-| `chevron-left` / `chevron-right` | `Icons.chevron_left` / `Icons.chevron_right` |
-| `heart` | `Icons.favorite` |
-| `check` (puce à-faire + CTA bas) | `Icons.check` |
-| `x` (puce à-éviter) | `Icons.close` |
-| `wind` (CTA respiration) | `Icons.air` |
+- Le corpus générique est une **liste ordonnée stable** (par `id`/ordre de seed).
+- **Point de départ du jour** : `offset = joursDepuisEpoch % nbCartesGeneriques`.
+- On prend **N cartes** à partir de `offset` (en boucle circulaire) dans l'ordre du corpus → le deck
+  « tourne » d'un cran chaque jour (contenu stable dans la journée, frais le lendemain, sans aléatoire).
+- **N (taille de la portion générique)** : 🟡 **Q-CO-2** — proposition **4** cartes génériques
+  (+ éventuellement 1 carte émotion en tête = **3 à 5 cartes** au total, cohérent mockup « 2/5 »).
 
----
+> **Réconciliation avec `conseilDuJour` / `tipDay0X` (DEC-CO-11)** : les 7 `tipDay01..07` existants
+> (table `Conseils`) **deviennent des cartes du deck** (type `rappel` ou `conseil` selon leur nature).
+> La **toute première carte générique du jour** (à `offset`) est, par construction, **le même conseil
+> que `conseilDuJour(today)`** → **cohérence garantie** entre la tuile « Conseil du jour » de l'Accueil
+> et le deck (la tuile affiche le tip du jour ; le deck l'ouvre en première carte générique). Pas de
+> contenu divergent, pas de duplication de logique : même `joursDepuisEpoch % n`.
 
-## 4. Structure widgets (arborescence)
+### 3.4 Composition & ordre final du deck (DEC-CO-06)
+
+Ordre de construction (déterministe), géré par un **helper pur** `composerDeck(...)` testable :
 
 ```
-AdvicePage(args: AdviceArgs?)                         // lib/advice/view/advice_page.dart
-└─ AppBackground(background: AppTheme.bubbleBackground) // fond bulle #16213C + halos
-   └─ AdviceView                                       // gère PageController + index courant (StatefulWidget)
-      └─ Scaffold(backgroundColor: transparent, extendBodyBehindAppBar: true)
-         ├─ DigiToolbar(title: l10n.adviceTitle, onBack: _onBack)   // PAS de trailing
-         └─ Column
-            ├─ _AdviceDots(current, total)             // dots, actif = barre couleur émotion
-            ├─ Expanded
-            │  └─ Stack                                 // peek des cartes voisines
-            │     ├─ (cartes peek en arrière-plan, décoratif, coupé si reduceMotion)
-            │     └─ PageView.builder(controller, viewportFraction: ~0.86)
-            │        └─ _AdviceCard(advice: AdviceCatalog.all[index])
-            │           ├─ _AccentBar(color: advice.color)
-            │           ├─ _EmotionLabel(icon: favorite, color, text: adviceEmotionLabel)
-            │           ├─ _CardTitle(l10n[advice.titleKey])
-            │           ├─ _AdviceList(advice.doKeys,   accent: advice.color,  icon: check)
-            │           ├─ _AdviceList(advice.avoidKeys, accent: muted,         icon: close)
-            │           └─ _TryBreathingButton(color: advice.color) → /bubble/breathing
-            ├─ _CarouselControls(controller, index, total)  // prev | sep | next
-            └─ _ApplyButton → feedback + pop()           // « J'applique ce conseil »
+deck = []
+1. SI humeurDuJour != null ET corpus contient une carte emotion pour son code :
+     deck.add( carteEmotion(code) )           // carte contextuelle EN TÊTE
+   SINON SI humeurDuJour != null ET valence < 0 (repli, pas de carte dédiée) :
+     deck.add( carteEmotionGenerique )         // repli réconfort (optionnel V1, Q-CO-3)
+2. portion générique = rotation déterministe (DEC-CO-05) de N cartes
+   en EXCLUANT une éventuelle carte déjà ajoutée en 1 (pas de doublon).
+   deck.addAll(portionGenerique)
+3. deck final = liste ordonnée (carte 0 = contextuelle si présente, sinon 1ʳᵉ générique = conseil du jour).
 ```
 
-> `AdviceView` est **`StatefulWidget`** : il possède le `PageController`, l'index
-> courant (`_index`), gère `dispose()` du controller et l'init via
-> `initialEmotionId`. Aucune dépendance Bloc/Cubit (cf. §13).
+- **Aucune humeur notée** → **étape 1 sautée** → deck **100 % générique** (rotation du jour). C'est le
+  cas « par défaut » (mockup le montre sans dépendre d'une humeur). Jamais d'écran vide : le corpus
+  générique est toujours seedé (≥ 7), donc le deck a toujours ≥ N cartes.
+- **Pas de doublon** : si la carte émotion contextuelle = une carte aussi présente dans la portion
+  générique (improbable, types distincts), on déduplique par `cleContenu`.
+- **Le compteur de dots** reflète `deck.length` (3 à 5 selon présence de la carte émotion).
+- **Réactivité** : si l'utilisateur **note/modifie son humeur** pendant que l'écran est ouvert (peu
+  probable depuis cet écran, mais possible en multitâche), le stream `observerDerniereHumeurDuJour`
+  ré-émet → le Bloc **recompose le deck** et revient à la carte 0. 🟡 Q-CO-5 : recomposer en live ou
+  figer à l'ouverture ? **Reco : figer le deck à l'ouverture** (DEC-CO-06) pour ne pas « voler » la
+  position de lecture ; on lit l'humeur **une fois** au `ConseilsDemarre` (lecture ponctuelle, pas
+  d'abonnement continu). Plus simple, plus stable UX.
+
+### 3.5 Schéma de la composition (récap)
+
+```
+                ┌─────────────────────────────────────────────┐
+   Drift LECTURE│ EntreesHumeur: observerDerniereHumeurDuJour  │ (1 lecture ponctuelle)
+                │ Conseils     : corpus de cartes (clés)        │ (1 lecture)
+                └───────────────┬─────────────────────────────┘
+                                ▼
+                       composerDeck(humeurDuJour, corpus, today)   ← helper PUR (testable)
+                                ▼
+   [ carteEmotion(code)? ]  +  [ rotation déterministe de N cartes génériques ]
+                                ▼
+                       List<CarteConseil>  → ConseilsState.deck
+```
 
 ---
 
-## 5. Modèle `core_package` — catalogue (SOURCE DE VÉRITÉ)
+## 4. Modèle de données (Drift étendu — clés i18n, contenu FR/EN dans les ARB)
 
-Fichier : `packages/core_package/lib/src/advice/advice_catalog.dart`
-Export à ajouter dans `packages/core_package/lib/core_package.dart`.
+> **Principe** (cohérent avec l'existant `Conseils.cleConseil`) : **la base ne stocke que des CLÉS et
+> des métadonnées structurelles**, jamais le texte (qui vit dans les ARB, 8 langues). Conventions
+> **data en FRANÇAIS** (architecture.md).
 
-### Enum émotions négatives
-```dart
-/// Identifiants stables des emotions negatives du carrousel de conseils.
-/// Ordre = ordre d'affichage des cartes.
-enum NegativeEmotion { anger, sadness, fear, stress, loneliness }
-```
+### 4.1 Décision : étendre la table `Conseils` (DEC-CO-01)
 
-### Modèle `EmotionAdvice`
-Suit **exactement** le pattern `StretchSegment` / `BubbleCategory` déjà en place
-(donnée pure immuable, `Equatable`, **clés i18n**, jamais de texte en dur ;
-`Color` autorisé comme pour `BubbleCategory`).
+On **étend la table `Conseils` existante** (plutôt qu'une 2ᵉ table) avec des colonnes structurelles.
+Cela réutilise le seed/rotation déjà en place et garde **une source unique** du corpus.
 
 ```dart
-class EmotionAdvice extends Equatable {
-  const EmotionAdvice({
-    required this.id,
-    required this.color,
-    required this.titleKey,
-    required this.doKeys,      // List<String> longueur 3
-    required this.avoidKeys,   // List<String> longueur 2
-    required this.exercise,    // exercice associe (defaut respiration)
-  });
+@DataClassName('Conseil')
+class Conseils extends Table {
+  IntColumn get id => integer().autoIncrement()();
 
-  final NegativeEmotion id;
-  final Color color;           // couleur d'accent de l'emotion
-  final String titleKey;       // cle ARB du titre « Quand tu te sens... »
-  final List<String> doKeys;   // 3 cles ARB « a faire »
-  final List<String> avoidKeys;// 2 cles ARB « a eviter »
-  final AdviceExercise exercise;
+  /// Clé i18n du TITRE/headline ou de la citation (le texte vit dans les ARB).
+  TextColumn get cleConseil => text().named('cle_conseil')();
 
-  @override
-  List<Object?> get props => [id, color, titleKey, doKeys, avoidKeys, exercise];
-}
+  // ─── AJOUTS (schéma v4) ───
+  /// Type de carte : 'rappel' | 'conseil' | 'emotion'.
+  TextColumn get typeCarte => text().named('type_carte').withDefault(const Constant('conseil'))();
 
-/// Exercice proposé par une carte (extensible). V1 : respiration uniquement.
-enum AdviceExercise { breathing }
-```
+  /// Code émotion canonique si typeCarte == 'emotion' (sinon null).
+  /// ∈ emotionsCanoniques ('happy','calm',...). Couleur via MoodColors.byKey.
+  TextColumn get codeEmotion => text().named('code_emotion').nullable()();
 
-### Catalogue `const` (les 5 cartes)
-```dart
-abstract final class AdviceCatalog {
-  static const List<EmotionAdvice> all = <EmotionAdvice>[
-    EmotionAdvice(
-      id: NegativeEmotion.anger,
-      color: Color(0xFFE5392B),                 // = AppTheme.angerRed
-      titleKey: 'adviceCardTitleAnger',
-      doKeys: ['adviceDoAnger1','adviceDoAnger2','adviceDoAnger3'],
-      avoidKeys: ['adviceAvoidAnger1','adviceAvoidAnger2'],
-      exercise: AdviceExercise.breathing,
-    ),
-    EmotionAdvice(
-      id: NegativeEmotion.sadness,
-      color: Color(0xFF3FB8E6),                 // bleu = AppTheme.sadnessBlue
-      titleKey: 'adviceCardTitleSadness',
-      doKeys: ['adviceDoSadness1','adviceDoSadness2','adviceDoSadness3'],
-      avoidKeys: ['adviceAvoidSadness1','adviceAvoidSadness2'],
-      exercise: AdviceExercise.breathing,
-    ),
-    EmotionAdvice(
-      id: NegativeEmotion.fear,
-      color: Color(0xFF9B7BE8),                 // violet = AppTheme.fearViolet
-      titleKey: 'adviceCardTitleFear',
-      doKeys: ['adviceDoFear1','adviceDoFear2','adviceDoFear3'],
-      avoidKeys: ['adviceAvoidFear1','adviceAvoidFear2'],
-      exercise: AdviceExercise.breathing,
-    ),
-    EmotionAdvice(
-      id: NegativeEmotion.stress,
-      color: Color(0xFFF0C84A),                 // jaune = AppTheme.stressAmber (= sensesAccent)
-      titleKey: 'adviceCardTitleStress',
-      doKeys: ['adviceDoStress1','adviceDoStress2','adviceDoStress3'],
-      avoidKeys: ['adviceAvoidStress1','adviceAvoidStress2'],
-      exercise: AdviceExercise.breathing,
-    ),
-    EmotionAdvice(
-      id: NegativeEmotion.loneliness,
-      color: Color(0xFFA8D24E),                 // vert = AppTheme.lonelinessGreen (= success)
-      titleKey: 'adviceCardTitleLoneliness',
-      doKeys: ['adviceDoLoneliness1','adviceDoLoneliness2','adviceDoLoneliness3'],
-      avoidKeys: ['adviceAvoidLoneliness1','adviceAvoidLoneliness2'],
-      exercise: AdviceExercise.breathing,
-    ),
-  ];
+  /// Jeton d'accent CHROME pour rappel/conseil : 'primary' | 'lime' | 'or'.
+  /// IGNORÉ pour 'emotion' (accent = MoodColors). JAMAIS un hex. (DEC-CO-07)
+  TextColumn get accentChrome => text().named('accent_chrome').withDefault(const Constant('primary'))();
 
-  /// Recherche par id (mode initialEmotionId). null si introuvable.
-  static EmotionAdvice? byId(String? rawId) { /* values.firstWhereOrNull */ }
-
-  /// Index d'une emotion dans `all` (sync PageController). -1 si introuvable.
-  static int indexOf(String? rawId) { /* ... */ }
+  /// Ordre stable dans le corpus (rotation déterministe). Défaut = id.
+  IntColumn get ordre => integer().withDefault(const Constant(0))();
 }
 ```
 
-> **Couleurs émotions (chaque émotion a SA couleur).** Le design ne donne que le
-> rouge colère `#E5392B`. Les 4 autres réutilisent des tokens **déjà présents**
-> dans `AppTheme` (cyan, jaune `sensesAccent`, vert `success`, violet `#9B7BE8`
-> déjà utilisé pour la bulle « senses ») afin de **ne pas inventer de palette**.
-> **À valider visuellement** par le designer : ces affectations sont des
-> **valeurs par défaut cohérentes avec la charte existante**, pas une exigence
-> du mockup. Les ajouter à `AppTheme` sous des **alias sémantiques** (§voir
-> tokens ci-dessous) pour que le catalogue reste lisible.
+> **Alternative écartée** : un **dataset Dart statique** (pas de Drift) pour le corpus. Rejeté car
+> (i) le corpus existe **déjà** en Drift (`Conseils` seedé), (ii) la rotation `conseilDuJour` lit
+> Drift, (iii) garder une seule source évite la divergence. **Le contenu textuel**, lui, reste **hors
+> Drift** (ARB) — c'est déjà le cas.
 
-### Tokens couleurs à ajouter dans `AppTheme`
-```dart
-static const Color angerRed       = Color(0xFFE5392B); // NOUVEAU (du mockup)
-static const Color sadnessBlue    = primary;           // alias #3FB8E6
-static const Color fearViolet     = Color(0xFF9B7BE8); // réutilise la teinte "senses"
-static const Color stressAmber    = sensesAccent;      // alias #F0C84A
-static const Color lonelinessGreen= success;           // alias #A8D24E
-```
+### 4.2 Migration (schéma v3 → v4) — idempotente (DEC-CO-02)
 
-> Source de vérité couleur = **soit** les constantes `AppTheme` **soit** le
-> catalogue `core_package`. **Décision** : le **catalogue `core_package` porte
-> la `Color`** (comme `BubbleCategory`), et `AppTheme.angerRed` existe pour
-> l'UI partagée (dot actif, etc.). Garder les deux **synchronisés** ; ne pas
-> diverger.
+`schemaVersion: 3 → 4`. Dans `onUpgrade`, bloc `if (from < 4)` **idempotent** (même prudence que les
+migrations v2/v3 existantes : vérifier la présence des colonnes via `PRAGMA table_info` avant
+`addColumn`, ne jamais dupliquer) :
 
----
+- `addColumn` `type_carte`, `code_emotion`, `accent_chrome`, `ordre` **si absentes**.
+- **Re-seed enrichi** : les colonnes ajoutées ont des `withDefault`, donc les lignes `tipDay01..07`
+  existantes restent valides ; un **`UPDATE`** assigne `type_carte`/`accent_chrome`/`ordre` corrects
+  aux 7 tips existants (voir §4.3), et un **`INSERT … WHERE NOT EXISTS`** ajoute les **nouvelles cartes
+  émotion** (clés `conseilEmotion*`) sans dupliquer si déjà présentes (idempotence par `cle_conseil`).
+- `beforeOpen` : le `_seedConseils()` existant doit devenir **`_seedCorpus()`** seedant le corpus
+  complet (rappels + conseils + 7 émotions) **de façon idempotente** (skip si `cleConseil` déjà
+  présente, pas seulement `count > 0` — sinon une base v3 à 7 lignes ne recevrait jamais les cartes
+  émotion). 🟡 Détail d'implémentation à confirmer (Q-CO-6).
 
-## 6. Actions & navigation (exhaustif)
+> ⚠️ **Après modif du modèle Drift** : `dart run build_runner build --delete-conflicting-outputs`
+> (coding-assertions). Migration **idempotente obligatoire** (précédents v2/v3 = modèle de prudence).
 
-| Élément | Déclencheur | Comportement | Feedback | Conditions |
-| --- | --- | --- | --- | --- |
-| **Chevron retour** | tap | `Navigator.maybePop()` (retour parent **par nom de route**, non présumé) | — | toujours visible |
-| **Swipe horizontal** | geste PageView | change la carte ; met à jour `_index` + dots | `HapticFeedback.selectionClick()` sur `onPageChanged` | — |
-| **« précédent »** | tap | `controller.previousPage(duration: 250ms, curve: easeOut)` | `selectionClick` | **désactivé** (grisé, `onPressed: null`) si `_index == 0` |
-| **« suivant »** | tap | `controller.nextPage(...)` | `selectionClick` | **désactivé** si `_index == total-1` |
-| **« Essayer la respiration »** (CTA carte) | tap | `Navigator.pushNamed('/bubble/breathing')` → `BreathingPage`. **Optionnel** : passer `arguments` portant l'émotion courante (contexte non requis par BreathingPage) | `selectionClick` | présent sur chaque carte |
-| **« J'applique ce conseil »** (CTA bas) | tap | `HapticFeedback.selectionClick()` → `ScaffoldMessenger.showSnackBar(l10n.adviceAppliedConfirmation)` (ou petite confirmation animée `cta-in`) → `Navigator.maybePop()` | SnackBar de confirmation | **HOOK** journal/super-conseil §11 — **action simple et découplée** (callback/route), **aucune** écriture Drift ici |
+### 4.3 Corpus seedé (clés — contenu PLACEHOLDER ARB, à valider partenaires)
 
-> **Découplage du CTA « J'applique »** : le bouton appelle un callback
-> `onApply` (défaut = feedback + `pop`). Quand le Journal sera planifié, on
-> injectera un `onApply` qui marque le conseil comme appliqué (écriture Drift)
-> **sans modifier cet écran**. Documenté §11.
+| `cle_conseil` | `type_carte` | `code_emotion` | `accent_chrome` | Origine |
+|---|---|---|---|---|
+| `tipDay01`..`tipDay07` | `rappel` ou `conseil` (à répartir, Q-CO-7) | — | `primary`/`lime`/`or` (cyclique) | **Existant** réutilisé |
+| `conseilEmotionAngry` | `emotion` | `angry` | (ignoré) | Nouveau |
+| `conseilEmotionSad` | `emotion` | `sad` | (ignoré) | Nouveau |
+| `conseilEmotionNervous` | `emotion` | `nervous` | (ignoré) | Nouveau |
+| `conseilEmotionTired` | `emotion` | `tired` | (ignoré) | Nouveau |
+| `conseilEmotionHappy` | `emotion` | `happy` | (ignoré) | Nouveau (positif, entretien) |
+| `conseilEmotionCalm` | `emotion` | `calm` | (ignoré) | Nouveau |
+| `conseilEmotionDynamic` | `emotion` | `dynamic` | (ignoré) | Nouveau |
+| `conseilRappelPresent` | `rappel` | — | `primary` | Nouveau (« Scroll later, live now. ») |
+| `conseilRappelLikes` | `rappel` | — | `or` | Nouveau (« Tu n'es pas ton like count. ») |
+| `conseilPratiqueInteractions` | `conseil` | — | `lime` | Nouveau |
+| `conseilPratiqueEspace` | `conseil` | — | `primary` | Nouveau |
 
-> **Navigation `/bubble/breathing`** : référencer `BreathingPage` **par nom de
-> route** (la table de routes n'est pas encore centralisée — cf. registry,
-> routing par nom à brancher). Ne pas instancier `BreathingPage` en dur si une
-> route nommée existe.
+> Les nombres exacts (combien de rappels/conseils/émotions) sont **ajustables** (Q-CO-2/3/7). Le
+> tableau ci-dessus est une **proposition placeholder**. **Aucun texte ici n'est définitif.**
 
----
-
-## 7. Contrat d'entrée `initialEmotionId` (mode catalogue vs contextuel)
+### 4.4 ViewModel UI (pas de logique dans la vue)
 
 ```dart
-class AdviceArgs {
-  const AdviceArgs({this.initialEmotionId});
-  /// Id d'emotion (NegativeEmotion.name) sur laquelle ouvrir le carrousel.
-  /// null  => mode CATALOGUE pur, ouverture sur la 1re carte.
-  /// fourni => ouverture directe sur la carte correspondante.
-  final String? initialEmotionId;
+/// Carte composée prête à afficher (clés i18n résolues à l'affichage).
+sealed class CarteConseil {
+  final String cleContenu;     // base de clé i18n (ex. 'conseilRappelPresent')
+}
+class CarteRappel extends CarteConseil {
+  final String accentChrome;   // 'primary'|'lime'|'or'  → résolu en Color via helper
+  // texte = ARB: <cle>Citation1 / <cle>Citation2 / <cle>SousTexte / <cle>Tag (+ icône)
+}
+class CarteConseilPratique extends CarteConseil {
+  final String accentChrome;
+  // texte = ARB: <cle>Headline / <cle>Dos (List) / <cle>Donts (List) / <cle>Tag
+}
+class CarteEmotion extends CarteConseil {
+  final String codeEmotion;    // ∈ emotionsCanoniques → couleur MoodColors.byKey
+  // headline = conseilsEmotionHeadline({emotion}) ; dos/donts = ARB <cle>Dos/<cle>Donts
+  // CTA = conseilsEmotionCta → STUB respiration
 }
 ```
 
-- **Mode CATALOGUE (défaut, implémenté ici)** : `initialEmotionId == null` →
-  `PageController(initialPage: 0)`. Toutes les émotions parcourables.
-- **Mode CONTEXTUEL (préparé, utilisé plus tard par le Journal)** :
-  `initialEmotionId` fourni → `initialPage = AdviceCatalog.indexOf(id)`.
-  L'utilisateur **peut toujours** parcourir les autres cartes (pas de filtrage
-  dur — le design est un carrousel complet).
-- **Repli (AC-9 / §8)** : `initialEmotionId` **inconnu** (`indexOf == -1`) →
-  ouverture sur la **1ʳᵉ carte** (mode catalogue), aucun crash, aucun écran vide.
+> **Résolution Do's/Don'ts en i18n** : une liste de puces = **clés indexées** (`<cle>Do1`, `<cle>Do2`,
+> … / `<cle>Dont1`, …) car gen-l10n ne gère pas les listes natives. Helper de résolution
+> `List<String> resoudreLignes(l10n, cleBase, suffixe, nb)`. 🟡 Q-CO-8 : nombre fixe de puces (ex. 3
+> Do's + 2 Don'ts) pour simplifier les clés. **Reco : gabarit fixe 3 Do's / 2 Don'ts** (comme le
+> mockup), clés `…Do1..3` / `…Dont1..2`.
 
 ---
 
-## 8. États écran
+## 5. Bloc / Event / State
 
-| État | Condition | Rendu |
-| --- | --- | --- |
-| **Nominal** | toujours (catalogue non vide) | carte courante + dots + contrôles + CTA bas |
-| **Navigation** | swipe / prev / next | transition `PageView`, dots resync, haptique |
-| **initialEmotionId inconnu** | `indexOf(id) == -1` | **repli** → 1ʳᵉ carte (mode catalogue). Pas d'erreur affichée |
-| ~~Empty~~ | **N/A** | catalogue `const` toujours non vide |
-| ~~Error~~ | **N/A** | aucune source faillible (pas de réseau, pas de Drift, pas d'I/O) |
+**Pattern** : `flutter_bloc` (Bloc-only), `bloc_lint`. State `Equatable` + enum `status`. Transformers
+explicites (`bloc_concurrency`). Le Bloc **compose le deck** (via helper pur) et gère la **carte
+courante** (index).
 
-> **Garde-fou défensif** (test Kent) : si jamais `AdviceCatalog.all` était vide
-> (régression), l'écran ne doit pas crasher (clamp d'index, `Expanded` vide
-> toléré). Mais ce n'est **pas** un état métier prévu.
+### 5.1 `ConseilsStatus` (enum)
+```
+initial · chargement · pret · erreur
+```
 
----
+### 5.2 `ConseilsState` (Equatable)
+- `status: ConseilsStatus`
+- `deck: List<CarteConseil>` (composé, ordonné — vide tant que `chargement`)
+- `indexCourant: int` (0-based ; carte active)
+- `erreur: bool` (fallback bienveillant)
 
-## 9. Internationalisation (clés ARB — gen-l10n, 8 langues)
+`copyWith` + `props` complets. **Aucun champ de score / progression.** Dérivés en getters :
+`carteCourante`, `aPrecedent` (`indexCourant > 0`), `aSuivant` (`indexCourant < deck.length - 1`),
+`accentCourant` (token chrome ou `MoodColors` selon le type — résolu côté View).
 
-Fichiers : `apps/digiharmony_app/lib/l10n/arb/app_<lang>.arb` (8 langues).
-**FR + EN remplis**, **placeholders el/it/ro/tr/es/mk** (recopier l'EN en
-attendant traduction — repli `en`). Préfixe **`advice*`**.
+### 5.3 `ConseilsEvent` (sealed/abstract)
+| Event | Déclenché par | Transformer | Charge |
+|---|---|---|---|
+| `ConseilsDemarre` | `page()` / ouverture | `restartable()` | — |
+| `ConseilsCarteSuivante` | swipe gauche / flèche › / tap zone droite | `droppable()` | — |
+| `ConseilsCartePrecedente` | swipe droite / flèche ‹ / tap zone gauche | `droppable()` | — |
+| `ConseilsCarteAtteinte(int index)` | `PageView.onPageChanged` (source de vérité de la position) | `droppable()` | `index` |
 
-### Clés transverses
-| Clé | FR | EN |
-| --- | --- | --- |
-| `adviceTitle` | « Conseils » | "Advice" |
-| `adviceEmotionLabel` | « Émotion » | "Emotion" |
-| `adviceDoSectionLabel` | « À faire » | "Do" |
-| `adviceAvoidSectionLabel` | « À éviter » | "Avoid" |
-| `adviceTryBreathing` | « Essayer la respiration » | "Try breathing" |
-| `advicePrev` | « précédent » | "previous" |
-| `adviceNext` | « suivant » | "next" |
-| `adviceApply` | « J'applique ce conseil » | "I'll apply this advice" |
-| `adviceAppliedConfirmation` | « Bien joué, prends soin de toi 💙 » | "Well done, take care of yourself" |
-
-### Clés par émotion (structurées par `emotionId`)
-Pattern : `adviceCardTitle{Emotion}`, `adviceDo{Emotion}{1..3}`,
-`adviceAvoid{Emotion}{1..2}`. Exemple **colère** (du mockup) :
-
-| Clé | FR | EN |
-| --- | --- | --- |
-| `adviceCardTitleAnger` | « Quand tu te sens en colère… » | "When you feel angry…" |
-| `adviceDoAnger1` | « Fais une pause avant de répondre » | "Take a break before replying" |
-| `adviceDoAnger2` | « Respire profondément 3 fois » | "Breathe deeply 3 times" |
-| `adviceDoAnger3` | « Écris ce que tu ressens — sans envoyer » | "Write what you feel — without sending" |
-| `adviceAvoidAnger1` | « Ne poste pas à chaud » | "Don't post in the heat of the moment" |
-| `adviceAvoidAnger2` | « Évite les confrontations en ligne » | "Avoid online confrontations" |
-
-> Les 4 autres émotions (`sadness`, `fear`, `stress`, `loneliness`) suivent le
-> **même schéma de clés** (`adviceCardTitleSadness`, `adviceDoSadness1..3`,
-> `adviceAvoidSadness1..2`, etc.). **Contenu FR/EN à rédiger** par le PO/designer
-> (ton bienveillant, public mineur). Les clés sont **déclarées** dans l'en-tête
-> `i18n_keys:` et dans `core_package` (catalogue) ; le **texte** est rempli ARB.
-
-> **Pas de placeholders ICU** ici (aucun nombre/variable injecté dans ces
-> chaînes) → entrées ARB simples + bloc `@`-metadata vide.
+### 5.4 Logique
+- `ConseilsDemarre` :
+  1. `status: chargement`.
+  2. Lecture **ponctuelle** : `humeur = await db.observerDerniereHumeurDuJour().first` (ou méthode
+     ponctuelle équivalente — Q-CO-5/DEC-CO-06 : on fige à l'ouverture) + `corpus = await db.lireCorpusConseils()`.
+  3. `deck = composerDeck(humeurDuJour: humeur, corpus: corpus, jour: DateTime.now(), n: N)` (helper pur).
+  4. `emit(status: pret, deck, indexCourant: 0)`.
+  5. Exception (corpus vide, etc.) → `status: erreur` (fallback : afficher au moins le `tipDay01` en
+     carte unique, jamais de crash).
+- `ConseilsCarteSuivante`/`ConseilsCartePrecedente` : bornent l'index dans `[0, deck.length-1]`, mettent
+  à jour `indexCourant` (la View anime le `PageView` en conséquence). No-op aux bornes (pas de wrap).
+- `ConseilsCarteAtteinte(index)` : `indexCourant = index` (synchronise l'état avec le `PageView` après
+  un swipe direct).
+- **Helper pur** `composerDeck(...)` (testable isolément, §3.4) — **aucun accès Drift dedans**, reçoit
+  les données déjà lues.
 
 ---
 
-## 10. Composants réutilisés / étendus
+## 6. Vue(s) — structure visuelle (mockup confirmé)
 
-| Composant | Statut | Note |
-| --- | --- | --- |
-| `DigiToolbar` | **RÉUTILISÉ tel quel** | `title` + `onBack`, **sans `trailing`**, `showMenu=false` (spacer 48px auto à droite — exactement le design « pas de bouton à droite ») |
-| `AppBackground` | **RÉUTILISÉ tel quel** | `background: AppTheme.bubbleBackground` (#16213C, défaut). Halos décoratifs déjà statiques (reduceMotion-safe par construction) |
-| `AppTheme` | **ÉTENDU** | ajouter `angerRed` (#E5392B) + alias émotions (§5) + éventuel `radiusCard=16` |
-| `EmotionAdvice`/`AdviceCatalog`/`NegativeEmotion` | **NOUVEAU** `core_package` | catalogue statique, source de vérité (§5) |
+> **Aucun hex en dur.** Accents cartes rappel/conseil = mapping token (`primary`/lime/`accentGold`) ;
+> accent carte émotion = `MoodColors.byKey[code]`. Espacements `AppSpacing`, rayons `AppRadii`.
 
-> **Pas de réutilisation du kit `lib/wellbeing_shared/`** (CelebrationLayout,
-> RestartButton, ExitSessionDialog, AudioHint) : cet écran n'a ni séance
-> minutée, ni célébration, ni voix off, ni dialog de sortie. Ne pas l'importer.
+### 6.1 `ConseilsView` — squelette
+```
+Scaffold (backgroundColor: AppColors.backgroundDeep)
+ └─ Stack
+     ├─ HaloRespirant (teinté accent courant ; a11y-aware, statique si reduced-motion)
+     ├─ ParticulesFlottantes (OFF si reduced-motion)
+     └─ SafeArea > Column
+          ├─ _Toolbar (chevron-left → pop · « Conseils » · espaceur 48 ; PAS de burger)
+          ├─ _CompteurDots(deck.length, indexCourant, accentCourant)   // pilule active élargie
+          ├─ Expanded > _DeckCartes(
+          │      PageView(controller, onPageChanged → ConseilsCarteAtteinte)
+          │      itemBuilder → switch(carte) { rappel→_CarteRappel, emotion→_CarteEmotion, conseil→_CarteConseilPratique }
+          │      // peek carte suivante + bord carte précédente via viewportFraction < 1 + décor
+          │  )
+          └─ _HintSwipe (‹ précédent | suivant › ; très atténué ; masqué/adapté en reduced-motion)
+          // PAS de CTA bas « J'applique » (DEC-CO-09 — supprimé)
+```
 
----
+### 6.2 Cartes (widgets dédiés sous `widgets/`)
+- `_CarteRappel` : tag (icône + `…Tag`) · citation 2 lignes (`…Citation1` / `…Citation2` en accent) ·
+  sous-texte (`…SousTexte`, `textMuted`). Décor : clouds + streak accent (tokens).
+- `_CarteEmotion` : tag « Émotion » (accent = `MoodColors.byKey[code]`) · headline
+  `conseilsEmotionHeadline({emotion})` (emoji `emojiPourCode(code)` optionnel) · Do's (✓ rond accent) ·
+  Don'ts (✗ rond `textMuted`) · **CTA `conseilsEmotionCta`** (bouton plein accent émotion) →
+  `ouvrirPlaceholder(context, l10n.conseilsEmotionRespirationBientot)` (**STUB**, pas de navigation
+  réelle ; même esprit que le « Faire l'exercice » du Journal, DEC-J-02).
+- `_CarteConseilPratique` : tag « Conseil pratique » · headline · Do's/Don'ts. Pas de CTA.
 
-## 11. Points d'extension (documentés, NON implémentés ici)
+### 6.3 Accent — résolution (helper, jamais de hex)
+```dart
+Color accentDeCarte(CarteConseil c) => switch (c) {
+  CarteEmotion(:final codeEmotion) => MoodColors.byKey[codeEmotion] ?? AppColors.primary,
+  CarteRappel(:final accentChrome) || CarteConseilPratique(:final accentChrome) =>
+    switch (accentChrome) {
+      'or'   => AppColors.accentGold,
+      'lime' => AppColors.signatureGradient[1],   // lime du dégradé signature
+      _      => AppColors.primary,
+    },
+};
+```
 
-1. **Hook « J'applique ce conseil » → Journal/super-conseil.** Le CTA bas est le
-   **point naturel** pour marquer un conseil comme appliqué. Quand le Journal
-   sera planifié : injecter un `onApply(EmotionAdvice)` qui écrit l'événement en
-   **Drift** (jamais HydratedBloc). Cet écran reste inchangé (callback découplé).
-
-2. **Super-conseil (7 émotions négatives consécutives, DEC-001/DEC-002).** **Non
-   implémenté ici.** Articulation future : un **conseil spécial** pourrait être
-   **injecté en tête de carrousel** (carte index 0) **uniquement** quand le
-   compteur dérivé de Drift atteint 7. Ce compteur est **DÉRIVÉ de Drift, jamais
-   dupliqué**. L'injection se ferait via un paramètre `List<EmotionAdvice>`
-   passé à `AdviceView` (défaut = `AdviceCatalog.all`), sans toucher au
-   catalogue source. Aucune logique Drift dans ce plan.
-
-3. **Mode contextuel piloté par le Journal.** Le Journal ouvrira
-   `AdvicePage(AdviceArgs(initialEmotionId: emotionDuJour))` — déjà supporté par
-   le contrat d'entrée §7.
-
-4. **Seed Drift du catalogue.** Si une feature SQL l'exige (§0.2) : seed
-   lecture-seule depuis `AdviceCatalog.all` au 1er lancement, source de vérité
-   = statique. Non requis ici.
-
----
-
-## 12. Animations & reduceMotion
-
-Animations CSS du mockup → `flutter_animate` (aucun package tiers, aucun asset) :
-
-| Anim CSS | Cible Flutter | Catégorie | reduceMotion |
-| --- | --- | --- | --- |
-| `card-enter` | entrée de la carte courante (fade+slide léger) | semi-fonctionnelle | **réduite** (fade court conservé, slide coupé) |
-| `swipe-hint` | indice de swipe sur la 1ʳᵉ ouverture | **décorative** | **désactivée** |
-| `bg-card-peek` | cartes empilées derrière (Stack) | **décorative** | **désactivée** (cartes voisines rendues statiques, sans pulsation) |
-| `cloud-l` / `cloud-r` | nuages colorés dans la carte | **décorative** | **désactivée** |
-| `emotion-glow` | halo de la carte (couleur émotion) | **décorative** | **désactivée** (glow statique léger toléré) |
-| `ptcl` | 3 particules flottantes | **décorative** | **désactivée** |
-| `cta-in` | apparition CTA bas | **décorative** | **désactivée** |
-
-> Détection : `MediaQuery.maybeOf(context)?.disableAnimations ?? false`. Quand
-> actif : la **navigation (prev/next/swipe), les dots, l'affichage des cartes et
-> les listes** restent **pleinement fonctionnels** (AC-11). Seul le décoratif
-> tombe.
+> **DEC-CO-07** : le mockup utilise un accent **violet** (`#8A3FD1`) pour une carte *conseil*. C'est la
+> teinte **émotion** `MoodColors.nervous`, **interdite hors codage émotionnel** (design-system).
+> → Pour les cartes **rappel/conseil**, on **restreint** les accents à la palette **chrome**
+> (`primary`/lime/`or`). Le violet n'est employé **que** par une carte **émotion** `nervous`.
 
 ---
 
-## 13. Décision état : pourquoi PAS de Bloc ici
+## 7. États de la page (synthèse)
 
-La règle `coding-assertions` impose `bloc`/`flutter_bloc` **dès qu'il y a de
-l'état applicatif métier mutable / persistant** (cf. `BreathingBloc`,
-`SensesBloc`…). **Ici, ce n'est pas le cas** :
+| État | Déclencheur | Rendu |
+|---|---|---|
+| **initial** | 1ʳᵉ frame avant `ConseilsDemarre` | `SizedBox.shrink` (transitoire) |
+| **chargement** | lecture Drift + composition en cours | skeleton/halo discret (public mineur, pas de spinner agressif) |
+| **pret** | deck composé (≥ 1 carte) | deck + dots + hint + CTA |
+| **erreur** | corpus vide / exception | fallback bienveillant : 1 carte `tipDay01` + CTA, **jamais de crash** |
 
-- Aucune donnée métier mutable : le catalogue est `const`.
-- Aucun timer, aucune machine d'états métier (contrairement à Breathing/Stretch).
-- Aucune persistance (ni Drift ni HydratedBloc sur cet écran).
-- Le seul état est **l'index de page courant** = **état UI pur** de navigation
-  → `PageController` + `setState` dans `AdviceView` (`StatefulWidget`).
-
-→ **Pas de `AdviceBloc`.** Introduire un Bloc ici serait du sur-engineering sans
-état métier à gérer. **Si** le hook journal/super-conseil §11 ajoute plus tard
-de l'état métier (catalogue dérivé de Drift, carte super-conseil conditionnelle),
-**alors** un `AdviceCubit` deviendra justifié — à ce moment-là, pas avant.
-
-> ⚠️ **Point à valider** avec l'équipe : ce projet utilise `bloc_lint`. Vérifier
-> qu'aucune règle de lint n'impose un Bloc par page. Si c'est le cas, encapsuler
-> l'index dans un `AdviceCubit` minimal (un seul champ `int index`). Le reste du
-> plan est inchangé.
+- Le deck **n'est jamais vide** en nominal (corpus seedé ≥ 7). « Aucune humeur notée » n'est **pas** un
+  état d'erreur : c'est le **deck générique** (DEC-CO-06).
 
 ---
 
-## 14. Contraintes projet dures (rappel — invariants)
+## 7.2 i18n (clés ARB — 8 langues, repli `en`)
 
-- Flutter, monorepo Melos 7 (`apps/digiharmony_app` + `packages/core_package`).
-- **Client-only, zéro collecte** : AUCUN SDK réseau/analytics/tracking/Crashlytics.
-- **Aucune permission** au-delà de `PACKAGE_USAGE_STATS` (cet écran n'en demande
-  aucune).
-- Vibration via **`HapticFeedback` uniquement** (pas de permission `VIBRATE`).
-- Pas de backend ni Firebase.
-- **DM Sans en asset local** (PAS `google_fonts`).
-- **Icônes Material only** ; **aucun asset image** (cartes via `Stack`).
-- **Conseils = donnée de référence fixe** : catalogue statique `core_package`
-  (source de vérité), seed Drift seulement si l'architecture l'impose — **jamais
-  dupliqué**.
-- i18n gen-l10n / ARB 8 langues, repli `en`, **aucune chaîne en dur**.
+> Ajouter dans **les 8** `lib/l10n/arb/app_<lang>.arb` (template `app_en.arb`), `fr`+`en` réels, repli
+> `en` pour `el/it/ro/tr/es/mk`. Puis `flutter gen-l10n`. **Réutiliser** `tipDay01..07`,
+> `moodHappy..moodTired`, `homeToolDailyTip` — **ne pas recréer**. **Tout le corpus = PLACEHOLDER à
+> valider partenaires.**
+
+**Chrome / navigation :**
+
+| Clé | FR (réf.) | EN |
+|---|---|---|
+| `conseilsTitre` | « Conseils » | "Tips" |
+| `conseilsRetourTooltip` | « Retour » | "Back" |
+| `conseilsHintPrecedent` | « précédent » | "previous" |
+| `conseilsHintSuivant` | « suivant » | "next" |
+| `conseilsTagEquilibre` | « Équilibre » | "Balance" |
+| `conseilsTagRappel` | « Rappel » | "Reminder" |
+| `conseilsTagConseilPratique` | « Conseil pratique » | "Practical tip" |
+| `conseilsTagEmotion` | « Émotion » | "Emotion" |
+| `conseilsEmotionHeadline` | « Quand tu te sens {emotion}… » | "When you feel {emotion}…" (placeholder ICU `{emotion}`) |
+| `conseilsEmotionCta` | « Essayer la respiration » | "Try breathing" |
+| `conseilsEmotionRespirationBientot` | « L'exercice de respiration arrive bientôt. » | "The breathing exercise is coming soon." (SnackBar STUB) |
+| `conseilsCompteurSemantique` | « Carte {index} sur {total} » | "Card {index} of {total}" (a11y, ICU) |
+| `conseilsCarteSemantique` | « Conseil {index} sur {total} » | "Tip {index} of {total}" (a11y deck) |
+
+**Corpus de cartes (PLACEHOLDER — gabarit fixe 3 Do's / 2 Don'ts, Q-CO-8) :**
+
+- **Rappels** : `<cle>Citation1`, `<cle>Citation2`, `<cle>SousTexte`, `<cle>Tag`.
+  Ex. `conseilRappelPresentCitation1`="Scroll later," / `…Citation2`="live now." / `…SousTexte`=« Les
+  moments présents ne reviennent pas. Le fil, lui, sera toujours là. » / `…Tag`=`conseilsTagEquilibre`.
+- **Conseils pratiques** : `<cle>Headline`, `<cle>Do1..3`, `<cle>Dont1..2`, `<cle>Tag`.
+- **Émotions** : `<cle>Do1..3`, `<cle>Dont1..2` (le headline est `conseilsEmotionHeadline({emotion})`,
+  le tag `conseilsTagEmotion`). Ex. `conseilEmotionAngryDo1`=« Fais une pause avant de répondre ».
+
+> Le **détail complet** des chaînes placeholder (les ~50 clés de contenu) sera produit à
+> l'implémentation avec relecture partenaires (DEC-CO-10). Le plan fixe le **gabarit** (clés
+> indexées, 3 Do's / 2 Don'ts) ; le **texte n'est pas figé**.
 
 ---
 
-## 15. Fichiers à créer / modifier
+## 8. Navigation & recâblage Accueil
 
-**Créer :**
-- `packages/core_package/lib/src/advice/advice_catalog.dart` (modèle + catalogue)
-- `apps/digiharmony_app/lib/advice/view/advice_page.dart` (`AdvicePage` + `AdviceView`)
-- `apps/digiharmony_app/lib/advice/widgets/advice_card.dart` (`_AdviceCard`, `_AdviceList`, `_AccentBar`, `_EmotionLabel`, `_TryBreathingButton`)
-- `apps/digiharmony_app/lib/advice/widgets/advice_dots.dart` (`_AdviceDots`)
-- `apps/digiharmony_app/lib/advice/widgets/carousel_controls.dart` (`_CarouselControls`, `_ApplyButton`)
-- `apps/digiharmony_app/lib/advice/advice.dart` (barrel)
+### 8.1 Ajout `AppRouter.versConseils` (`lib/app/routing/app_router.dart`)
+Calqué **exactement** sur `versJournal` (transmet `AppDatabase` à travers la frontière de route) :
 
-**Modifier :**
-- `packages/core_package/lib/core_package.dart` (export `advice_catalog.dart`)
-- `apps/digiharmony_app/lib/theme/app_theme.dart` (tokens couleurs émotions + `angerRed` + éventuel `radiusCard`)
-- `apps/digiharmony_app/lib/l10n/arb/app_*.arb` (8 fichiers — clés §9 ; FR/EN remplis)
-- Table de routes (quand centralisée) : enregistrer `/advice` → `AdvicePage` et
-  brancher l'entrée depuis Journal/Home (par nom de route).
+```dart
+/// Ouvre le deck de conseils (empilé, retour possible).
+///
+/// La [AppDatabase] est transmise explicitement (nouveau sous-arbre de route),
+/// comme `versJournal`. `push` (pas `pushReplacement`). Pas de GoRouter (DEC-FND-07).
+static Future<void> versConseils(BuildContext context) {
+  final database = context.read<AppDatabase>();
+  return Navigator.of(context).push(
+    MaterialPageRoute<void>(
+      builder: (_) => RepositoryProvider<AppDatabase>.value(
+        value: database,
+        child: const ConseilsPage(),
+      ),
+    ),
+  );
+}
+```
+
+### 8.2 Recâblage de la tuile « Conseil du jour » de l'Accueil
+Dans `lib/pages/accueil/views/accueil_view.dart` (~L105-115), la `TuileOutil` `homeToolDailyTip` a
+aujourd'hui :
+```dart
+onTap: () => ouvrirPlaceholder(context, l10n.placeholderConseil),
+```
+→ remplacer par :
+```dart
+onTap: () => AppRouter.versConseils(context),
+```
+- Le libellé `homeToolDailyTip` et la `description: tipTexte` (tip du jour) **sont conservés** : la
+  tuile montre toujours le conseil du jour ; le tap **ouvre le deck**, dont **la 1ʳᵉ carte générique =
+  ce même conseil** (cohérence garantie DEC-CO-11).
+- `placeholderConseil` n'est plus déclenché par la tuile (peut rester défini ailleurs).
+- ⚠️ **Dépendance d'intégration (Accueil #2)** : 1 ligne, append-only, à appliquer après merge Accueil
+  (même pattern que le recâblage Journal/Temps d'écran). Voir §12.
+
+### 8.3 `ConseilsPage.page()` / `route()`
+`page()` crée `BlocProvider<ConseilsBloc>` avec
+`ConseilsBloc(context.read<AppDatabase>())..add(const ConseilsDemarre())`, puis rend `ConseilsView`.
+`route()` encapsule le `MaterialPageRoute` (mais `AppRouter.versConseils` reste le point d'entrée
+canonique qui fournit la DB à la frontière de route).
 
 ---
 
-## 16. Definition of Done
+## 9. Fichiers à créer / modifier
 
-- [ ] `AdviceCatalog.all` = 5 `EmotionAdvice` (une par `NegativeEmotion`), clés i18n, couleurs.
-- [ ] Carrousel `PageView` + dots + prev/next **synchronisés** ; dot actif = barre couleur émotion.
-- [ ] `initialEmotionId` ouvre la bonne carte ; repli 1ʳᵉ carte si inconnu/null.
-- [ ] « Essayer la respiration » → `/bubble/breathing` ; « J'applique » → feedback + pop, **0 Drift**.
-- [ ] `HapticFeedback.selectionClick` sur nav carte + 2 CTA.
-- [ ] `reduceMotion` coupe le décoratif, garde la nav/affichage.
-- [ ] Tous textes via ARB (FR/EN remplis, placeholders 6 langues, repli en).
-- [ ] `flutter analyze` clean (`very_good_analysis` + `bloc_lint`).
-- [ ] Tests Kent (étape 5) verts — voir `aidd_docs/tasks/conseils.tests.md`.
+> **Fourni par Fondations / existant (NE PAS recréer)** : `theme.dart`, `app_router.dart`,
+> `app_database.dart` (étendu), `common/placeholder_screen.dart` (`ouvrirPlaceholder`),
+> `common/widgets/halo_respirant.dart`, `particules_flottantes.dart`, `emotion_canonique.dart`, `l10n/`.
+
+**Créer (propre à `conseils`)** :
+- `lib/pages/conseils/views/conseils_page.dart` (`ConseilsPage` + `route()` ; fournit `ConseilsBloc`).
+- `lib/pages/conseils/views/conseils_view.dart` (`ConseilsView` : toolbar + dots + PageView deck + hint + CTA).
+- `lib/pages/conseils/bloc/conseils_bloc.dart` / `conseils_event.dart` / `conseils_state.dart`.
+- `lib/pages/conseils/modeles/carte_conseil.dart` (sealed `CarteConseil` + sous-types + `accentDeCarte`).
+- `lib/pages/conseils/modeles/composeur_deck.dart` (helper PUR `composerDeck` — DEC-CO-03..06, testable).
+- `lib/pages/conseils/widgets/compteur_dots.dart`, `carte_rappel.dart`, `carte_emotion.dart`,
+  `carte_conseil_pratique.dart`, `hint_swipe.dart`.
+
+**Modifier** :
+- `lib/data/local/app_database.dart` : étendre `Conseils` (4 colonnes, §4.1) ; `schemaVersion 3→4` +
+  migration idempotente `if (from < 4)` (§4.2) ; `_seedConseils → _seedCorpus` idempotent par clé ;
+  **+** lecture `lireCorpusConseils()` (liste ordonnée par `ordre`/`id`). **NE PAS toucher**
+  `conseilDuJour` (réutilisé tel quel ; il continue de pointer la 1ʳᵉ carte de rotation). → **codegen
+  Drift requis** (`build_runner`).
+- `lib/app/routing/app_router.dart` : **+** `versConseils(context)` (append-only, §8.1).
+- `lib/pages/accueil/views/accueil_view.dart` : recâbler la `TuileOutil` `homeToolDailyTip` (1 ligne, §8.2).
+- 8 × `lib/l10n/arb/app_<lang>.arb` : clés §7.2 (chrome + corpus placeholder), puis `flutter gen-l10n`.
+- `aidd_docs/tasks/_registry.md` : ligne `conseils` (§12).
+
+> **N'ajouter AUCUNE dépendance pub.** `PageView`/gestures = Flutter natif. **Pas de `google_fonts`**
+> (DM Sans bundlé). Pas de package de swipe-deck tiers (Flutter `PageView` suffit, reste testable et
+> a11y-friendly).
+
+---
+
+## 10. Conformité contraintes projet (garde-fous)
+
+- ✅ Zéro backend/Firebase/SDK réseau/analytics/Crashlytics. Lecture Drift locale seule. Aucune permission.
+- ✅ **Lecture Drift seule** (`Conseils`, `EntreesHumeur`) ; **aucune écriture** ; **aucun CTA « J'applique »** (supprimé, DEC-CO-09).
+- ✅ **Aucun score/classement/streak/FOMO** : dots = position, pas progression (DEC-003). Déck déterministe (pas de boucle « refresh »).
+- ✅ Émotions = `emotionsCanoniques` ; couleur émotion = `MoodColors.byKey` (jamais hex mockup) ; libellé `libelleEmotion`.
+- ✅ Accents chrome via tokens `AppColors` (jamais hex) ; violet émotion **non** détourné en chrome (DEC-CO-07).
+- ✅ Ton bienveillant, public mineur ; **contenu = placeholders à valider partenaires** (DEC-CO-10), rien figé.
+- ✅ i18n 8 langues, repli `en`, aucune chaîne en dur ; corpus dans ARB (clés, pas de texte en Dart).
+- ✅ a11y : reduced-motion (particules/halo/anim OFF), tap ≥ 48dp, **swipe accessible** (flèches + Semantics) (DEC-CO-08).
+- ✅ Bloc-only, transformers explicites, `State` `Equatable` + enum `status`. Un seul `ConseilsBloc`.
+- ✅ Nommage FR (`lib/pages/conseils/`), structure `{bloc,views,widgets,modeles}`.
+- ✅ Migration Drift idempotente (modèle v2/v3) ; `build_runner` après modif modèle.
+- ✅ Android `minify`/`shrinkResources = false`.
+- ✅ Réutilise `conseilDuJour`/`tipDay0X` (cohérence Accueil↔deck, DEC-CO-11), `HaloRespirant`, `ParticulesFlottantes`, `ouvrirPlaceholder`.
+
+---
+
+## 11. Hors périmètre V1 (→ V1.1)
+
+- **Exercice de respiration / Détox réel** (CTA carte émotion = STUB ; partagé avec Journal/Soutien).
+- **Tendance multi-jours** pour les cartes émotion (V1 = humeur **du jour** ; tendance = US séparée, Q-CO-4).
+- **Recomposition live** du deck si l'humeur change pendant la consultation (V1 = figé à l'ouverture, DEC-CO-06).
+- **Favoris / sauvegarde de conseils**, partage, « conseils déjà vus » (impliquerait de la persistance → écarté zéro-collecte/anti-rétention).
+- **Corpus piloté à distance** (Remote Config) — interdit (zéro réseau). Corpus = seed local.
+- **Traductions réelles `el/it/ro/tr/es/mk`** (repli `en` en V1).
+- **Validation finale du contenu** par les partenaires (le corpus V1 reste placeholder).
+
+---
+
+## 12. Registry & coordination
+
+- Ligne à ajouter dans `aidd_docs/tasks/_registry.md` :
+  `| [conseils.md](./conseils.md) | Conseils (deck swipable, ConseilsPage empilée — cartes rappel/conseil/emotion, sélection déterministe + carte émotion selon humeur du jour, contenu placeholder à valider partenaires) | US-CO-01/02 (à créer) | Phase 2 🟡 | Fondations (#3), Noter mon humeur (#6) | conseils.tests.md ⏳ | proposition_a_valider |`
+- **Composants consommés** : `AppTheme`/`AppColors`/`MoodColors`/`AppRadii`/`AppSpacing`, `AppRouter`,
+  `AppDatabase` (étendue), `HaloRespirant`, `ParticulesFlottantes`, `ouvrirPlaceholder`,
+  `emotionsCanoniques`/`emojiPourCode`/`libelleEmotion`.
+- **Introduit ici (réutilisable)** : `CarteConseil` (modèle), `composerDeck` (helper pur),
+  `accentDeCarte`, lecture `lireCorpusConseils`, extension corpus de la table `Conseils`.
+- **Coordination Drift** : extension `Conseils` + migration v4 → **coordonner avec tout autre lot
+  touchant `app_database.dart`** (schéma partagé). `conseilDuJour` **non modifié** (compat Accueil/Journal).
+- **Coordination Accueil (#2)** : recâblage tuile = 1 ligne append-only, après merge Accueil.
+
+---
+
+## 13. Questions à valider (Section ouverte)
+
+> 🟡 **US non créées** (Erwin à solliciter) et **contenu non validé partenaires**. Maquette Banani
+> confirmée. La logique de sélection (point dur) est **tranchée** (DEC-CO-03..06) mais ses **paramètres**
+> (N, couverture émotions, répartition) restent à confirmer.
+
+- **Q-CO-1 (US)** : créer **US-CO-01** (parcourir le deck) + **US-CO-02** (carte émotion selon humeur)
+  via Erwin, milestone Phase 2. OK ?
+- **Q-CO-2 (taille N du deck)** : nombre de cartes génériques par jour ? **Reco : 4** (+ 1 émotion
+  éventuelle = 3-5 cartes, cohérent mockup « 2/5 »).
+- **Q-CO-3 (couverture émotions)** : cartes émotion pour **les 7** canoniques, ou **seulement les 4
+  négatives** en V1 ? **Reco : les 7** (placeholder).
+- **Q-CO-4 (humeur du jour vs tendance)** : V1 = **humeur du jour** (dernière saisie). Une **tendance
+  récente** (ex. émotion négative dominante 7 j) = **V1.1**. Confirmer.
+- **Q-CO-5 (figer vs live)** : deck **figé à l'ouverture** (reco) ou **recomposé** si l'humeur change
+  en multitâche ? **Reco : figé** (lecture ponctuelle, ne casse pas la position de lecture).
+- **Q-CO-6 (re-seed idempotent)** : confirmer le passage `_seedConseils` (`count>0`) →
+  `_seedCorpus` **idempotent par clé** (sinon les cartes émotion ne s'ajoutent pas à une base v3 déjà
+  peuplée à 7 lignes).
+- **Q-CO-7 (répartition tipDay01..07)** : lesquels des 7 tips existants deviennent `rappel` vs
+  `conseil` ? (Ils sont des phrases courtes type rappel — **reco : tous `rappel`**, accents cycliques.)
+- **Q-CO-8 (gabarit Do's/Don'ts)** : gabarit **fixe 3 Do's / 2 Don'ts** (clés indexées) pour toutes les
+  cartes émotion/conseil ? **Reco : oui** (simplifie l'i18n ; conforme mockup).
+- **Q-CO-9 (CTA « J'applique ce conseil »)** : ✅ **tranché — SUPPRIMÉ** (DEC-CO-09). Le bouton bas du
+  mockup n'est pas repris (inutile, n'écrivait rien). Plus de SnackBar de confirmation associé.
+- **Q-CO-10 (icônes de tag)** : le mockup utilise des icônes Lucide (`sun`/`heart`/`zap`/`star`/`shield`/
+  `wind`). À mapper sur **Material Icons** (pas de package Lucide → cohérent, pas de dépendance). Mapping
+  proposé : `sun→wb_sunny_outlined`, `heart→favorite_border`, `zap→bolt`, `star→star_border`,
+  `shield→shield_outlined`, `wind→air`. Confirmer.
+- **Q-CO-11 (halo teinté accent)** : le halo de fond se teinte de l'accent de la carte active (mockup).
+  Acceptable ou halo neutre fixe ? **Reco : teinte douce suivant l'accent**, OFF en reduced-motion.
+
+---
+
+## 14. Décisions tranchées (DEC-CO)
+
+| ID | Décision |
+|---|---|
+| DEC-CO-01 | **Corpus = table `Conseils` ÉTENDUE** (4 colonnes : `type_carte`, `code_emotion`, `accent_chrome`, `ordre`) — source unique, réutilise seed/rotation existants. Dataset Dart statique **rejeté** (le corpus est déjà en Drift). Le **texte** reste hors Drift (ARB). |
+| DEC-CO-02 | **Migration `schemaVersion 3→4` idempotente** (`PRAGMA table_info` avant `addColumn`, re-seed par clé). Modèle de prudence v2/v3. `build_runner` requis. |
+| DEC-CO-03 | **Composition DÉTERMINISTE par jour** (`joursDepuisEpoch % n`, comme `conseilDuJour`). Pas d'aléatoire (ni session, ni seedé) → testable, anti-rétention. |
+| DEC-CO-04 | **Carte émotion contextuelle EN TÊTE si humeur notée le jour courant** (`observerDerniereHumeurDuJour`), mappée sur l'émotion canonique exacte, couleur `MoodColors.byKey`. **« Humeur récente » V1 = humeur du jour** (tendance multi-jours = V1.1). |
+| DEC-CO-05 | **Rappels/conseils génériques = rotation déterministe quotidienne** (offset `joursDepuisEpoch % nbGeneriques`, N cartes circulaires). |
+| DEC-CO-06 | **Deck = [carte émotion?] + [N génériques en rotation]**, dédupliqué, **figé à l'ouverture** (lecture humeur ponctuelle). **Aucune humeur** → deck 100 % générique (jamais vide). |
+| DEC-CO-07 | **Accents** : carte émotion = `MoodColors.byKey` ; cartes rappel/conseil = palette **chrome** (`primary`/lime `signatureGradient[1]`/`accentGold`). Le **violet** (`MoodColors.nervous`) **interdit en chrome** → réservé à la carte émotion `nervous`. Jamais de hex mockup. |
+| DEC-CO-08 | **Swipe accessible** : navigation aussi par flèches/tap + `Semantics` (carte X/Y, actions précédent/suivant). reduced-motion → particules/halo/anim OFF. |
+| DEC-CO-09 | **Pas de CTA « J'applique ce conseil »** : le bouton bas du mockup est **supprimé** (jugé inutile — il n'écrivait rien : pas de score ni d'historique, cohérent anti-rétention DEC-003). L'écran se termine sur le hint swipe ; aucune action « valider », aucune persistance. |
+| DEC-CO-10 | **Tout le corpus de cartes = PLACEHOLDER à valider partenaires Erasmus+** — rien figé comme définitif. Le plan fixe le **gabarit** (clés, 3 Do's/2 Don'ts), pas le texte. |
+| DEC-CO-11 | **Réconciliation `conseilDuJour`/Accueil** : `tipDay01..07` deviennent des cartes du deck ; la 1ʳᵉ carte générique du jour = `conseilDuJour(today)` (même `% n`) → cohérence tuile Accueil ↔ deck, sans logique dupliquée. `conseilDuJour` **non modifié**. |
+| DEC-CO-12 | Navigation `AppRouter.versConseils` en `push` (DEC-FND-07), calquée sur `versJournal` (DB à la frontière de route). Recâblage tuile Accueil = dépendance d'intégration append-only (#2). |
+| DEC-CO-13 | Icônes de tag Lucide → **Material Icons** (pas de package tiers). CTA respiration → **STUB** `ouvrirPlaceholder` (partagé esprit Journal DEC-J-02 / Détox non implémenté). |
+
+---
+
+## 15. Plan de tests prévisionnel (pour Kent — Step 5)
+
+**Helper pur `composerDeck` (unitaires — cœur du point dur)**
+- Humeur `angry` du jour + corpus avec `conseilEmotionAngry` → **carte 0 = CarteEmotion(angry)**, suivie de N génériques en rotation.
+- Humeur `angry` mais **pas** de carte dédiée → repli (carte réconfort si valence<0, ou pas de carte émotion) selon Q-CO-3.
+- **Aucune humeur** → deck 100 % générique, **carte 0 = `conseilDuJour(today)`** (cohérence DEC-CO-11).
+- **Déterminisme** : même `(jour, humeur, corpus)` → deck identique (rejouable). Jour+1 → rotation décalée d'un cran.
+- Pas de doublon entre carte émotion et portion générique.
+- Corpus trop court / vide → fallback (≥ 1 carte, pas de crash).
+
+**Bloc (`bloc_test`)**
+- `ConseilsDemarre` → `chargement` puis `pret` avec `deck` peuplé, `indexCourant: 0`.
+- `ConseilsDemarre` avec humeur du jour → carte 0 = émotion correspondante.
+- `ConseilsCarteSuivante`/`Precedente` → index borné `[0, len-1]`, no-op aux bornes.
+- `ConseilsCarteAtteinte(i)` → `indexCourant == i`.
+- **Aucune écriture Drift** sur tout le cycle de vie de l'écran (vérifier via DB mémoire) ; aucun event « appliquer ».
+- Corpus vide → `status: erreur`, fallback carte unique.
+
+**AppDatabase (`AppDatabase.forTesting`, SQLite mémoire)**
+- Migration v3→v4 idempotente : colonnes ajoutées une seule fois ; `tipDay01..07` conservés + métadonnées assignées.
+- `_seedCorpus` idempotent par clé : ré-ouverture n'ajoute pas de doublon ; cartes émotion présentes.
+- `lireCorpusConseils()` : ordre stable (`ordre`/`id`), types/codes corrects.
+- `conseilDuJour` **inchangé** (toujours rotation `% n`).
+
+**Widget**
+- Carte émotion : accent = `MoodColors.byKey[code]` (pas hex), libellé via `libelleEmotion`, CTA → SnackBar `conseilsEmotionRespirationBientot` (pas de navigation).
+- Carte rappel/conseil : accent ∈ {primary, lime, or} (jamais violet ni hex), citation 2 lignes / Do's-Don'ts.
+- Compteur dots : pilule active élargie, couleur = accent courant ; `deck.length` dots.
+- PageView : swipe → `ConseilsCarteAtteinte` ; flèches/tap zones → suivant/précédent (a11y).
+- **Aucun CTA « J'applique » dans l'arbre** (garde-fou : `find.text(...)` du libellé supprimé → `findsNothing`).
+- reduced-motion : `MediaQueryData(disableAnimations: true)` → particules OFF, halo statique, rendu lisible (⚠️ **jamais `pumpAndSettle()`** avec halo/particules — piège testing.md ; piloter avec `pump(Duration)` ou `disableAnimations`).
+
+**Navigation / recâblage**
+- `AppRouter.versConseils` push `ConseilsPage` avec `AppDatabase` fournie.
+- `accueil_view.dart` tuile `homeToolDailyTip` : tap → `versConseils` (et non plus `ouvrirPlaceholder`).
+
+**i18n / a11y**
+- Toutes les clés `conseils*` + corpus présentes fr+en ; aucune chaîne en dur ; ICU `{emotion}`/`{index}`/`{total}` valides.
+- `Semantics` : carte X/Y annoncée, actions précédent/suivant, CTA labellisé.

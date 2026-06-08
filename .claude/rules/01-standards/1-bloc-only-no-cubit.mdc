@@ -27,7 +27,8 @@ Interdictions:
 - Logique métier dans un `Cubit` même s'il paraît "plus simple"
 
 Exceptions tolérées:
-- Aucune — si tu crois qu'un Cubit est justifié, c'est qu'un Bloc avec 1 seul event l'est aussi. Utilise le Bloc.
+- Sur le **no-Cubit** : aucune — si tu crois qu'un Cubit est justifié, c'est qu'un Bloc avec 1 seul event l'est aussi. Utilise le Bloc.
+- **Dérogation projet DIGIHARMONY (actée 2026-06-05)** : les suffixes **anglais `Event`/`State`** sont autorisés (ex. `AccueilBloc`/`AccueilEvent`/`AccueilState`) au lieu de `Evenement`/`Etat`. Le reste du nommage (classes/dossiers/data layer) reste en français ; le no-Cubit reste strict.
 
 Plans (fichiers `aidd_docs/tasks/**/*.md`):
 - Un plan ne doit jamais mentionner "Cubit" comme brique proposée

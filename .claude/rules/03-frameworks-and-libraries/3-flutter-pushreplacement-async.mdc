@@ -1,0 +1,46 @@
+---
+description: NE JAMAIS await pushReplacement ; évaluer la logique post-navigation AVANT de remplacer la route
+globs: apps/*/lib/**/*.dart
+alwaysApply: true
+---
+
+Principe:
+- `Navigator.pushReplacement` (et `pushReplacementNamed`) retourne une `Future<T?>` qui ne se
+  résout **qu'au pop de la NOUVELLE route**. L'`await`er suspend le code appelant indéfiniment
+  (la route de destination, ex. un écran d'accueil, ne pop jamais) → tout le code après est mort.
+- Après un `pushReplacement`, le `BuildContext` de l'écran remplacé est **démonté**
+  (`context.mounted == false`) : toute logique gardée par `if (!context.mounted) return;` après la
+  navigation ne s'exécute jamais.
+
+Règles:
+- **Ne pas `await`** un `pushReplacement`. Utiliser `unawaited(navigator.pushReplacement(...))`.
+- **Capturer** `final navigator = Navigator.of(context);` (et les blocs via `context.read<...>()`)
+  **AVANT** tout `await` et avant la navigation, puis naviguer via cette référence.
+- **Évaluer** la logique conditionnelle de navigation (ex. lecture DB, décision d'empiler un écran
+  par-dessus) **AVANT** le `pushReplacement`, tant que le contexte est encore monté.
+- Pour empiler un écran au-dessus de la nouvelle route : `unawaited(navigator.push(...))` après le
+  `pushReplacement`, via le `navigator` capturé (pas le `context` démonté).
+
+Anti-pattern (déclenchement mort au runtime):
+```dart
+await AppRouter.versAccueil(context); // = pushReplacement → ne résout jamais
+if (!context.mounted) return;         // toujours faux ici → branche morte
+if (compteur >= 7) AppRouter.versSoutien(context);
+```
+
+Correct:
+```dart
+final navigator = Navigator.of(context);
+final bloc = context.read<SoutienBloc>();
+final compteur = await db.compterSaisiesNegativesConsecutives();
+if (!context.mounted) return;
+unawaited(navigator.pushReplacement(AccueilPage.route()));
+if (compteur >= 7) {
+  bloc.add(const SoutienMontre());
+  unawaited(navigator.push(SoutienPage.route()));
+}
+```
+
+Tests:
+- Couvrir le chemin runtime par un test d'intégration qui **échouerait** sans le correctif
+  (sinon `pumpAndSettle` hang ou branche jamais atteinte).

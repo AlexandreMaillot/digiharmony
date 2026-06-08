@@ -1,0 +1,13 @@
+# Splash natif DIGIHARMONY (build-time uniquement, aucun SDK runtime/réseau).
+# Continuité visuelle avant l'écran Flutter SplashPage : fond profond #16213C
+# (= AppColors.backgroundDeep) + logo carré.
+# Régénérer après modification : dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#16213C"
+  image: assets/images/logo_digiharmony_square.png
+  android_12:
+    color: "#16213C"
+    image: assets/images/logo_digiharmony_square.png
+  ios: true
+  android: true
+  fullscreen: false
