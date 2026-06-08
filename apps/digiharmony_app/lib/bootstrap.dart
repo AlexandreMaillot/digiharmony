@@ -51,6 +51,7 @@ Future<void> bootstrap(
   FutureOr<Widget> Function(AppDatabase database) builder, {
   Future<Storage> Function()? storageBuilder,
   AppDatabase Function()? databaseBuilder,
+  Future<void> Function()? audioInit,
 }) async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -68,7 +69,19 @@ Future<void> bootstrap(
   HydratedBloc.storage = await (storageBuilder ?? _defaultStorageBuilder)();
 
   // 2) Lecture audio en arrière-plan (écran Détox-lecteur) — joue un asset
-  // local, aucune URL/réseau. Échec non bloquant.
+  // local, aucune URL/réseau. Échec non bloquant. Injectable pour les tests
+  // (le canal natif ne répond pas en environnement de test → no-op).
+  await (audioInit ?? _defaultAudioInit)();
+
+  // 3) Base Drift unique (ouverture paresseuse ; warm-up mesuré par le Splash).
+  final database = (databaseBuilder ?? AppDatabase.new)();
+
+  runApp(await builder(database));
+}
+
+/// Initialise just_audio_background (échec non bloquant). Remplacé par un no-op
+/// dans les tests via le paramètre `audioInit` de [bootstrap].
+Future<void> _defaultAudioInit() async {
   try {
     await JustAudioBackground.init(
       androidNotificationChannelId: 'com.digiharmony.audio',
@@ -81,9 +94,4 @@ Future<void> bootstrap(
       stackTrace: stackTrace,
     );
   }
-
-  // 3) Base Drift unique (ouverture paresseuse ; warm-up mesuré par le Splash).
-  final database = (databaseBuilder ?? AppDatabase.new)();
-
-  runApp(await builder(database));
 }

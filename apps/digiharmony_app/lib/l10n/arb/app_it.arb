@@ -899,5 +899,7 @@
     "notifGuideBrand": "DigiHarmony",
     "@notifGuideBrand": {
         "description": "Brand label"
-    }
+    },
+    "saisieHumeurValider": "Confirm",
+    "saisieHumeurErreur": "Oops, saving didn't work. Please try again."
 }
