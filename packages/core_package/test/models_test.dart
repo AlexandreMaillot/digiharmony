@@ -61,13 +61,13 @@ void main() {
       expect(AmbianceDetox.parId(IdAmbianceDetox.sea).id, IdAmbianceDetox.sea);
     });
 
-    test('durations are 5/10/15 with exactly one default (15)', () {
+    test('durations are 5/10/15 with exactly one default (5)', () {
       expect(
         DureeDetox.all.map((d) => d.minutes).toList(),
         <int>[5, 10, 15],
       );
       expect(DureeDetox.all.where((d) => d.isDefault).length, 1);
-      expect(DureeDetox.minutesParDefaut, 15);
+      expect(DureeDetox.minutesParDefaut, 5);
     });
   });
 

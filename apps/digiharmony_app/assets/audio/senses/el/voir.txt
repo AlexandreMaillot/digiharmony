@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Κοίταξε γύρω σου και ονόμασε πέντε πράγματα που <emphasis level="reduced">βλέπεις</emphasis>.</prosody>

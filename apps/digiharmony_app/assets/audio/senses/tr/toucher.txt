@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Tenine değen dört şeyi fark <emphasis level="reduced">et</emphasis>.</prosody>

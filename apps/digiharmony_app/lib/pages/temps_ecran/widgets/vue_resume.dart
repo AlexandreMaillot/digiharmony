@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:digiharmony_app/app/routing/app_router.dart';
-import 'package:digiharmony_app/common/placeholder_screen.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/temps_ecran/bloc/temps_ecran_bloc.dart';
 import 'package:digiharmony_app/pages/temps_ecran/modeles/formatage_duree.dart';
@@ -109,13 +108,12 @@ class VueResume extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
 
-          // Carte « Faire une pause » (stub Détox).
+          // Carte « Faire une pause » → configuration Détox.
           _CarteAction(
             icone: Icons.spa_outlined,
             titre: l10n.tempsEcranFairePause,
             sousTitre: l10n.tempsEcranFairePauseSousTitre,
-            onTap: () =>
-                ouvrirPlaceholder(context, l10n.tempsEcranFairePause),
+            onTap: () => AppRouter.versDetox(context),
           ),
           const SizedBox(height: AppSpacing.sm),
 

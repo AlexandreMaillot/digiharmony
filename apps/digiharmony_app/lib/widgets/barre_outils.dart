@@ -10,6 +10,7 @@ class BarreOutils extends StatelessWidget implements PreferredSizeWidget {
   /// {@macro barre_outils}
   const BarreOutils({
     this.title,
+    this.titreWidget,
     this.onBack,
     this.trailing,
     this.showMenu = false,
@@ -19,6 +20,9 @@ class BarreOutils extends StatelessWidget implements PreferredSizeWidget {
 
   /// Titre centre (resolu depuis l'ARB par l'appelant).
   final String? title;
+
+  /// Widget centre optionnel (ex. logo). S'il est fourni, il remplace [title].
+  final Widget? titreWidget;
 
   /// Callback du bouton retour. Si null, pas de bouton retour.
   final VoidCallback? onBack;
@@ -56,14 +60,17 @@ class BarreOutils extends StatelessWidget implements PreferredSizeWidget {
           children: [
             leading,
             Expanded(
-              child: Text(
-                title ?? '',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppColors.text,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
+              child: Center(
+                child: titreWidget ??
+                    Text(
+                      title ?? '',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: AppColors.text,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
               ),
             ),
             right ?? const SizedBox(width: 48),

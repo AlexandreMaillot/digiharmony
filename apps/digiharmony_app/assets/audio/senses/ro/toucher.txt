@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Observă patru lucruri pe care le simți pe <emphasis level="reduced">piele</emphasis>.</prosody>

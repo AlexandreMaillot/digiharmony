@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Guardati intorno e nomina cinque cose che puoi <emphasis level="reduced">vedere</emphasis>.</prosody>

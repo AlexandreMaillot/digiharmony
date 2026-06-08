@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Etrafındaki iki kokuyu, <break time="500ms"/> hafif olanları bile fark <emphasis level="reduced">et</emphasis>.</prosody>

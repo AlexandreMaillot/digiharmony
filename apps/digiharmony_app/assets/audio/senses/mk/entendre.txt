@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Затвори ги очите. <break time="600ms"/> Слушај ги блиските звуци, <break time="500ms"/> потоа <emphasis level="reduced">далечните</emphasis>.</prosody>

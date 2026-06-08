@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Etrafına bak ve görebildiğin beş şeyi <emphasis level="reduced">say</emphasis>.</prosody>

@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Gently tilt your head toward your right shoulder. <break time="600ms"/> Hold for five seconds. <break time="600ms"/> Switch <emphasis level="reduced">sides</emphasis>.</prosody>

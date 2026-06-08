@@ -2,6 +2,7 @@
 // directives_ordering (deux sous-sections reconnues malgré le tri).
 // ignore_for_file: directives_ordering
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:core_package/core_package.dart';
 import 'package:digiharmony_app/bien_etre_partage/dialogue_quitter_seance.dart';
@@ -30,13 +31,17 @@ class SensPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Lu ici (dans build) et non dans `create` : depend du contexte.
+    final langue = Localizations.localeOf(context).languageCode;
     return BlocProvider<SensBloc>(
       create: (context) => SensBloc(
         exercise: ExerciceAncrage.cinqQuatreTroisDeuxUn,
         enregistrerSeance: EnregistrerSeanceBienEtreUseCase(
           depot: context.read<DepotStatsBienEtre>(),
         ),
-        gererAudio: GererAudioSensUseCase(depot: DepotAudioSensImpl()),
+        gererAudio: GererAudioSensUseCase(
+          depot: DepotAudioSensImpl(langue: langue),
+        ),
         lireVoixOff: LirePreferenceVoixOffUseCase(
           voixOffBloc: context.read<VoixOffBloc>(),
         ),
@@ -130,36 +135,14 @@ class _LayoutEnCours extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          _IndicateurEtape(
+          _IndicateurEtapeAnime(
             current: state.stepIndex,
             total: state.exercise.totalSteps,
           ),
           const Spacer(),
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.primary.withValues(alpha: 0.1),
-              border: Border.all(
-                color: AppColors.primary.withValues(alpha: 0.27),
-              ),
-            ),
-            child: Icon(
-              step.sense.icon,
-              color: AppColors.primary,
-              size: 36,
-            ),
-          ),
+          _IconeSensAnimee(sens: step.sense),
           const SizedBox(height: 16),
-          Text(
-            l10n.sensesCountValue(step.count),
-            style: const TextStyle(
-              color: AppColors.sensesAccentOr,
-              fontSize: 72,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          _NumeroEtapeAnime(valeur: l10n.sensesCountValue(step.count)),
           Text(
             step.sense.label(l10n),
             style: const TextStyle(
@@ -179,6 +162,7 @@ class _LayoutEnCours extends StatelessWidget {
             children: [
               if (state.stepIndex > 0)
                 Expanded(
+                  flex: 2,
                   child: OutlinedButton.icon(
                     onPressed: () => context
                         .read<SensBloc>()
@@ -189,7 +173,7 @@ class _LayoutEnCours extends StatelessWidget {
                 ),
               if (state.stepIndex > 0) const SizedBox(width: 12),
               Expanded(
-                flex: 2,
+                flex: 3,
                 child: FilledButton.icon(
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.sensesAccentOr,
@@ -214,37 +198,270 @@ class _LayoutEnCours extends StatelessWidget {
   }
 }
 
-class _IndicateurEtape extends StatelessWidget {
-  const _IndicateurEtape({required this.current, required this.total});
+/// Indicateur d'etapes anime : la pastille active grossit en douceur
+/// (AnimatedContainer) et rebondit comme une goutte a chaque changement.
+///
+/// `StatefulWidget` dedie : la page parente reste Stateless ; l'animation
+/// est declenchee par le changement de [current] via `didUpdateWidget`.
+class _IndicateurEtapeAnime extends StatefulWidget {
+  const _IndicateurEtapeAnime({required this.current, required this.total});
 
   final int current;
   final int total;
 
   @override
+  State<_IndicateurEtapeAnime> createState() => _IndicateurEtapeAnimeState();
+}
+
+class _IndicateurEtapeAnimeState extends State<_IndicateurEtapeAnime>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  bool get _reduceMotion => MediaQuery.of(context).disableAnimations;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 520),
+    );
+  }
+
+  @override
+  void didUpdateWidget(_IndicateurEtapeAnime oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.current != widget.current && !_reduceMotion) {
+      unawaited(_controller.forward(from: 0));
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: context.l10n.sensesStepProgress(current + 1, total),
+      label: context.l10n.sensesStepProgress(
+        widget.current + 1,
+        widget.total,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          for (var i = 0; i < total; i++)
+          for (var i = 0; i < widget.total; i++)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Container(
-                width: i == current ? 28 : 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: i < current
-                      ? AppColors.primary.withValues(alpha: 0.55)
-                      : i == current
-                      ? AppColors.sensesAccentOr
-                      : AppColors.textMuted.withValues(alpha: 0.2),
-                ),
-              ),
+              child: _point(i),
             ),
         ],
       ),
+    );
+  }
+
+  Widget _point(int i) {
+    final actif = i == widget.current;
+    // Largeur/couleur en transition douce a chaque rebuild.
+    final dot = AnimatedContainer(
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
+      width: actif ? 28 : 10,
+      height: 10,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: i < widget.current
+            ? AppColors.primary.withValues(alpha: 0.55)
+            : actif
+            ? AppColors.sensesAccentOr
+            : AppColors.textMuted.withValues(alpha: 0.2),
+      ),
+    );
+    if (!actif || _reduceMotion) return dot;
+    // Pastille active : squish elastique « goutte d'eau » qui rebondit.
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final t = _controller.value;
+        final pulse = math.sin(t * math.pi) * (1 - t);
+        return Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.diagonal3Values(
+            1 - 0.25 * pulse,
+            1 + 0.6 * pulse,
+            1,
+          ),
+          child: child,
+        );
+      },
+      child: dot,
+    );
+  }
+}
+
+/// Icone centrale animee : le nouveau glyphe « pop » a chaque changement de
+/// sens (scale elastique + fondu + leger pivot). Cercle statique autour.
+class _IconeSensAnimee extends StatefulWidget {
+  const _IconeSensAnimee({required this.sens});
+
+  final SensAncrage sens;
+
+  @override
+  State<_IconeSensAnimee> createState() => _IconeSensAnimeeState();
+}
+
+class _IconeSensAnimeeState extends State<_IconeSensAnimee>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  bool get _reduceMotion => MediaQuery.of(context).disableAnimations;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 450),
+      value: 1,
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_reduceMotion) _controller.value = 1;
+  }
+
+  @override
+  void didUpdateWidget(_IconeSensAnimee oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.sens != widget.sens && !_reduceMotion) {
+      unawaited(_controller.forward(from: 0));
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final icone = Icon(widget.sens.icon, color: AppColors.primary, size: 36);
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.primary.withValues(alpha: 0.1),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.27)),
+      ),
+      child: Center(
+        child: _reduceMotion
+            ? icone
+            : AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) {
+                  final t = Curves.easeOut.transform(_controller.value);
+                  final pop = Curves.elasticOut.transform(_controller.value);
+                  final scale = 0.5 + 0.5 * pop;
+                  return Opacity(
+                    opacity: t,
+                    child: Transform.rotate(
+                      angle: (1 - t) * -0.4,
+                      child: Transform.scale(scale: scale, child: child),
+                    ),
+                  );
+                },
+                child: icone,
+              ),
+      ),
+    );
+  }
+}
+
+/// Numero d'etape anime : flip « cube » 3D — l'ancien chiffre bascule et le
+/// nouveau apparait de face a chaque changement de [valeur].
+class _NumeroEtapeAnime extends StatefulWidget {
+  const _NumeroEtapeAnime({required this.valeur});
+
+  final String valeur;
+
+  @override
+  State<_NumeroEtapeAnime> createState() => _NumeroEtapeAnimeState();
+}
+
+class _NumeroEtapeAnimeState extends State<_NumeroEtapeAnime>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late String _ancien;
+  late String _courant;
+
+  bool get _reduceMotion => MediaQuery.of(context).disableAnimations;
+
+  @override
+  void initState() {
+    super.initState();
+    _ancien = widget.valeur;
+    _courant = widget.valeur;
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 520),
+      value: 1,
+    );
+  }
+
+  @override
+  void didUpdateWidget(_NumeroEtapeAnime oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.valeur != widget.valeur) {
+      _ancien = oldWidget.valeur;
+      _courant = widget.valeur;
+      if (_reduceMotion) {
+        _controller.value = 1;
+      } else {
+        unawaited(_controller.forward(from: 0));
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Widget _chiffre(String s) => Text(
+    s,
+    style: const TextStyle(
+      color: AppColors.sensesAccentOr,
+      fontSize: 72,
+      fontWeight: FontWeight.bold,
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    if (_reduceMotion) return _chiffre(_courant);
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        final t = _controller.value;
+        final premiereMoitie = t < 0.5;
+        final angle = premiereMoitie
+            ? (math.pi / 2) * Curves.easeIn.transform(t * 2)
+            : -(math.pi / 2) * (1 - Curves.easeOut.transform((t - 0.5) * 2));
+        return Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.0015)
+            ..rotateX(angle),
+          child: _chiffre(premiereMoitie ? _ancien : _courant),
+        );
+      },
     );
   }
 }

@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Înclină ușor capul spre umărul drept. <break time="600ms"/> Ține cinci secunde. <break time="600ms"/> Schimbă <emphasis level="reduced">partea</emphasis>.</prosody>

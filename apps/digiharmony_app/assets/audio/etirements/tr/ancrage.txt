@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Rahatça otur, <break time="500ms"/> ayaklarını yere bas ve yavaşça nefes <emphasis level="reduced">al</emphasis>.</prosody>

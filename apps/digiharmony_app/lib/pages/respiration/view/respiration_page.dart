@@ -37,6 +37,8 @@ class RespirationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Lu ici (dans build) et non dans `create` : depend du contexte.
+    final langue = Localizations.localeOf(context).languageCode;
     return BlocProvider<RespirationBloc>(
       create: (context) => RespirationBloc(
         session: SeanceRespiration.quatreDeuxSix,
@@ -44,7 +46,7 @@ class RespirationPage extends StatelessWidget {
           depot: context.read<DepotStatsBienEtre>(),
         ),
         gererAudio: GererAudioRespirationUseCase(
-          depot: DepotAudioRespirationImpl(),
+          depot: DepotAudioRespirationImpl(langue: langue),
         ),
         lireVoixOff: LirePreferenceVoixOffUseCase(
           voixOffBloc: context.read<VoixOffBloc>(),

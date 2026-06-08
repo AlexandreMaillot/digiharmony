@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Κάθισε άνετα, <break time="500ms"/> στήριξε τα πόδια σου και πάρε μια αργή <emphasis level="reduced">ανάσα</emphasis>.</prosody>

@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Başını nazikçe sağ omzuna doğru eğ. <break time="600ms"/> Beş saniye tut. <break time="600ms"/> Taraf <emphasis level="reduced">değiştir</emphasis>.</prosody>

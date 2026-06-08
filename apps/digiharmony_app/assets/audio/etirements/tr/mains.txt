@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Ellerini yavaşça aç ve kapat, <break time="500ms"/> sonra bileklerini iki yöne <emphasis level="reduced">çevir</emphasis>.</prosody>

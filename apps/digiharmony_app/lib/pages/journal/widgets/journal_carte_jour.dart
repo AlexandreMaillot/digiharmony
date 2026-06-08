@@ -117,17 +117,11 @@ class JournalCarteJour extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                // CTA exercice (STUB V1 — DEC-J-02).
+                // CTA exercice : ouvre l'exercice bulle adapte a l'humeur.
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.journalExerciseComingSoon),
-                        ),
-                      );
-                    },
+                    onPressed: () => _versExercicePourHumeur(context, code),
                     child: Text(l10n.journalDayDoExerciseCta),
                   ),
                 ),
@@ -147,7 +141,29 @@ class JournalCarteJour extends StatelessWidget {
     );
   }
 
-  /// Résout le texte du conseil depuis sa clé i18n.
+  /// Ouvre l'un des 4 exercices bulles selon l'humeur du jour.
+  ///
+  /// Logique : etats de forte activation (colere / dynamique) -> Respiration ;
+  /// anxiete (nerveux) -> Les sens (ancrage) ; fatigue / corps -> Etirement ;
+  /// le reste (triste / joyeux / calme) -> Detox (decompresser / savourer).
+  Future<void> _versExercicePourHumeur(BuildContext context, String code) {
+    switch (code) {
+      case 'angry':
+      case 'dynamic':
+        return AppRouter.versRespiration(context);
+      case 'nervous':
+        return AppRouter.versSens(context);
+      case 'tired':
+        return AppRouter.versEtirement(context);
+      case 'sad':
+      case 'happy':
+      case 'calm':
+      default:
+        return AppRouter.versDetox(context);
+    }
+  }
+
+  /// Résout le texte du conseil depuis sa clé i18n (corpus v4 inclus).
   String _texteConseil(AppLocalizations l10n, String cle) {
     switch (cle) {
       case 'tipDay01':
@@ -164,8 +180,16 @@ class JournalCarteJour extends StatelessWidget {
         return l10n.tipDay06;
       case 'tipDay07':
         return l10n.tipDay07;
+      case 'conseilRappelPresent':
+        return l10n.conseilRappelPresentCitation1;
+      case 'conseilRappelLikes':
+        return l10n.conseilRappelLikesCitation1;
+      case 'conseilPratiqueInteractions':
+        return l10n.conseilPratiqueInteractionsHeadline;
+      case 'conseilPratiqueEspace':
+        return l10n.conseilPratiqueEspaceHeadline;
       default:
-        return cle;
+        return l10n.tipDay01;
     }
   }
 }

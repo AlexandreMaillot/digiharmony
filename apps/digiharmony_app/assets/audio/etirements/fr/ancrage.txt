@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Installe-toi confortablement, <break time="500ms"/> pose tes pieds au sol, <break time="500ms"/> respire <emphasis level="reduced">lentement</emphasis>.</prosody>

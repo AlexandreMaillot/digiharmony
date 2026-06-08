@@ -89,7 +89,22 @@ class BullesView extends StatelessWidget {
       extendBodyBehindAppBar: true,
       backgroundColor: AppColors.background,
       appBar: BarreOutils(
-        title: l10n.notifGuideBrand,
+        // Logo DigiHarmony (remplace le wordmark texte).
+        titreWidget: Image.asset(
+          'assets/images/logo_digiharmony.png',
+          height: 30,
+          fit: BoxFit.contain,
+          semanticLabel: l10n.notifGuideBrand,
+          // Repli : si l'asset manque, on retombe sur le wordmark texte.
+          errorBuilder: (context, error, stackTrace) => Text(
+            l10n.notifGuideBrand,
+            style: const TextStyle(
+              color: AppColors.text,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ),
         backLabel: l10n.bubblesToolbarBack,
         onBack: Navigator.of(context).canPop()
             ? () => Navigator.of(context).maybePop()

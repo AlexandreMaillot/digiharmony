@@ -28,8 +28,10 @@ abstract class DepotAudioEtirement {
 /// [ControleurAudioEtirement] (just_audio).
 class DepotAudioEtirementImpl implements DepotAudioEtirement {
   /// {@macro depot_audio_etirement_impl}
-  DepotAudioEtirementImpl({ControleurAudioEtirement? controleur})
-    : _controleur = controleur ?? ControleurAudioEtirement();
+  DepotAudioEtirementImpl({
+    ControleurAudioEtirement? controleur,
+    String langue = 'fr',
+  }) : _controleur = controleur ?? ControleurAudioEtirement(langue: langue);
 
   final ControleurAudioEtirement _controleur;
 

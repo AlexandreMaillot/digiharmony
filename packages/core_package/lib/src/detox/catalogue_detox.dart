@@ -76,18 +76,18 @@ class DureeDetox {
   /// Duree en minutes.
   final int minutes;
 
-  /// Pilote le badge DEFAUT (15 min).
+  /// Marque la duree par defaut (premiere ouverture) = 5 min.
   final bool isDefault;
 
   /// Les 3 durees proposees.
   static const List<DureeDetox> all = <DureeDetox>[
-    DureeDetox(minutes: 5),
+    DureeDetox(minutes: 5, isDefault: true),
     DureeDetox(minutes: 10),
-    DureeDetox(minutes: 15, isDefault: true),
+    DureeDetox(minutes: 15),
   ];
 
-  /// Duree par defaut (si aucune selection memorisee) = 15 min.
-  static const int minutesParDefaut = 15;
+  /// Duree par defaut (si aucune selection memorisee) = 5 min.
+  static const int minutesParDefaut = 5;
 
   /// Minutes autorisees.
   static const List<int> minutesAutorises = <int>[5, 10, 15];

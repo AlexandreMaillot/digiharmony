@@ -8,10 +8,10 @@ class DetoxConfigEtat extends Equatable {
     required this.durationMinutes,
   });
 
-  /// Defauts produit : Mer + 15 min.
+  /// Defauts produit (premiere ouverture) : Mer + 5 min.
   factory DetoxConfigEtat.initial() => const DetoxConfigEtat(
     ambianceId: IdAmbianceDetox.sea,
-    durationMinutes: 15,
+    durationMinutes: 5,
   );
 
   /// Ambiance selectionnee.

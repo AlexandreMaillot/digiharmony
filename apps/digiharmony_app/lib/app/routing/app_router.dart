@@ -1,12 +1,17 @@
 import 'dart:io';
 import 'package:digiharmony_app/data/local/app_database.dart';
+import 'package:digiharmony_app/data/local/depot_stats_bien_etre.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_page.dart';
 import 'package:digiharmony_app/pages/bienvenue/views/bienvenue_page.dart';
 import 'package:digiharmony_app/pages/bulles/view/bulles_page.dart';
 import 'package:digiharmony_app/pages/conseils/views/conseils_page.dart';
+import 'package:digiharmony_app/pages/detox/view/detox_config_page.dart';
+import 'package:digiharmony_app/pages/etirement/view/etirement_page.dart';
 import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
 import 'package:digiharmony_app/pages/parametres/views/parametres_page.dart';
+import 'package:digiharmony_app/pages/respiration/view/respiration_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_page.dart';
+import 'package:digiharmony_app/pages/sens/view/sens_page.dart';
 import 'package:digiharmony_app/pages/soutien/views/soutien_page.dart';
 import 'package:digiharmony_app/pages/temps_ecran/services/service_temps_ecran.dart';
 import 'package:digiharmony_app/pages/temps_ecran/services/service_temps_ecran_ios.dart';
@@ -142,6 +147,66 @@ abstract final class AppRouter {
         builder: (_) => RepositoryProvider<AppDatabase>.value(
           value: database,
           child: const BullesPage(),
+        ),
+      ),
+    );
+  }
+
+  /// Ouvre directement l'exercice de Respiration (empilé, retour possible).
+  ///
+  /// Utilisé depuis les cartes Conseils « émotion » (CTA « Essayer la
+  /// respiration »). La [AppDatabase] est transmise explicitement pour
+  /// traverser la frontière de route (DEC-FND-07). `push`. Pas de GoRouter.
+  static Future<void> versRespiration(BuildContext context) {
+    final depot = DepotDriftStatsBienEtre(context.read<AppDatabase>());
+    return Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => RepositoryProvider<DepotStatsBienEtre>.value(
+          value: depot,
+          child: const RespirationPage(),
+        ),
+      ),
+    );
+  }
+
+  /// Ouvre la configuration de la pause « Détox » (empilé, retour possible).
+  ///
+  /// Utilisé depuis le CTA « Faire une pause » de l'accueil. La [AppDatabase]
+  /// est transmise explicitement pour traverser la frontière de route
+  /// (le lecteur Détox enregistre la séance). `push`. Pas de GoRouter.
+  static Future<void> versDetox(BuildContext context) {
+    final depot = DepotDriftStatsBienEtre(context.read<AppDatabase>());
+    return Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => RepositoryProvider<DepotStatsBienEtre>.value(
+          value: depot,
+          child: const DetoxConfigPage(),
+        ),
+      ),
+    );
+  }
+
+  /// Ouvre directement l'exercice « Les sens » (empilé, retour possible).
+  static Future<void> versSens(BuildContext context) {
+    final depot = DepotDriftStatsBienEtre(context.read<AppDatabase>());
+    return Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => RepositoryProvider<DepotStatsBienEtre>.value(
+          value: depot,
+          child: const SensPage(),
+        ),
+      ),
+    );
+  }
+
+  /// Ouvre directement l'exercice d'Étirement (empilé, retour possible).
+  static Future<void> versEtirement(BuildContext context) {
+    final depot = DepotDriftStatsBienEtre(context.read<AppDatabase>());
+    return Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => RepositoryProvider<DepotStatsBienEtre>.value(
+          value: depot,
+          child: const EtirementPage(),
         ),
       ),
     );

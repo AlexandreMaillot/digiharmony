@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Mira algo lejano, <break time="500ms"/> luego cierra los ojos y <emphasis level="reduced">respira</emphasis>.</prosody>

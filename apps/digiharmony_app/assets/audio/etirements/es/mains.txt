@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Abre y cierra las manos despacio, <break time="500ms"/> luego gira las muñecas en ambos <emphasis level="reduced">sentidos</emphasis>.</prosody>

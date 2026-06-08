@@ -28,8 +28,10 @@ abstract class DepotAudioRespiration {
 /// [ControleurAudioRespiration] (just_audio).
 class DepotAudioRespirationImpl implements DepotAudioRespiration {
   /// {@macro depot_audio_respiration_impl}
-  DepotAudioRespirationImpl({ControleurAudioRespiration? controleur})
-    : _controleur = controleur ?? ControleurAudioRespiration();
+  DepotAudioRespirationImpl({
+    ControleurAudioRespiration? controleur,
+    String langue = 'fr',
+  }) : _controleur = controleur ?? ControleurAudioRespiration(langue: langue);
 
   final ControleurAudioRespiration _controleur;
 

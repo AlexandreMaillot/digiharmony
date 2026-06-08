@@ -22,8 +22,8 @@ abstract class DepotAudioSens {
 /// (just_audio).
 class DepotAudioSensImpl implements DepotAudioSens {
   /// {@macro depot_audio_sens_impl}
-  DepotAudioSensImpl({ControleurAudioSens? controleur})
-    : _controleur = controleur ?? ControleurAudioSens();
+  DepotAudioSensImpl({ControleurAudioSens? controleur, String langue = 'fr'})
+    : _controleur = controleur ?? ControleurAudioSens(langue: langue);
 
   final ControleurAudioSens _controleur;
 

@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Ferme les yeux. <break time="600ms"/> Écoute les sons proches, <break time="500ms"/> puis les sons <emphasis level="reduced">lointains</emphasis>.</prosody>

@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Incline doucement la tête vers l’épaule droite. <break time="600ms"/> Tiens cinq secondes. <break time="600ms"/> Change de <emphasis level="reduced">côté</emphasis>.</prosody>

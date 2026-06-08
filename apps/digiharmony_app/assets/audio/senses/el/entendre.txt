@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Κλείσε τα μάτια σου. <break time="600ms"/> Άκουσε τους κοντινούς ήχους, <break time="500ms"/> μετά τους <emphasis level="reduced">μακρινούς</emphasis>.</prosody>

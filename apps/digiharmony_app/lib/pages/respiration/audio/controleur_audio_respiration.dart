@@ -7,19 +7,42 @@ import 'package:just_audio_background/just_audio_background.dart';
 /// Tout chargement est en try/catch silencieux : un asset manquant ne casse
 /// jamais la seance (fallback gracieux).
 class ControleurAudioRespiration {
+  /// [langue] : code langue (ex. 'fr', 'en') -> sous-dossier audio.
+  /// Repli automatique sur 'fr' si le fichier de la langue est absent.
+  ControleurAudioRespiration({this.langue = _langueRepli});
+
+  /// Code langue courant.
+  final String langue;
+
   final AudioPlayer _player = AudioPlayer();
 
-  static const Map<PhaseRespiration, String> _assets =
+  static const String _dossier = 'assets/audio/respiration';
+  static const String _langueRepli = 'fr';
+
+  static const Map<PhaseRespiration, String> _fichiers =
       <PhaseRespiration, String>{
-    PhaseRespiration.inhale: 'assets/audio/respiration/inspire.mp3',
-    PhaseRespiration.hold: 'assets/audio/respiration/retiens.mp3',
-    PhaseRespiration.exhale: 'assets/audio/respiration/expire.mp3',
+    PhaseRespiration.inhale: 'inspire.mp3',
+    PhaseRespiration.hold: 'retiens.mp3',
+    PhaseRespiration.exhale: 'expire.mp3',
   };
 
-  /// Joue l'audio de guidage de la phase (si l'asset existe).
+  /// Joue l'audio de guidage de la phase dans la langue courante
+  /// (repli sur 'fr' si le fichier de la langue n'existe pas).
   Future<void> playPhase(PhaseRespiration phase) async {
-    final asset = _assets[phase];
-    if (asset == null) return;
+    final fichier = _fichiers[phase];
+    if (fichier == null) return;
+    await _jouerAvecRepli(
+      '$_dossier/$langue/$fichier',
+      '$_dossier/$_langueRepli/$fichier',
+    );
+  }
+
+  Future<void> _jouerAvecRepli(String asset, String repli) async {
+    if (await _essayer(asset)) return;
+    if (asset != repli) await _essayer(repli);
+  }
+
+  Future<bool> _essayer(String asset) async {
     try {
       // just_audio_background impose une etiquette MediaItem sur chaque
       // source ; sans elle, setAudioSource leve une exception.
@@ -30,8 +53,10 @@ class ControleurAudioRespiration {
         ),
       );
       await _player.play();
+      return true;
     } on Object catch (_) {
-      // Fallback gracieux : asset absent -> silence.
+      // Asset absent (langue ou fichier manquant) -> echec silencieux.
+      return false;
     }
   }
 

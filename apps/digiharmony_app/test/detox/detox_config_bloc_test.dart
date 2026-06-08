@@ -16,10 +16,10 @@ void main() {
     HydratedBloc.storage = storage;
   });
 
-  test('defaults to sea + 15 min', () {
+  test('defaults to sea + 5 min', () {
     final bloc = DetoxConfigBloc();
     expect(bloc.state.ambianceId, IdAmbianceDetox.sea);
-    expect(bloc.state.durationMinutes, 15);
+    expect(bloc.state.durationMinutes, 5);
   });
 
   test('DetoxAmbianceSelectionnee updates ambiance', () async {
@@ -38,7 +38,7 @@ void main() {
   test('DetoxDureeSelectionnee ignores disallowed values', () async {
     final bloc = DetoxConfigBloc()..add(const DetoxDureeSelectionnee(7));
     await Future<void>.delayed(Duration.zero);
-    expect(bloc.state.durationMinutes, 15);
+    expect(bloc.state.durationMinutes, 5);
   });
 
   test('fromJson falls back to defaults on unknown values', () {
@@ -48,6 +48,6 @@ void main() {
       'durationMinutes': 99,
     });
     expect(restored!.ambianceId, IdAmbianceDetox.sea);
-    expect(restored.durationMinutes, 15);
+    expect(restored.durationMinutes, 5);
   });
 }

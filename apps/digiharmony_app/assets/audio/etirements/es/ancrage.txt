@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Siéntate cómodamente, <break time="500ms"/> apoya bien los pies y respira <emphasis level="reduced">despacio</emphasis>.</prosody>

@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Εντόπισε δύο μυρωδιές γύρω σου, <break time="500ms"/> ακόμη κι <emphasis level="reduced">ελαφριές</emphasis>.</prosody>

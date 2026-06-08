@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Седни удобно, <break time="500ms"/> потпри ги стапалата и земи бавен <emphasis level="reduced">здив</emphasis>.</prosody>

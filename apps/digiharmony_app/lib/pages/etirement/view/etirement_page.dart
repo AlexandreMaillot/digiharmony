@@ -31,6 +31,8 @@ class EtirementPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Lu ici (dans build) et non dans `create` : depend du contexte.
+    final langue = Localizations.localeOf(context).languageCode;
     return BlocProvider<EtirementBloc>(
       create: (context) => EtirementBloc(
         routine: RoutineEtirement.routineParDefaut,
@@ -38,7 +40,7 @@ class EtirementPage extends StatelessWidget {
           depot: context.read<DepotStatsBienEtre>(),
         ),
         gererAudio: GererAudioEtirementUseCase(
-          depot: DepotAudioEtirementImpl(),
+          depot: DepotAudioEtirementImpl(langue: langue),
         ),
         lireVoixOff: LirePreferenceVoixOffUseCase(
           voixOffBloc: context.read<VoixOffBloc>(),

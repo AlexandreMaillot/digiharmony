@@ -57,9 +57,12 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    - assets/audio/respiration/
-    - assets/audio/senses/
-    - assets/audio/etirements/
+    # Voix off par langue : un sous-dossier par code langue (fr garanti).
+    # Pour ajouter une langue : deposer les memes noms de fichiers dans
+    # assets/audio/<exo>/<langue>/ ET declarer ce dossier ici.
+    - assets/audio/respiration/fr/
+    - assets/audio/senses/fr/
+    - assets/audio/etirements/fr/
     - assets/audio/detox/
   fonts:
     - family: DMSans

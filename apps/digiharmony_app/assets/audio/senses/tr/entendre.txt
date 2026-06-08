@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Gözlerini kapat. <break time="600ms"/> Önce yakındaki sesleri, <break time="500ms"/> sonra uzaktakileri <emphasis level="reduced">dinle</emphasis>.</prosody>

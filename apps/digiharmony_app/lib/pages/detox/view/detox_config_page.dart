@@ -273,29 +273,14 @@ class _PuceDuree extends StatelessWidget {
               : AppColors.surface.withValues(alpha: 0.35),
           borderRadius: BorderRadius.circular(AppRadii.card),
         ),
-        child: Column(
-          children: [
-            Text(
-              l10n.detoxDurationMinutes(duration.minutes),
-              style: TextStyle(
-                color: selected
-                    ? AppColors.backgroundDeep
-                    : AppColors.text,
-                fontWeight: FontWeight.bold,
-              ),
+        child: Center(
+          child: Text(
+            l10n.detoxDurationMinutes(duration.minutes),
+            style: TextStyle(
+              color: selected ? AppColors.backgroundDeep : AppColors.text,
+              fontWeight: FontWeight.bold,
             ),
-            if (duration.isDefault)
-              Text(
-                l10n.detoxDurationDefaultBadge,
-                style: TextStyle(
-                  color: selected
-                      ? AppColors.backgroundDeep
-                      : AppColors.textMuted,
-                  fontSize: 9,
-                  letterSpacing: 1,
-                ),
-              ),
-          ],
+          ),
         ),
       ),
     );

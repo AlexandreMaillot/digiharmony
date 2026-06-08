@@ -7,6 +7,7 @@ import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_view.dart';
 import 'package:digiharmony_app/pages/bulles/view/bulles_page.dart';
 import 'package:digiharmony_app/pages/conseils/views/conseils_page.dart';
+import 'package:digiharmony_app/pages/detox/view/detox_config_page.dart';
 import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
 import 'package:digiharmony_app/pages/parametres/views/parametres_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_view.dart';
@@ -212,9 +213,9 @@ void main() {
       },
     );
 
-    // HN-6 : pilule « Take a break » → PlaceholderScreen.
+    // HN-6 : pilule « Take a break » → DetoxConfigPage (config de la pause).
     testWidgets(
-      'HN-6 : Take a break → PlaceholderScreen',
+      'HN-6 : Take a break → DetoxConfigPage',
       (tester) async {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
@@ -226,8 +227,11 @@ void main() {
           100,
         );
         await tester.tap(find.text('Take a break'));
-        await tester.pumpAndSettle();
-        expect(find.byType(PlaceholderScreen), findsOneWidget);
+        // DetoxConfigPage a des animations en boucle (card-float) : pas de
+        // pumpAndSettle ; pump + durée fixe suffit pour la transition.
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.byType(DetoxConfigPage), findsOneWidget);
         expectHaptique();
       },
     );

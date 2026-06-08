@@ -302,19 +302,19 @@
     "conseilEmotionDynamicDo3": "Lance ce projet que tu remets à plus tard",
     "conseilEmotionDynamicDont1": "Ne gaspille pas cet élan dans le scroll sans fin",
     "conseilEmotionDynamicDont2": "Ne laisse pas les notifications briser ton élan",
-    "bubblesTitle": "Bubbles to soothe you",
+    "bubblesTitle": "Des bulles pour t'apaiser",
     "@bubblesTitle": {
         "description": "Bubbles hub title"
     },
-    "bubblesSubtitle": "Choose based on how you feel",
+    "bubblesSubtitle": "Choisis selon comment tu te sens",
     "@bubblesSubtitle": {
         "description": "Bubbles hub subtitle"
     },
-    "bubblesRespirationLabel": "Breathing",
+    "bubblesRespirationLabel": "Respiration",
     "@bubblesRespirationLabel": {
         "description": "Breathing bubble label"
     },
-    "bubblesRespirationHint": "when you're stressed or angry",
+    "bubblesRespirationHint": "quand tu es stressé ou en colère",
     "@bubblesRespirationHint": {
         "description": "Breathing bubble hint"
     },
@@ -322,11 +322,11 @@
     "@bubblesRespirationDuration": {
         "description": "Breathing bubble duration"
     },
-    "bubblesSensesLabel": "Senses",
+    "bubblesSensesLabel": "Les sens",
     "@bubblesSensesLabel": {
         "description": "Senses bubble label"
     },
-    "bubblesSensesHint": "when anxiety rises",
+    "bubblesSensesHint": "quand l'anxiété monte",
     "@bubblesSensesHint": {
         "description": "Senses bubble hint"
     },
@@ -334,11 +334,11 @@
     "@bubblesSensesDuration": {
         "description": "Senses bubble duration"
     },
-    "bubblesStretchLabel": "Stretching",
+    "bubblesStretchLabel": "Étirement",
     "@bubblesStretchLabel": {
         "description": "Stretch bubble label"
     },
-    "bubblesStretchHint": "when your body is tense",
+    "bubblesStretchHint": "quand ton corps est tendu",
     "@bubblesStretchHint": {
         "description": "Stretch bubble hint"
     },
@@ -346,43 +346,43 @@
     "@bubblesStretchDuration": {
         "description": "Stretch bubble duration"
     },
-    "bubblesDetoxLabel": "Detox",
+    "bubblesDetoxLabel": "Détox",
     "@bubblesDetoxLabel": {
         "description": "Detox bubble label"
     },
-    "bubblesDetoxHint": "when you really want to disconnect",
+    "bubblesDetoxHint": "quand tu veux vraiment décrocher",
     "@bubblesDetoxHint": {
         "description": "Detox bubble hint"
     },
-    "bubblesDetoxDuration": "you choose",
+    "bubblesDetoxDuration": "tu choisis",
     "@bubblesDetoxDuration": {
         "description": "Detox bubble duration"
     },
-    "bubblesOfflineHint": "Tap to begin — everything happens offline",
+    "bubblesOfflineHint": "Tap pour commencer — tout se passe hors ligne",
     "@bubblesOfflineHint": {
         "description": "Bubbles footer offline hint"
     },
-    "bubblesToolbarBack": "Back",
+    "bubblesToolbarBack": "Retour",
     "@bubblesToolbarBack": {
         "description": "Back button a11y label"
     },
-    "breathingTitle": "Breathing",
+    "breathingTitle": "Respiration",
     "@breathingTitle": {
         "description": "Breathing page title"
     },
-    "breathingPhaseInhale": "Breathe in…",
+    "breathingPhaseInhale": "Inspire…",
     "@breathingPhaseInhale": {
         "description": "Inhale phase label"
     },
-    "breathingPhaseHold": "Hold…",
+    "breathingPhaseHold": "Retiens…",
     "@breathingPhaseHold": {
         "description": "Hold phase label"
     },
-    "breathingPhaseExhale": "Breathe out…",
+    "breathingPhaseExhale": "Expire…",
     "@breathingPhaseExhale": {
         "description": "Exhale phase label"
     },
-    "breathingSecondsValue": "{count} seconds",
+    "breathingSecondsValue": "{count} secondes",
     "@breathingSecondsValue": {
         "description": "Duration label under the breathing bubble",
         "placeholders": {
@@ -391,7 +391,7 @@
             }
         }
     },
-    "breathingCycleProgress": "Cycle {current} of {total}",
+    "breathingCycleProgress": "Cycle {current} sur {total}",
     "@breathingCycleProgress": {
         "description": "Cycle progress indicator",
         "placeholders": {
@@ -403,67 +403,67 @@
             }
         }
     },
-    "breathingVoiceoverHint": "Voice guidance available — optional",
+    "breathingVoiceoverHint": "Voix off disponible — optionnel",
     "@breathingVoiceoverHint": {
         "description": "Voiceover hint"
     },
-    "breathingRestart": "Restart",
+    "breathingRestart": "Recommencer",
     "@breathingRestart": {
         "description": "Restart button"
     },
-    "breathingVoiceoverOnLabel": "Voice guidance on",
+    "breathingVoiceoverOnLabel": "Voix off activée",
     "@breathingVoiceoverOnLabel": {
         "description": "Voiceover on a11y"
     },
-    "breathingVoiceoverOffLabel": "Voice guidance off",
+    "breathingVoiceoverOffLabel": "Voix off coupée",
     "@breathingVoiceoverOffLabel": {
         "description": "Voiceover off a11y"
     },
-    "breathingPauseHint": "Tap the bubble to pause",
+    "breathingPauseHint": "Tape la bulle pour mettre en pause",
     "@breathingPauseHint": {
         "description": "Pause hint"
     },
-    "breathingResumeHint": "Paused — tap to resume",
+    "breathingResumeHint": "En pause — tape pour reprendre",
     "@breathingResumeHint": {
         "description": "Resume hint"
     },
-    "breathingCelebrationTitle": "Well done!",
+    "breathingCelebrationTitle": "Bravo !",
     "@breathingCelebrationTitle": {
         "description": "Celebration title"
     },
-    "breathingCelebrationBody": "You completed your breathing session.",
+    "breathingCelebrationBody": "Tu as terminé ta séance de respiration.",
     "@breathingCelebrationBody": {
         "description": "Celebration body"
     },
-    "breathingCelebrationDone": "Done",
+    "breathingCelebrationDone": "Terminé",
     "@breathingCelebrationDone": {
         "description": "Celebration done button"
     },
-    "breathingExitDialogTitle": "Leave the session?",
+    "breathingExitDialogTitle": "Quitter la séance ?",
     "@breathingExitDialogTitle": {
         "description": "Exit dialog title"
     },
-    "breathingExitDialogBody": "Your progress for this session won't be saved.",
+    "breathingExitDialogBody": "Ta progression de cette séance ne sera pas enregistrée.",
     "@breathingExitDialogBody": {
         "description": "Exit dialog body"
     },
-    "breathingExitDialogConfirm": "Leave",
+    "breathingExitDialogConfirm": "Quitter",
     "@breathingExitDialogConfirm": {
         "description": "Exit dialog confirm"
     },
-    "breathingExitDialogCancel": "Stay",
+    "breathingExitDialogCancel": "Rester",
     "@breathingExitDialogCancel": {
         "description": "Exit dialog cancel"
     },
-    "breathingToolbarBack": "Back",
+    "breathingToolbarBack": "Retour",
     "@breathingToolbarBack": {
         "description": "Back a11y"
     },
-    "sensesTitle": "The senses",
+    "sensesTitle": "Les sens",
     "@sensesTitle": {
         "description": "Senses page title"
     },
-    "sensesStepProgress": "Step {current} of {total}",
+    "sensesStepProgress": "Étape {current} sur {total}",
     "@sensesStepProgress": {
         "description": "Accessibility label for the 5-step indicator",
         "placeholders": {
@@ -484,43 +484,43 @@
             }
         }
     },
-    "sensesStepSeeLabel": "things you see",
+    "sensesStepSeeLabel": "que tu vois",
     "@sensesStepSeeLabel": {
         "description": "See step label"
     },
-    "sensesStepSeeInstruction": "Look around and name five things you can see.",
+    "sensesStepSeeInstruction": "Regarde autour de toi et nomme cinq choses que tu vois.",
     "@sensesStepSeeInstruction": {
         "description": "See step instruction"
     },
-    "sensesStepTouchLabel": "you can touch",
+    "sensesStepTouchLabel": "que tu peux toucher",
     "@sensesStepTouchLabel": {
         "description": "Touch step label"
     },
-    "sensesStepTouchInstruction": "Notice four things you can feel against your skin.",
+    "sensesStepTouchInstruction": "Remarque quatre choses que tu peux sentir contre ta peau.",
     "@sensesStepTouchInstruction": {
         "description": "Touch step instruction"
     },
-    "sensesStepHearLabel": "you hear",
+    "sensesStepHearLabel": "que tu entends",
     "@sensesStepHearLabel": {
         "description": "Hear step label"
     },
-    "sensesStepHearInstruction": "Close your eyes. Listen to nearby sounds, then distant ones.",
+    "sensesStepHearInstruction": "Ferme les yeux. Écoute les sons proches, puis les lointains.",
     "@sensesStepHearInstruction": {
         "description": "Hear step instruction"
     },
-    "sensesStepSmellLabel": "you can smell",
+    "sensesStepSmellLabel": "que tu sens",
     "@sensesStepSmellLabel": {
         "description": "Smell step label"
     },
-    "sensesStepSmellInstruction": "Identify two scents around you, even faint ones.",
+    "sensesStepSmellInstruction": "Identifie deux odeurs autour de toi, même légères.",
     "@sensesStepSmellInstruction": {
         "description": "Smell step instruction"
     },
-    "sensesStepTasteLabel": "you can taste",
+    "sensesStepTasteLabel": "que tu goûtes",
     "@sensesStepTasteLabel": {
         "description": "Taste step label"
     },
-    "sensesStepTasteInstruction": "Focus on one taste in your mouth right now.",
+    "sensesStepTasteInstruction": "Concentre-toi sur un goût présent dans ta bouche.",
     "@sensesStepTasteInstruction": {
         "description": "Taste step instruction"
     },
@@ -536,99 +536,99 @@
             }
         }
     },
-    "sensesAudioHint": "Audio guide — ~3 min — optional",
+    "sensesAudioHint": "Guide audio — ~3 min — optionnel",
     "@sensesAudioHint": {
         "description": "Audio hint"
     },
-    "sensesNext": "Next",
+    "sensesNext": "Suivant",
     "@sensesNext": {
         "description": "Next button"
     },
-    "sensesPrevious": "Previous",
+    "sensesPrevious": "Précédent",
     "@sensesPrevious": {
         "description": "Previous button"
     },
-    "sensesRestart": "Start over",
+    "sensesRestart": "Recommencer",
     "@sensesRestart": {
         "description": "Restart button"
     },
-    "sensesVoiceoverOnLabel": "Voice guidance on",
+    "sensesVoiceoverOnLabel": "Voix off activée",
     "@sensesVoiceoverOnLabel": {
         "description": "Voiceover on a11y"
     },
-    "sensesVoiceoverOffLabel": "Voice guidance off",
+    "sensesVoiceoverOffLabel": "Voix off coupée",
     "@sensesVoiceoverOffLabel": {
         "description": "Voiceover off a11y"
     },
-    "sensesCelebrationTitle": "Well grounded!",
+    "sensesCelebrationTitle": "Te voilà ancré·e !",
     "@sensesCelebrationTitle": {
         "description": "Celebration title"
     },
-    "sensesCelebrationBody": "You completed the 5-4-3-2-1 grounding exercise.",
+    "sensesCelebrationBody": "Tu as terminé l'ancrage 5-4-3-2-1.",
     "@sensesCelebrationBody": {
         "description": "Celebration body"
     },
-    "sensesCelebrationDone": "Done",
+    "sensesCelebrationDone": "Terminé",
     "@sensesCelebrationDone": {
         "description": "Celebration done button"
     },
-    "sensesExitDialogTitle": "Leave the session?",
+    "sensesExitDialogTitle": "Quitter la séance ?",
     "@sensesExitDialogTitle": {
         "description": "Exit dialog title"
     },
-    "sensesExitDialogBody": "Your progress for this session won't be saved.",
+    "sensesExitDialogBody": "Ta progression de cette séance ne sera pas enregistrée.",
     "@sensesExitDialogBody": {
         "description": "Exit dialog body"
     },
-    "sensesExitDialogConfirm": "Leave",
+    "sensesExitDialogConfirm": "Quitter",
     "@sensesExitDialogConfirm": {
         "description": "Exit dialog confirm"
     },
-    "sensesExitDialogCancel": "Stay",
+    "sensesExitDialogCancel": "Rester",
     "@sensesExitDialogCancel": {
         "description": "Exit dialog cancel"
     },
-    "sensesToolbarBack": "Back",
+    "sensesToolbarBack": "Retour",
     "@sensesToolbarBack": {
         "description": "Back a11y"
     },
-    "stretchTitle": "Stretch",
+    "stretchTitle": "Étirement",
     "@stretchTitle": {
         "description": "Stretch page title"
     },
-    "stretchPhonePrompt": "Put your phone down, follow the voice",
+    "stretchPhonePrompt": "Pose ton téléphone, suis la voix",
     "@stretchPhonePrompt": {
         "description": "Phone prompt"
     },
-    "stretchSegmentAnchorLabel": "Grounding",
+    "stretchSegmentAnchorLabel": "Ancrage",
     "@stretchSegmentAnchorLabel": {
         "description": "Anchor segment label"
     },
-    "stretchSegmentAnchorInstruction": "Sit comfortably, plant your feet, take a slow breath.",
+    "stretchSegmentAnchorInstruction": "Assieds-toi confortablement, ancre tes pieds, respire lentement.",
     "@stretchSegmentAnchorInstruction": {
         "description": "Anchor instruction"
     },
-    "stretchSegmentNeckShouldersLabel": "Neck & shoulders",
+    "stretchSegmentNeckShouldersLabel": "Cou & épaules",
     "@stretchSegmentNeckShouldersLabel": {
         "description": "Neck segment label"
     },
-    "stretchSegmentNeckShouldersInstruction": "Gently tilt your head toward your right shoulder. Hold for 5 seconds. Switch sides.",
+    "stretchSegmentNeckShouldersInstruction": "Incline doucement la tête vers l'épaule droite. Tiens 5 secondes. Change de côté.",
     "@stretchSegmentNeckShouldersInstruction": {
         "description": "Neck instruction"
     },
-    "stretchSegmentHandsLabel": "Hands",
+    "stretchSegmentHandsLabel": "Mains",
     "@stretchSegmentHandsLabel": {
         "description": "Hands segment label"
     },
-    "stretchSegmentHandsInstruction": "Open and close your hands slowly, then circle your wrists both ways.",
+    "stretchSegmentHandsInstruction": "Ouvre et ferme les mains doucement, puis fais tourner tes poignets dans les deux sens.",
     "@stretchSegmentHandsInstruction": {
         "description": "Hands instruction"
     },
-    "stretchSegmentRestEyesLabel": "Rest your eyes",
+    "stretchSegmentRestEyesLabel": "Reposer la vue",
     "@stretchSegmentRestEyesLabel": {
         "description": "Rest eyes segment label"
     },
-    "stretchSegmentRestEyesInstruction": "Look at something far away, then close your eyes and breathe.",
+    "stretchSegmentRestEyesInstruction": "Regarde au loin, puis ferme les yeux et respire.",
     "@stretchSegmentRestEyesInstruction": {
         "description": "Rest eyes instruction"
     },
@@ -644,7 +644,7 @@
             }
         }
     },
-    "stretchElapsed": "{time} elapsed",
+    "stretchElapsed": "{time} écoulé",
     "@stretchElapsed": {
         "description": "Global elapsed time",
         "placeholders": {
@@ -653,7 +653,7 @@
             }
         }
     },
-    "stretchRemaining": "{time} left",
+    "stretchRemaining": "{time} restant",
     "@stretchRemaining": {
         "description": "Global remaining time",
         "placeholders": {
@@ -662,123 +662,123 @@
             }
         }
     },
-    "stretchSegmentStatusDone": "Done",
+    "stretchSegmentStatusDone": "Terminé",
     "@stretchSegmentStatusDone": {
         "description": "Segment status done a11y"
     },
-    "stretchSegmentStatusActive": "In progress",
+    "stretchSegmentStatusActive": "En cours",
     "@stretchSegmentStatusActive": {
         "description": "Segment status active a11y"
     },
-    "stretchSegmentStatusUpcoming": "Upcoming",
+    "stretchSegmentStatusUpcoming": "À venir",
     "@stretchSegmentStatusUpcoming": {
         "description": "Segment status upcoming a11y"
     },
-    "stretchAudioHint": "Relaxing music + voice — optional",
+    "stretchAudioHint": "Musique relaxante + voix — optionnel",
     "@stretchAudioHint": {
         "description": "Audio hint"
     },
-    "stretchRestart": "Restart",
+    "stretchRestart": "Recommencer",
     "@stretchRestart": {
         "description": "Restart button"
     },
-    "stretchPauseHint": "Tap the guide to pause",
+    "stretchPauseHint": "Tape le guide pour mettre en pause",
     "@stretchPauseHint": {
         "description": "Pause hint"
     },
-    "stretchResumeHint": "Paused — tap to resume",
+    "stretchResumeHint": "En pause — tape pour reprendre",
     "@stretchResumeHint": {
         "description": "Resume hint"
     },
-    "stretchCelebrationTitle": "Well done!",
+    "stretchCelebrationTitle": "Bravo !",
     "@stretchCelebrationTitle": {
         "description": "Celebration title"
     },
-    "stretchCelebrationBody": "You completed your stretching routine.",
+    "stretchCelebrationBody": "Tu as terminé ta routine d'étirement.",
     "@stretchCelebrationBody": {
         "description": "Celebration body"
     },
-    "stretchCelebrationDone": "Done",
+    "stretchCelebrationDone": "Terminé",
     "@stretchCelebrationDone": {
         "description": "Celebration done button"
     },
-    "stretchExitDialogTitle": "Leave the session?",
+    "stretchExitDialogTitle": "Quitter la séance ?",
     "@stretchExitDialogTitle": {
         "description": "Exit dialog title"
     },
-    "stretchExitDialogBody": "Your progress for this session won't be saved.",
+    "stretchExitDialogBody": "Ta progression de cette séance ne sera pas enregistrée.",
     "@stretchExitDialogBody": {
         "description": "Exit dialog body"
     },
-    "stretchExitDialogConfirm": "Leave",
+    "stretchExitDialogConfirm": "Quitter",
     "@stretchExitDialogConfirm": {
         "description": "Exit dialog confirm"
     },
-    "stretchExitDialogCancel": "Stay",
+    "stretchExitDialogCancel": "Rester",
     "@stretchExitDialogCancel": {
         "description": "Exit dialog cancel"
     },
-    "stretchVoiceoverOnLabel": "Voice guidance on",
+    "stretchVoiceoverOnLabel": "Voix off activée",
     "@stretchVoiceoverOnLabel": {
         "description": "Voiceover on a11y"
     },
-    "stretchVoiceoverOffLabel": "Voice guidance off",
+    "stretchVoiceoverOffLabel": "Voix off coupée",
     "@stretchVoiceoverOffLabel": {
         "description": "Voiceover off a11y"
     },
-    "stretchToolbarBack": "Back",
+    "stretchToolbarBack": "Retour",
     "@stretchToolbarBack": {
         "description": "Back a11y"
     },
-    "detoxTitle": "Detox",
+    "detoxTitle": "Détox",
     "@detoxTitle": {
         "description": "Detox setup title"
     },
-    "detoxSetupHeading": "Prepare your break",
+    "detoxSetupHeading": "Prépare ta pause",
     "@detoxSetupHeading": {
         "description": "Setup heading"
     },
-    "detoxSetupSubtitle": "Choose an atmosphere and a duration",
+    "detoxSetupSubtitle": "Choisis une ambiance et une durée",
     "@detoxSetupSubtitle": {
         "description": "Setup subtitle"
     },
-    "detoxSectionAmbiance": "ATMOSPHERE",
+    "detoxSectionAmbiance": "AMBIANCE",
     "@detoxSectionAmbiance": {
         "description": "Atmosphere section label"
     },
-    "detoxSectionDuration": "DURATION",
+    "detoxSectionDuration": "DURÉE",
     "@detoxSectionDuration": {
         "description": "Duration section label"
     },
-    "detoxAmbianceWaterLabel": "Water",
+    "detoxAmbianceWaterLabel": "Eau",
     "@detoxAmbianceWaterLabel": {
         "description": "Water ambiance label"
     },
-    "detoxAmbianceWaterDesc": "Stream, gentle rain",
+    "detoxAmbianceWaterDesc": "Ruisseau, pluie douce",
     "@detoxAmbianceWaterDesc": {
         "description": "Water ambiance desc"
     },
-    "detoxAmbianceSeaLabel": "Sea",
+    "detoxAmbianceSeaLabel": "Mer",
     "@detoxAmbianceSeaLabel": {
         "description": "Sea ambiance label"
     },
-    "detoxAmbianceSeaDesc": "Waves, sea breeze",
+    "detoxAmbianceSeaDesc": "Vagues, brise marine",
     "@detoxAmbianceSeaDesc": {
         "description": "Sea ambiance desc"
     },
-    "detoxAmbianceWhiteNoiseLabel": "White noise",
+    "detoxAmbianceWhiteNoiseLabel": "Bruit blanc",
     "@detoxAmbianceWhiteNoiseLabel": {
         "description": "White noise label"
     },
-    "detoxAmbianceWhiteNoiseDesc": "Textured silence",
+    "detoxAmbianceWhiteNoiseDesc": "Silence texturé",
     "@detoxAmbianceWhiteNoiseDesc": {
         "description": "White noise desc"
     },
-    "detoxAmbianceForestLabel": "Forest",
+    "detoxAmbianceForestLabel": "Forêt",
     "@detoxAmbianceForestLabel": {
         "description": "Forest ambiance label"
     },
-    "detoxAmbianceForestDesc": "Birds, foliage",
+    "detoxAmbianceForestDesc": "Oiseaux, feuillage",
     "@detoxAmbianceForestDesc": {
         "description": "Forest ambiance desc"
     },
@@ -791,7 +791,7 @@
             }
         }
     },
-    "detoxDurationDefaultBadge": "DEFAULT",
+    "detoxDurationDefaultBadge": "DÉFAUT",
     "@detoxDurationDefaultBadge": {
         "description": "Default duration badge"
     },
@@ -807,15 +807,15 @@
             }
         }
     },
-    "detoxStart": "Start my break",
+    "detoxStart": "Commencer ma pause",
     "@detoxStart": {
         "description": "Start break button"
     },
-    "detoxToolbarBack": "Back",
+    "detoxToolbarBack": "Retour",
     "@detoxToolbarBack": {
         "description": "Back a11y"
     },
-    "detoxPlayerTitle": "Your break",
+    "detoxPlayerTitle": "Ta pause",
     "@detoxPlayerTitle": {
         "description": "Player title"
     },
@@ -828,15 +828,15 @@
             }
         }
     },
-    "detoxPlayerBloomTitle": "The more you let go, the more it blooms",
+    "detoxPlayerBloomTitle": "Plus tu lâches, plus ça s'épanouit",
     "@detoxPlayerBloomTitle": {
         "description": "Bloom title"
     },
-    "detoxPlayerBloomSubtitle": "You're on a break. Well done.",
+    "detoxPlayerBloomSubtitle": "Tu es en pleine pause. Bien joué.",
     "@detoxPlayerBloomSubtitle": {
         "description": "Bloom subtitle"
     },
-    "detoxPlayerTimeRemaining": "{time} remaining",
+    "detoxPlayerTimeRemaining": "{time} restantes",
     "@detoxPlayerTimeRemaining": {
         "description": "Remaining time",
         "placeholders": {
@@ -854,47 +854,47 @@
             }
         }
     },
-    "detoxPlayerAirplaneTip": "Don't touch your phone — airplane mode recommended",
+    "detoxPlayerAirplaneTip": "Ne touche pas ton téléphone — mode avion conseillé",
     "@detoxPlayerAirplaneTip": {
         "description": "Airplane tip"
     },
-    "detoxPlayerEnd": "End the break",
+    "detoxPlayerEnd": "Terminer la pause",
     "@detoxPlayerEnd": {
         "description": "End break button"
     },
-    "detoxPlayerEndConfirmTitle": "End the break?",
+    "detoxPlayerEndConfirmTitle": "Terminer la pause ?",
     "@detoxPlayerEndConfirmTitle": {
         "description": "End confirm title"
     },
-    "detoxPlayerEndConfirmBody": "Your break isn't over yet. It won't be counted.",
+    "detoxPlayerEndConfirmBody": "Ta pause n'est pas finie. Elle ne sera pas comptée.",
     "@detoxPlayerEndConfirmBody": {
         "description": "End confirm body"
     },
-    "detoxPlayerEndConfirmConfirm": "End",
+    "detoxPlayerEndConfirmConfirm": "Terminer",
     "@detoxPlayerEndConfirmConfirm": {
         "description": "End confirm"
     },
-    "detoxPlayerEndConfirmCancel": "Keep going",
+    "detoxPlayerEndConfirmCancel": "Continuer",
     "@detoxPlayerEndConfirmCancel": {
         "description": "End cancel"
     },
-    "detoxPlayerCelebrationTitle": "Break complete",
+    "detoxPlayerCelebrationTitle": "Pause terminée",
     "@detoxPlayerCelebrationTitle": {
         "description": "Celebration title"
     },
-    "detoxPlayerCelebrationBody": "You took a real break. Nicely done.",
+    "detoxPlayerCelebrationBody": "Tu as pris une vraie pause. Bravo.",
     "@detoxPlayerCelebrationBody": {
         "description": "Celebration body"
     },
-    "detoxPlayerCelebrationDone": "Done",
+    "detoxPlayerCelebrationDone": "Terminé",
     "@detoxPlayerCelebrationDone": {
         "description": "Celebration done"
     },
-    "detoxPlayerToolbarBack": "Back",
+    "detoxPlayerToolbarBack": "Retour",
     "@detoxPlayerToolbarBack": {
         "description": "Back a11y"
     },
-    "detoxPlayerMediaTitle": "Detox break",
+    "detoxPlayerMediaTitle": "Pause détox",
     "@detoxPlayerMediaTitle": {
         "description": "Lockscreen media title"
     },

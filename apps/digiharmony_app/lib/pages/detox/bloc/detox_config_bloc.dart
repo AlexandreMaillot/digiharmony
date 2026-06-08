@@ -5,7 +5,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 part 'detox_config_etat.dart';
 part 'detox_config_event.dart';
 
-/// Selection Detox persistee (ambiance + duree), defauts Mer + 15 min.
+/// Selection Detox persistee (ambiance + duree), defauts Mer + 5 min.
 ///
 /// Tolérance « flag léger » : la persistance reste dans HydratedBloc car
 /// il s'agit d'une preference simple (pas de repository de prefs ni de
