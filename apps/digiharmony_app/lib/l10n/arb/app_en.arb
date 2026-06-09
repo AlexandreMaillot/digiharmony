@@ -642,6 +642,10 @@
         "description": "Android step 5 body. TODO validation partenaires"
     },
     "parametresTitre": "Settings",
+    "parametresContactBouton": "Contact DigiHarmony",
+    "@parametresContactBouton": {
+        "description": "Label of the bottom button in Settings to contact DigiHarmony by email."
+    },
     "@parametresTitre": {
         "description": "ParametresPage — toolbar title"
     },
@@ -650,6 +654,18 @@
         "description": "ParametresPage — section heading for language picker"
     },
     "parametresSectionConfidentialite": "Privacy",
+    "parametresMentionsLegales": "Legal notice",
+    "@parametresMentionsLegales": {
+        "description": "Settings link label opening the hosted legal notice."
+    },
+    "parametresConditionsUtilisation": "Terms of use",
+    "@parametresConditionsUtilisation": {
+        "description": "Settings link label opening the hosted terms of use."
+    },
+    "parametresPolitiqueConfidentialite": "Privacy policy",
+    "@parametresPolitiqueConfidentialite": {
+        "description": "Settings link label opening the hosted privacy policy."
+    },
     "@parametresSectionConfidentialite": {
         "description": "ParametresPage — section heading for privacy card"
     },
