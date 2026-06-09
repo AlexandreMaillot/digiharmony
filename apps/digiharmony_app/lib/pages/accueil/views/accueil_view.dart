@@ -1,5 +1,4 @@
 import 'package:digiharmony_app/app/routing/app_router.dart';
-import 'package:digiharmony_app/common/placeholder_screen.dart';
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
@@ -97,10 +96,7 @@ class AccueilView extends StatelessWidget {
                             TuileOutil(
                               label: l10n.homeToolBubble,
                               icone: Icons.auto_awesome,
-                              onTap: () => ouvrirPlaceholder(
-                                context,
-                                l10n.placeholderBulle,
-                              ),
+                              onTap: () => AppRouter.versBulles(context),
                             ),
                             const SizedBox(width: AppSpacing.md),
                             TuileOutil(
@@ -120,8 +116,7 @@ class AccueilView extends StatelessWidget {
                     child: PiluleAction(
                       label: l10n.homePauseCta,
                       icone: Icons.eco,
-                      onTap: () =>
-                          ouvrirPlaceholder(context, l10n.placeholderPause),
+                      onTap: () => AppRouter.versDetox(context),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),

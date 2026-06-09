@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "marketplaces": [
+    {
+      "name": "aidd-framework",
+      "source": {
+        "kind": "github",
+        "repo": "ai-driven-dev/aidd-framework",
+        "ref": "v4.4.1"
+      },
+      "scope": "project",
+      "addedAt": "2026-06-05T08:32:51.725Z",
+      "lastFetched": "2026-06-05T08:32:55.137Z",
+      "version": "4.4.1"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Identifie deux odeurs autour de toi, <break time="500ms"/> même <emphasis level="reduced">légères</emphasis>.</prosody>

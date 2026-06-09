@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Наведни ја главата нежно кон десното рамо. <break time="600ms"/> Задржи пет секунди. <break time="600ms"/> Смени <emphasis level="reduced">страна</emphasis>.</prosody>

@@ -34,3 +34,12 @@ final class TempsEcranReessaye extends TempsEcranEvent {
   /// Crée l'événement de réessai.
   const TempsEcranReessaye();
 }
+
+/// Force la recréation du rapport iOS (PlatformView `DeviceActivityReport`).
+///
+/// Émis (différé) après un octroi d'autorisation : le rapport système est
+/// souvent vide à la création immédiate, une recréation le fait apparaître.
+final class TempsEcranRechargerRapport extends TempsEcranEvent {
+  /// Crée l'événement de rechargement du rapport.
+  const TempsEcranRechargerRapport();
+}

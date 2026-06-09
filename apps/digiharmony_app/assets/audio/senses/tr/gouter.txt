@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Şu an ağzındaki bir tada <emphasis level="reduced">odaklan</emphasis>.</prosody>

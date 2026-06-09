@@ -500,23 +500,33 @@
     "@tempsEcranDureeHeuresMinutes": {
         "description": "Duration format with hours and minutes.",
         "placeholders": {
-            "heures": { "type": "int" },
-            "minutes": { "type": "int" }
+            "heures": {
+                "type": "int"
+            },
+            "minutes": {
+                "type": "int"
+            }
         }
     },
     "tempsEcranDureeMinutes": "{minutes} min",
     "@tempsEcranDureeMinutes": {
         "description": "Duration format with minutes only.",
         "placeholders": {
-            "minutes": { "type": "int" }
+            "minutes": {
+                "type": "int"
+            }
         }
     },
     "tempsEcranAppSemantique": "{app}: {duree}",
     "@tempsEcranAppSemantique": {
         "description": "Accessibility label for an app row (name + duration).",
         "placeholders": {
-            "app": { "type": "String" },
-            "duree": { "type": "String" }
+            "app": {
+                "type": "String"
+            },
+            "duree": {
+                "type": "String"
+            }
         }
     },
     "tempsEcranIosAutorisationTitre": "To see your screen time",
@@ -552,61 +562,133 @@
         "description": "Footer reassurance: the app emits no notifications."
     },
     "tutoNotifsIosEtape1Titre": "Open Settings",
-    "@tutoNotifsIosEtape1Titre": { "description": "iOS step 1 title. TODO validation partenaires" },
+    "@tutoNotifsIosEtape1Titre": {
+        "description": "iOS step 1 title. TODO validation partenaires"
+    },
     "tutoNotifsIosEtape1Corps": "Find the gear icon on your home screen or in your app library.",
-    "@tutoNotifsIosEtape1Corps": { "description": "iOS step 1 body. TODO validation partenaires" },
+    "@tutoNotifsIosEtape1Corps": {
+        "description": "iOS step 1 body. TODO validation partenaires"
+    },
     "tutoNotifsIosEtape2Titre": "Tap \"Notifications\"",
-    "@tutoNotifsIosEtape2Titre": { "description": "iOS step 2 title. TODO validation partenaires" },
+    "@tutoNotifsIosEtape2Titre": {
+        "description": "iOS step 2 title. TODO validation partenaires"
+    },
     "tutoNotifsIosEtape2Corps": "Scroll down to the \"Notifications\" section and tap it.",
-    "@tutoNotifsIosEtape2Corps": { "description": "iOS step 2 body. TODO validation partenaires" },
+    "@tutoNotifsIosEtape2Corps": {
+        "description": "iOS step 2 body. TODO validation partenaires"
+    },
     "tutoNotifsIosEtape3Titre": "Pick a distracting app",
-    "@tutoNotifsIosEtape3Titre": { "description": "iOS step 3 title. TODO validation partenaires" },
+    "@tutoNotifsIosEtape3Titre": {
+        "description": "iOS step 3 title. TODO validation partenaires"
+    },
     "tutoNotifsIosEtape3Corps": "Choose an app that interrupts you often — social media, messaging, games.",
-    "@tutoNotifsIosEtape3Corps": { "description": "iOS step 3 body. TODO validation partenaires" },
+    "@tutoNotifsIosEtape3Corps": {
+        "description": "iOS step 3 body. TODO validation partenaires"
+    },
     "tutoNotifsIosEtape4Titre": "Turn off or group",
-    "@tutoNotifsIosEtape4Titre": { "description": "iOS step 4 title. TODO validation partenaires" },
+    "@tutoNotifsIosEtape4Titre": {
+        "description": "iOS step 4 title. TODO validation partenaires"
+    },
     "tutoNotifsIosEtape4Corps": "Turn notifications off, or enable \"Scheduled Summary\" to get them once a day.",
-    "@tutoNotifsIosEtape4Corps": { "description": "iOS step 4 body. TODO validation partenaires" },
+    "@tutoNotifsIosEtape4Corps": {
+        "description": "iOS step 4 body. TODO validation partenaires"
+    },
     "tutoNotifsIosEtape5Titre": "Repeat for each app",
-    "@tutoNotifsIosEtape5Titre": { "description": "iOS step 5 title. TODO validation partenaires" },
+    "@tutoNotifsIosEtape5Titre": {
+        "description": "iOS step 5 title. TODO validation partenaires"
+    },
     "tutoNotifsIosEtape5Corps": "Take 2–3 minutes to go through your apps one by one. Every bit of quiet counts.",
-    "@tutoNotifsIosEtape5Corps": { "description": "iOS step 5 body. TODO validation partenaires" },
+    "@tutoNotifsIosEtape5Corps": {
+        "description": "iOS step 5 body. TODO validation partenaires"
+    },
     "tutoNotifsAndroidEtape1Titre": "Open Settings",
-    "@tutoNotifsAndroidEtape1Titre": { "description": "Android step 1 title. TODO validation partenaires" },
+    "@tutoNotifsAndroidEtape1Titre": {
+        "description": "Android step 1 title. TODO validation partenaires"
+    },
     "tutoNotifsAndroidEtape1Corps": "Find the gear icon in your app drawer or by swiping down from the top of the screen.",
-    "@tutoNotifsAndroidEtape1Corps": { "description": "Android step 1 body. TODO validation partenaires" },
+    "@tutoNotifsAndroidEtape1Corps": {
+        "description": "Android step 1 body. TODO validation partenaires"
+    },
     "tutoNotifsAndroidEtape2Titre": "Go to Apps",
-    "@tutoNotifsAndroidEtape2Titre": { "description": "Android step 2 title. TODO validation partenaires" },
+    "@tutoNotifsAndroidEtape2Titre": {
+        "description": "Android step 2 title. TODO validation partenaires"
+    },
     "tutoNotifsAndroidEtape2Corps": "Look for \"Apps\", \"App management\" or \"Installed apps\" depending on your phone.",
-    "@tutoNotifsAndroidEtape2Corps": { "description": "Android step 2 body. TODO validation partenaires" },
+    "@tutoNotifsAndroidEtape2Corps": {
+        "description": "Android step 2 body. TODO validation partenaires"
+    },
     "tutoNotifsAndroidEtape3Titre": "Select an app",
-    "@tutoNotifsAndroidEtape3Titre": { "description": "Android step 3 title. TODO validation partenaires" },
+    "@tutoNotifsAndroidEtape3Titre": {
+        "description": "Android step 3 title. TODO validation partenaires"
+    },
     "tutoNotifsAndroidEtape3Corps": "Choose a distracting app and open its settings from the list.",
-    "@tutoNotifsAndroidEtape3Corps": { "description": "Android step 3 body. TODO validation partenaires" },
+    "@tutoNotifsAndroidEtape3Corps": {
+        "description": "Android step 3 body. TODO validation partenaires"
+    },
     "tutoNotifsAndroidEtape4Titre": "Notifications → Turn off",
-    "@tutoNotifsAndroidEtape4Titre": { "description": "Android step 4 title. TODO validation partenaires" },
+    "@tutoNotifsAndroidEtape4Titre": {
+        "description": "Android step 4 title. TODO validation partenaires"
+    },
     "tutoNotifsAndroidEtape4Corps": "Tap \"Notifications\" in the app's settings, then turn off the non-essential categories.",
-    "@tutoNotifsAndroidEtape4Corps": { "description": "Android step 4 body. TODO validation partenaires" },
+    "@tutoNotifsAndroidEtape4Corps": {
+        "description": "Android step 4 body. TODO validation partenaires"
+    },
     "tutoNotifsAndroidEtape5Titre": "Do Not Disturb mode",
-    "@tutoNotifsAndroidEtape5Titre": { "description": "Android step 5 title. TODO validation partenaires" },
+    "@tutoNotifsAndroidEtape5Titre": {
+        "description": "Android step 5 title. TODO validation partenaires"
+    },
     "tutoNotifsAndroidEtape5Corps": "Turn on \"Do Not Disturb\" from the quick settings to create calm, interruption-free windows.",
-    "@tutoNotifsAndroidEtape5Corps": { "description": "Android step 5 body. TODO validation partenaires" },
+    "@tutoNotifsAndroidEtape5Corps": {
+        "description": "Android step 5 body. TODO validation partenaires"
+    },
     "parametresTitre": "Settings",
-    "@parametresTitre": { "description": "ParametresPage — toolbar title" },
+    "parametresContactBouton": "Contact DigiHarmony",
+    "@parametresContactBouton": {
+        "description": "Label of the bottom button in Settings to contact DigiHarmony by email."
+    },
+    "@parametresTitre": {
+        "description": "ParametresPage — toolbar title"
+    },
     "parametresSectionLangue": "Language",
-    "@parametresSectionLangue": { "description": "ParametresPage — section heading for language picker" },
+    "@parametresSectionLangue": {
+        "description": "ParametresPage — section heading for language picker"
+    },
     "parametresSectionConfidentialite": "Privacy",
-    "@parametresSectionConfidentialite": { "description": "ParametresPage — section heading for privacy card" },
+    "parametresMentionsLegales": "Legal notice",
+    "@parametresMentionsLegales": {
+        "description": "Settings link label opening the hosted legal notice."
+    },
+    "parametresConditionsUtilisation": "Terms of use",
+    "@parametresConditionsUtilisation": {
+        "description": "Settings link label opening the hosted terms of use."
+    },
+    "parametresPolitiqueConfidentialite": "Privacy policy",
+    "@parametresPolitiqueConfidentialite": {
+        "description": "Settings link label opening the hosted privacy policy."
+    },
+    "@parametresSectionConfidentialite": {
+        "description": "ParametresPage — section heading for privacy card"
+    },
     "parametresConfidentialiteCorps": "No personal data is stored or shared. No account, no identification.",
-    "@parametresConfidentialiteCorps": { "description": "ParametresPage — privacy reassurance body text" },
+    "@parametresConfidentialiteCorps": {
+        "description": "ParametresPage — privacy reassurance body text"
+    },
     "parametresSectionProjet": "The project",
-    "@parametresSectionProjet": { "description": "ParametresPage — section heading for project info" },
+    "@parametresSectionProjet": {
+        "description": "ParametresPage — section heading for project info"
+    },
     "parametresOpenSourceTitre": "Open source code",
-    "@parametresOpenSourceTitre": { "description": "ParametresPage — open source link title" },
+    "@parametresOpenSourceTitre": {
+        "description": "ParametresPage — open source link title"
+    },
     "parametresOpenSourceSousTitre": "GitHub · GNU GPL license",
-    "@parametresOpenSourceSousTitre": { "description": "ParametresPage — open source link subtitle" },
+    "@parametresOpenSourceSousTitre": {
+        "description": "ParametresPage — open source link subtitle"
+    },
     "parametresErasmusCorps": "Erasmus+ project — free app, no ads.",
-    "@parametresErasmusCorps": { "description": "ParametresPage — Erasmus+ mention card body text" },
+    "@parametresErasmusCorps": {
+        "description": "ParametresPage — Erasmus+ mention card body text"
+    },
     "parametresVersion": "DIGIHARMONY v{version}",
     "@parametresVersion": {
         "description": "ParametresPage — app version line at bottom (wordmark non-translated)",
@@ -618,283 +700,1125 @@
         }
     },
     "parametresLienIndisponible": "Couldn't open the link. You can find it in your browser.",
-    "@parametresLienIndisponible": { "description": "ParametresPage — SnackBar message when url_launcher fails to open a link" },
+    "@parametresLienIndisponible": {
+        "description": "ParametresPage — SnackBar message when url_launcher fails to open a link"
+    },
     "parametresLangueActiveSemantique": "Active language",
-    "@parametresLangueActiveSemantique": { "description": "ParametresPage — accessibility label suffix for the active language item" },
-
+    "@parametresLangueActiveSemantique": {
+        "description": "ParametresPage — accessibility label suffix for the active language item"
+    },
     "conseilsTitre": "Tips",
-    "@conseilsTitre": { "description": "ConseilsPage — toolbar title" },
+    "@conseilsTitre": {
+        "description": "ConseilsPage — toolbar title"
+    },
     "conseilsRetourTooltip": "Back",
-    "@conseilsRetourTooltip": { "description": "ConseilsPage — back chevron tooltip" },
+    "@conseilsRetourTooltip": {
+        "description": "ConseilsPage — back chevron tooltip"
+    },
     "conseilsHintPrecedent": "previous",
-    "@conseilsHintPrecedent": { "description": "ConseilsPage — hint swipe previous label" },
+    "@conseilsHintPrecedent": {
+        "description": "ConseilsPage — hint swipe previous label"
+    },
     "conseilsHintSuivant": "next",
-    "@conseilsHintSuivant": { "description": "ConseilsPage — hint swipe next label" },
+    "@conseilsHintSuivant": {
+        "description": "ConseilsPage — hint swipe next label"
+    },
     "conseilsTagConseilPratique": "Practical tip",
-    "@conseilsTagConseilPratique": { "description": "ConseilsPage — tag label: practical tip" },
+    "@conseilsTagConseilPratique": {
+        "description": "ConseilsPage — tag label: practical tip"
+    },
     "conseilsTagEmotion": "Emotion",
-    "@conseilsTagEmotion": { "description": "ConseilsPage — tag label: emotion card" },
+    "@conseilsTagEmotion": {
+        "description": "ConseilsPage — tag label: emotion card"
+    },
     "conseilsTagRespiration": "Breathing",
-    "@conseilsTagRespiration": { "description": "ConseilsPage — tag label: breathing card" },
+    "@conseilsTagRespiration": {
+        "description": "ConseilsPage — tag label: breathing card"
+    },
     "conseilsTagEnergie": "Energy",
-    "@conseilsTagEnergie": { "description": "ConseilsPage — tag label: energy card" },
+    "@conseilsTagEnergie": {
+        "description": "ConseilsPage — tag label: energy card"
+    },
     "conseilsTagGratitude": "Gratitude",
-    "@conseilsTagGratitude": { "description": "ConseilsPage — tag label: gratitude card" },
+    "@conseilsTagGratitude": {
+        "description": "ConseilsPage — tag label: gratitude card"
+    },
     "conseilsTagGrandAir": "Fresh air",
-    "@conseilsTagGrandAir": { "description": "ConseilsPage — tag label: fresh air card" },
+    "@conseilsTagGrandAir": {
+        "description": "ConseilsPage — tag label: fresh air card"
+    },
     "conseilsTagDeconnexion": "Unplug",
-    "@conseilsTagDeconnexion": { "description": "ConseilsPage — tag label: unplug/disconnect card" },
+    "@conseilsTagDeconnexion": {
+        "description": "ConseilsPage — tag label: unplug/disconnect card"
+    },
     "conseilsTagLien": "Connection",
-    "@conseilsTagLien": { "description": "ConseilsPage — tag label: social connection card" },
+    "@conseilsTagLien": {
+        "description": "ConseilsPage — tag label: social connection card"
+    },
     "conseilsTagBienveillance": "Self-kindness",
-    "@conseilsTagBienveillance": { "description": "ConseilsPage — tag label: self-kindness card" },
+    "@conseilsTagBienveillance": {
+        "description": "ConseilsPage — tag label: self-kindness card"
+    },
     "conseilsTagPresence": "Presence",
-    "@conseilsTagPresence": { "description": "ConseilsPage — tag label: mindful presence card" },
+    "@conseilsTagPresence": {
+        "description": "ConseilsPage — tag label: mindful presence card"
+    },
     "conseilsTagEstimeDeSoi": "Self-worth",
-    "@conseilsTagEstimeDeSoi": { "description": "ConseilsPage — tag label: self-worth card" },
+    "@conseilsTagEstimeDeSoi": {
+        "description": "ConseilsPage — tag label: self-worth card"
+    },
     "conseilsTagRelations": "Relationships",
-    "@conseilsTagRelations": { "description": "ConseilsPage — tag label: relationships card" },
+    "@conseilsTagRelations": {
+        "description": "ConseilsPage — tag label: relationships card"
+    },
     "conseilsTagEspace": "Space",
-    "@conseilsTagEspace": { "description": "ConseilsPage — tag label: personal space card" },
+    "@conseilsTagEspace": {
+        "description": "ConseilsPage — tag label: personal space card"
+    },
     "conseilsEmotionHeadline": "When you feel {emotion}…",
     "@conseilsEmotionHeadline": {
         "description": "ConseilsPage — emotion card headline with ICU placeholder",
         "placeholders": {
-            "emotion": { "type": "String", "description": "Localised emotion label" }
+            "emotion": {
+                "type": "String",
+                "description": "Localised emotion label"
+            }
         }
     },
     "conseilsEmotionCta": "Try breathing",
-    "@conseilsEmotionCta": { "description": "ConseilsPage — emotion card CTA (stub)" },
+    "@conseilsEmotionCta": {
+        "description": "ConseilsPage — emotion card CTA (stub)"
+    },
     "conseilsEmotionRespirationBientot": "The breathing exercise is coming soon.",
-    "@conseilsEmotionRespirationBientot": { "description": "ConseilsPage — snackbar stub message for breathing CTA" },
+    "@conseilsEmotionRespirationBientot": {
+        "description": "ConseilsPage — snackbar stub message for breathing CTA"
+    },
     "conseilsCompteurSemantique": "Card {index} of {total}",
     "@conseilsCompteurSemantique": {
         "description": "ConseilsPage — a11y label for dots counter",
         "placeholders": {
-            "index": { "type": "int" },
-            "total": { "type": "int" }
+            "index": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
         }
     },
     "conseilsCarteSemantique": "Tip {index} of {total}",
     "@conseilsCarteSemantique": {
         "description": "ConseilsPage — a11y deck label",
         "placeholders": {
-            "index": { "type": "int" },
-            "total": { "type": "int" }
+            "index": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
         }
     },
-
     "tipDay01Do1": "Take a few deep breaths and notice how you feel",
-    "@tipDay01Do1": { "description": "ConseilsPage — tipDay01 Do 1 [PLACEHOLDER — to be validated by Erasmus+ partners, DEC-CO-10]" },
+    "@tipDay01Do1": {
+        "description": "ConseilsPage — tipDay01 Do 1 [PLACEHOLDER — to be validated by Erasmus+ partners, DEC-CO-10]"
+    },
     "tipDay01Do2": "Find a quiet spot and simply breathe for a minute",
-    "@tipDay01Do2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay01Do2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay01Do3": "Be gentle with yourself when you feel stressed",
-    "@tipDay01Do3": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay01Do3": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay01Dont1": "Don't push through without pausing to breathe",
-    "@tipDay01Dont1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay01Dont1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay01Dont2": "Don't dismiss how your body feels right now",
-    "@tipDay01Dont2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
-
+    "@tipDay01Dont2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay02Do1": "Drink a full glass of water when you feel low energy",
-    "@tipDay02Do1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay02Do1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay02Do2": "Stretch your arms and shoulders gently for two minutes",
-    "@tipDay02Do2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay02Do2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay02Do3": "Step away from your screen and move your body",
-    "@tipDay02Do3": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay02Do3": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay02Dont1": "Don't ignore signs of tiredness — your body is speaking",
-    "@tipDay02Dont1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay02Dont1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay02Dont2": "Don't stay still for hours without a small break",
-    "@tipDay02Dont2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
-
+    "@tipDay02Dont2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay03Do1": "Write down one small thing that went well today",
-    "@tipDay03Do1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay03Do1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay03Do2": "Notice something you appreciated, however small",
-    "@tipDay03Do2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay03Do2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay03Do3": "Share your gratitude with someone you care about",
-    "@tipDay03Do3": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay03Do3": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay03Dont1": "Don't force positivity — just notice what felt okay",
-    "@tipDay03Dont1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay03Dont1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay03Dont2": "Don't compare your day to what others share online",
-    "@tipDay03Dont2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
-
+    "@tipDay03Dont2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay04Do1": "Step outside, even for just five minutes",
-    "@tipDay04Do1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay04Do1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay04Do2": "Look up at the sky and take a slow, deep breath",
-    "@tipDay04Do2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay04Do2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay04Do3": "Leave your phone behind and enjoy the fresh air",
-    "@tipDay04Do3": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay04Do3": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay04Dont1": "Don't scroll while you're outside — let yourself be present",
-    "@tipDay04Dont1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay04Dont1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay04Dont2": "Don't rush — a short walk counts just as much",
-    "@tipDay04Dont2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
-
+    "@tipDay04Dont2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay05Do1": "Put your phone in another room for a little while",
-    "@tipDay05Do1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay05Do1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay05Do2": "Notice how it feels to have a moment of quiet",
-    "@tipDay05Do2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay05Do2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay05Do3": "Use the silence to think, draw, or just rest",
-    "@tipDay05Do3": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay05Do3": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay05Dont1": "Don't fill every quiet moment with a screen",
-    "@tipDay05Dont1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay05Dont1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay05Dont2": "Don't feel the need to always be reachable",
-    "@tipDay05Dont2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
-
+    "@tipDay05Dont2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay06Do1": "Smile at a friend, classmate, or someone you meet today",
-    "@tipDay06Do1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay06Do1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay06Do2": "Say something kind — a small word can change someone's day",
-    "@tipDay06Do2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay06Do2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay06Do3": "Let yourself feel the warmth of a genuine connection",
-    "@tipDay06Do3": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay06Do3": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay06Dont1": "Don't replace real smiles with emoji-only conversations",
-    "@tipDay06Dont1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay06Dont1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay06Dont2": "Don't underestimate how much a kind gesture matters",
-    "@tipDay06Dont2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
-
+    "@tipDay06Dont2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay07Do1": "Speak to yourself the way you'd speak to a good friend",
-    "@tipDay07Do1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay07Do1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay07Do2": "Acknowledge your efforts, even when things are hard",
-    "@tipDay07Do2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay07Do2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay07Do3": "Give yourself permission to have an imperfect day",
-    "@tipDay07Do3": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay07Do3": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay07Dont1": "Don't be harder on yourself than you'd be on others",
-    "@tipDay07Dont1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@tipDay07Dont1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "tipDay07Dont2": "Don't wait to feel perfect before being kind to yourself",
-    "@tipDay07Dont2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
-
+    "@tipDay07Dont2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "conseilRappelPresentCitation1": "Scroll later,",
-    "@conseilRappelPresentCitation1": { "description": "ConseilsPage — conseilRappelPresent line 1 [PLACEHOLDER]" },
+    "@conseilRappelPresentCitation1": {
+        "description": "ConseilsPage — conseilRappelPresent line 1 [PLACEHOLDER]"
+    },
     "conseilRappelPresentCitation2": "live now.",
-    "@conseilRappelPresentCitation2": { "description": "ConseilsPage — conseilRappelPresent line 2 [PLACEHOLDER]" },
+    "@conseilRappelPresentCitation2": {
+        "description": "ConseilsPage — conseilRappelPresent line 2 [PLACEHOLDER]"
+    },
     "conseilRappelPresentSousTexte": "The present moment won't come back. The feed will always be there.",
-    "@conseilRappelPresentSousTexte": { "description": "ConseilsPage — conseilRappelPresent sub-text [PLACEHOLDER]" },
+    "@conseilRappelPresentSousTexte": {
+        "description": "ConseilsPage — conseilRappelPresent sub-text [PLACEHOLDER]"
+    },
     "conseilRappelPresentDo1": "Put your phone down and notice what's around you",
-    "@conseilRappelPresentDo1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@conseilRappelPresentDo1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "conseilRappelPresentDo2": "Engage fully in the conversation or activity in front of you",
-    "@conseilRappelPresentDo2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@conseilRappelPresentDo2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "conseilRappelPresentDo3": "Let yourself enjoy the moment without documenting it",
-    "@conseilRappelPresentDo3": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@conseilRappelPresentDo3": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "conseilRappelPresentDont1": "Don't check your feed during moments that matter",
-    "@conseilRappelPresentDont1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@conseilRappelPresentDont1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "conseilRappelPresentDont2": "Don't let the scroll replace living the moment",
-    "@conseilRappelPresentDont2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
-
+    "@conseilRappelPresentDont2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "conseilRappelLikesCitation1": "You are not",
-    "@conseilRappelLikesCitation1": { "description": "ConseilsPage — conseilRappelLikes line 1 [PLACEHOLDER]" },
+    "@conseilRappelLikesCitation1": {
+        "description": "ConseilsPage — conseilRappelLikes line 1 [PLACEHOLDER]"
+    },
     "conseilRappelLikesCitation2": "your like count.",
-    "@conseilRappelLikesCitation2": { "description": "ConseilsPage — conseilRappelLikes line 2 [PLACEHOLDER]" },
+    "@conseilRappelLikesCitation2": {
+        "description": "ConseilsPage — conseilRappelLikes line 2 [PLACEHOLDER]"
+    },
     "conseilRappelLikesSousTexte": "Your worth has nothing to do with numbers online.",
-    "@conseilRappelLikesSousTexte": { "description": "ConseilsPage — conseilRappelLikes sub-text [PLACEHOLDER]" },
+    "@conseilRappelLikesSousTexte": {
+        "description": "ConseilsPage — conseilRappelLikes sub-text [PLACEHOLDER]"
+    },
     "conseilRappelLikesDo1": "Remind yourself that likes measure reach, not your value",
-    "@conseilRappelLikesDo1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@conseilRappelLikesDo1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "conseilRappelLikesDo2": "Share what feels true to you, not what gets the most likes",
-    "@conseilRappelLikesDo2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@conseilRappelLikesDo2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "conseilRappelLikesDo3": "Celebrate your real-life moments away from the screen",
-    "@conseilRappelLikesDo3": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@conseilRappelLikesDo3": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "conseilRappelLikesDont1": "Don't measure your worth by how many likes you get",
-    "@conseilRappelLikesDont1": { "description": "[PLACEHOLDER — DEC-CO-10]" },
+    "@conseilRappelLikesDont1": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "conseilRappelLikesDont2": "Don't post just to get validation — your voice matters as it is",
-    "@conseilRappelLikesDont2": { "description": "[PLACEHOLDER — DEC-CO-10]" },
-
+    "@conseilRappelLikesDont2": {
+        "description": "[PLACEHOLDER — DEC-CO-10]"
+    },
     "conseilPratiqueInteractionsHeadline": "Manage your interactions",
-    "@conseilPratiqueInteractionsHeadline": { "description": "ConseilsPage — conseilPratiqueInteractions headline [PLACEHOLDER]" },
+    "@conseilPratiqueInteractionsHeadline": {
+        "description": "ConseilsPage — conseilPratiqueInteractions headline [PLACEHOLDER]"
+    },
     "conseilPratiqueInteractionsDo1": "Set a time limit for social apps",
-    "@conseilPratiqueInteractionsDo1": { "description": "[PLACEHOLDER]" },
+    "@conseilPratiqueInteractionsDo1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilPratiqueInteractionsDo2": "Reply when you feel ready, not right away",
-    "@conseilPratiqueInteractionsDo2": { "description": "[PLACEHOLDER]" },
+    "@conseilPratiqueInteractionsDo2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilPratiqueInteractionsDo3": "Turn off non-essential notifications",
-    "@conseilPratiqueInteractionsDo3": { "description": "[PLACEHOLDER]" },
+    "@conseilPratiqueInteractionsDo3": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilPratiqueInteractionsDont1": "Don't check your phone right after waking up",
-    "@conseilPratiqueInteractionsDont1": { "description": "[PLACEHOLDER]" },
+    "@conseilPratiqueInteractionsDont1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilPratiqueInteractionsDont2": "Don't scroll while talking to someone",
-    "@conseilPratiqueInteractionsDont2": { "description": "[PLACEHOLDER]" },
-
+    "@conseilPratiqueInteractionsDont2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilPratiqueEspaceHeadline": "Create breathing room",
-    "@conseilPratiqueEspaceHeadline": { "description": "ConseilsPage — conseilPratiqueEspace headline [PLACEHOLDER]" },
+    "@conseilPratiqueEspaceHeadline": {
+        "description": "ConseilsPage — conseilPratiqueEspace headline [PLACEHOLDER]"
+    },
     "conseilPratiqueEspaceDo1": "Leave your phone in another room during meals",
-    "@conseilPratiqueEspaceDo1": { "description": "[PLACEHOLDER]" },
+    "@conseilPratiqueEspaceDo1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilPratiqueEspaceDo2": "Read a book or journal for 10 minutes before bed",
-    "@conseilPratiqueEspaceDo2": { "description": "[PLACEHOLDER]" },
+    "@conseilPratiqueEspaceDo2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilPratiqueEspaceDo3": "Take a screen-free walk outside",
-    "@conseilPratiqueEspaceDo3": { "description": "[PLACEHOLDER]" },
+    "@conseilPratiqueEspaceDo3": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilPratiqueEspaceDont1": "Don't use your phone as an alarm clock",
-    "@conseilPratiqueEspaceDont1": { "description": "[PLACEHOLDER]" },
+    "@conseilPratiqueEspaceDont1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilPratiqueEspaceDont2": "Don't scroll in bed before sleeping",
-    "@conseilPratiqueEspaceDont2": { "description": "[PLACEHOLDER]" },
-
+    "@conseilPratiqueEspaceDont2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionAngryDo1": "Take a break before responding",
-    "@conseilEmotionAngryDo1": { "description": "ConseilsPage — angry emotion Do 1 [PLACEHOLDER]" },
+    "@conseilEmotionAngryDo1": {
+        "description": "ConseilsPage — angry emotion Do 1 [PLACEHOLDER]"
+    },
     "conseilEmotionAngryDo2": "Write down what you feel without sending it",
-    "@conseilEmotionAngryDo2": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionAngryDo2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionAngryDo3": "Step away from the screen for a few minutes",
-    "@conseilEmotionAngryDo3": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionAngryDo3": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionAngryDont1": "Don't reply when you feel overwhelmed",
-    "@conseilEmotionAngryDont1": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionAngryDont1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionAngryDont2": "Don't post something you might regret",
-    "@conseilEmotionAngryDont2": { "description": "[PLACEHOLDER]" },
-
+    "@conseilEmotionAngryDont2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionSadDo1": "Reach out to someone you trust",
-    "@conseilEmotionSadDo1": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionSadDo1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionSadDo2": "Listen to music that matches how you feel",
-    "@conseilEmotionSadDo2": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionSadDo2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionSadDo3": "Allow yourself to rest without guilt",
-    "@conseilEmotionSadDo3": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionSadDo3": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionSadDont1": "Don't compare your life to what you see online",
-    "@conseilEmotionSadDont1": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionSadDont1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionSadDont2": "Don't stay alone with heavy feelings for too long",
-    "@conseilEmotionSadDont2": { "description": "[PLACEHOLDER]" },
-
+    "@conseilEmotionSadDont2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionNervousDo1": "Take three slow, deep breaths",
-    "@conseilEmotionNervousDo1": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionNervousDo1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionNervousDo2": "Focus on one thing at a time",
-    "@conseilEmotionNervousDo2": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionNervousDo2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionNervousDo3": "Put the phone down and go for a short walk",
-    "@conseilEmotionNervousDo3": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionNervousDo3": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionNervousDont1": "Don't scroll endlessly when you feel anxious",
-    "@conseilEmotionNervousDont1": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionNervousDont1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionNervousDont2": "Don't compare your anxiety to others' highlight reels",
-    "@conseilEmotionNervousDont2": { "description": "[PLACEHOLDER]" },
-
+    "@conseilEmotionNervousDont2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionTiredDo1": "Give yourself permission to rest",
-    "@conseilEmotionTiredDo1": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionTiredDo1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionTiredDo2": "Put your phone away an hour before bed",
-    "@conseilEmotionTiredDo2": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionTiredDo2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionTiredDo3": "Drink water and stretch gently",
-    "@conseilEmotionTiredDo3": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionTiredDo3": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionTiredDont1": "Don't push through exhaustion with more scrolling",
-    "@conseilEmotionTiredDont1": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionTiredDont1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionTiredDont2": "Don't feel guilty for taking a break",
-    "@conseilEmotionTiredDont2": { "description": "[PLACEHOLDER]" },
-
+    "@conseilEmotionTiredDont2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionHappyDo1": "Share your joy with someone you care about",
-    "@conseilEmotionHappyDo1": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionHappyDo1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionHappyDo2": "Note one thing that made you smile today",
-    "@conseilEmotionHappyDo2": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionHappyDo2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionHappyDo3": "Use this energy to do something creative",
-    "@conseilEmotionHappyDo3": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionHappyDo3": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionHappyDont1": "Don't lose this moment chasing more likes",
-    "@conseilEmotionHappyDont1": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionHappyDont1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionHappyDont2": "Don't let social media steal your good mood",
-    "@conseilEmotionHappyDont2": { "description": "[PLACEHOLDER]" },
-
+    "@conseilEmotionHappyDont2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionCalmDo1": "Enjoy this peaceful moment — you deserve it",
-    "@conseilEmotionCalmDo1": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionCalmDo1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionCalmDo2": "Use this stillness to be present",
-    "@conseilEmotionCalmDo2": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionCalmDo2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionCalmDo3": "Take a mindful breath and appreciate the quiet",
-    "@conseilEmotionCalmDo3": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionCalmDo3": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionCalmDont1": "Don't rush to fill the silence with screens",
-    "@conseilEmotionCalmDont1": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionCalmDont1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionCalmDont2": "Don't scroll out of habit when you feel at peace",
-    "@conseilEmotionCalmDont2": { "description": "[PLACEHOLDER]" },
-
+    "@conseilEmotionCalmDont2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionDynamicDo1": "Channel this energy into something meaningful",
-    "@conseilEmotionDynamicDo1": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionDynamicDo1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionDynamicDo2": "Move your body — go for a walk or dance",
-    "@conseilEmotionDynamicDo2": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionDynamicDo2": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionDynamicDo3": "Start that project you've been putting off",
-    "@conseilEmotionDynamicDo3": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionDynamicDo3": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionDynamicDont1": "Don't waste this momentum on mindless scrolling",
-    "@conseilEmotionDynamicDont1": { "description": "[PLACEHOLDER]" },
+    "@conseilEmotionDynamicDont1": {
+        "description": "[PLACEHOLDER]"
+    },
     "conseilEmotionDynamicDont2": "Don't let notifications derail your flow",
-    "@conseilEmotionDynamicDont2": { "description": "[PLACEHOLDER]" }
+    "@conseilEmotionDynamicDont2": {
+        "description": "[PLACEHOLDER]"
+    },
+    "bubblesTitle": "Bubbles to soothe you",
+    "@bubblesTitle": {
+        "description": "Bubbles hub title"
+    },
+    "bubblesSubtitle": "Choose based on how you feel",
+    "@bubblesSubtitle": {
+        "description": "Bubbles hub subtitle"
+    },
+    "bubblesRespirationLabel": "Breathing",
+    "@bubblesRespirationLabel": {
+        "description": "Breathing bubble label"
+    },
+    "bubblesRespirationHint": "when you're stressed or angry",
+    "@bubblesRespirationHint": {
+        "description": "Breathing bubble hint"
+    },
+    "bubblesRespirationDuration": "1–2 min",
+    "@bubblesRespirationDuration": {
+        "description": "Breathing bubble duration"
+    },
+    "bubblesSensesLabel": "Senses",
+    "@bubblesSensesLabel": {
+        "description": "Senses bubble label"
+    },
+    "bubblesSensesHint": "when anxiety rises",
+    "@bubblesSensesHint": {
+        "description": "Senses bubble hint"
+    },
+    "bubblesSensesDuration": "~3 min",
+    "@bubblesSensesDuration": {
+        "description": "Senses bubble duration"
+    },
+    "bubblesStretchLabel": "Stretching",
+    "@bubblesStretchLabel": {
+        "description": "Stretch bubble label"
+    },
+    "bubblesStretchHint": "when your body is tense",
+    "@bubblesStretchHint": {
+        "description": "Stretch bubble hint"
+    },
+    "bubblesStretchDuration": "1 min",
+    "@bubblesStretchDuration": {
+        "description": "Stretch bubble duration"
+    },
+    "bubblesDetoxLabel": "Detox",
+    "@bubblesDetoxLabel": {
+        "description": "Detox bubble label"
+    },
+    "bubblesDetoxHint": "when you really want to disconnect",
+    "@bubblesDetoxHint": {
+        "description": "Detox bubble hint"
+    },
+    "bubblesDetoxDuration": "you choose",
+    "@bubblesDetoxDuration": {
+        "description": "Detox bubble duration"
+    },
+    "bubblesOfflineHint": "Tap to begin — everything happens offline",
+    "@bubblesOfflineHint": {
+        "description": "Bubbles footer offline hint"
+    },
+    "bubblesToolbarBack": "Back",
+    "@bubblesToolbarBack": {
+        "description": "Back button a11y label"
+    },
+    "breathingTitle": "Breathing",
+    "breathingCountdownPrepare": "Get ready, the breathing exercise is about to begin.",
+    "@breathingCountdownPrepare": {
+        "description": "Pre-session 3-2-1 countdown intro line for the breathing exercise (text only)."
+    },
+    "@breathingTitle": {
+        "description": "Breathing page title"
+    },
+    "breathingPhaseInhale": "Breathe in…",
+    "@breathingPhaseInhale": {
+        "description": "Inhale phase label"
+    },
+    "breathingPhaseHold": "Hold…",
+    "@breathingPhaseHold": {
+        "description": "Hold phase label"
+    },
+    "breathingPhaseExhale": "Breathe out…",
+    "@breathingPhaseExhale": {
+        "description": "Exhale phase label"
+    },
+    "breathingSecondsValue": "{count} seconds",
+    "@breathingSecondsValue": {
+        "description": "Duration label under the breathing bubble",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "breathingCycleProgress": "Cycle {current} of {total}",
+    "@breathingCycleProgress": {
+        "description": "Cycle progress indicator",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "breathingVoiceoverHint": "Voice guidance available — optional",
+    "@breathingVoiceoverHint": {
+        "description": "Voiceover hint"
+    },
+    "breathingRestart": "Restart",
+    "@breathingRestart": {
+        "description": "Restart button"
+    },
+    "breathingVoiceoverOnLabel": "Voice guidance on",
+    "@breathingVoiceoverOnLabel": {
+        "description": "Voiceover on a11y"
+    },
+    "breathingVoiceoverOffLabel": "Voice guidance off",
+    "@breathingVoiceoverOffLabel": {
+        "description": "Voiceover off a11y"
+    },
+    "breathingPauseHint": "Tap the bubble to pause",
+    "@breathingPauseHint": {
+        "description": "Pause hint"
+    },
+    "breathingResumeHint": "Paused — tap to resume",
+    "@breathingResumeHint": {
+        "description": "Resume hint"
+    },
+    "breathingCelebrationTitle": "Well done!",
+    "@breathingCelebrationTitle": {
+        "description": "Celebration title"
+    },
+    "breathingCelebrationBody": "You completed your breathing session.",
+    "@breathingCelebrationBody": {
+        "description": "Celebration body"
+    },
+    "breathingCelebrationDone": "Done",
+    "@breathingCelebrationDone": {
+        "description": "Celebration done button"
+    },
+    "breathingExitDialogTitle": "Leave the session?",
+    "@breathingExitDialogTitle": {
+        "description": "Exit dialog title"
+    },
+    "breathingExitDialogBody": "Your progress for this session won't be saved.",
+    "@breathingExitDialogBody": {
+        "description": "Exit dialog body"
+    },
+    "breathingExitDialogConfirm": "Leave",
+    "@breathingExitDialogConfirm": {
+        "description": "Exit dialog confirm"
+    },
+    "breathingExitDialogCancel": "Stay",
+    "@breathingExitDialogCancel": {
+        "description": "Exit dialog cancel"
+    },
+    "breathingToolbarBack": "Back",
+    "@breathingToolbarBack": {
+        "description": "Back a11y"
+    },
+    "sensesTitle": "The senses",
+    "@sensesTitle": {
+        "description": "Senses page title"
+    },
+    "sensesStepProgress": "Step {current} of {total}",
+    "@sensesStepProgress": {
+        "description": "Accessibility label for the 5-step indicator",
+        "placeholders": {
+            "current": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "sensesCountValue": "{count}",
+    "@sensesCountValue": {
+        "description": "Large count digit",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "sensesStepSeeLabel": "things you see",
+    "@sensesStepSeeLabel": {
+        "description": "See step label"
+    },
+    "sensesStepSeeInstruction": "Look around and name five things you can see.",
+    "@sensesStepSeeInstruction": {
+        "description": "See step instruction"
+    },
+    "sensesStepTouchLabel": "you can touch",
+    "@sensesStepTouchLabel": {
+        "description": "Touch step label"
+    },
+    "sensesStepTouchInstruction": "Notice four things you can feel against your skin.",
+    "@sensesStepTouchInstruction": {
+        "description": "Touch step instruction"
+    },
+    "sensesStepHearLabel": "you hear",
+    "@sensesStepHearLabel": {
+        "description": "Hear step label"
+    },
+    "sensesStepHearInstruction": "Close your eyes. Listen to nearby sounds, then distant ones.",
+    "@sensesStepHearInstruction": {
+        "description": "Hear step instruction"
+    },
+    "sensesStepSmellLabel": "you can smell",
+    "@sensesStepSmellLabel": {
+        "description": "Smell step label"
+    },
+    "sensesStepSmellInstruction": "Identify two scents around you, even faint ones.",
+    "@sensesStepSmellInstruction": {
+        "description": "Smell step instruction"
+    },
+    "sensesStepTasteLabel": "you can taste",
+    "@sensesStepTasteLabel": {
+        "description": "Taste step label"
+    },
+    "sensesStepTasteInstruction": "Focus on one taste in your mouth right now.",
+    "@sensesStepTasteInstruction": {
+        "description": "Taste step instruction"
+    },
+    "sensesRecapDone": "{count} {label}",
+    "@sensesRecapDone": {
+        "description": "Recap chip for an already completed step",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            },
+            "label": {
+                "type": "String"
+            }
+        }
+    },
+    "sensesAudioHint": "Audio guide — ~3 min — optional",
+    "@sensesAudioHint": {
+        "description": "Audio hint"
+    },
+    "sensesNext": "Next",
+    "sensesCountdownPrepare": "Get ready, the senses exercise is about to begin.",
+    "@sensesCountdownPrepare": {
+        "description": "Pre-session 3-2-1 countdown intro line for the senses exercise (text only)."
+    },
+    "@sensesNext": {
+        "description": "Next button"
+    },
+    "sensesPrevious": "Previous",
+    "@sensesPrevious": {
+        "description": "Previous button"
+    },
+    "sensesRestart": "Start over",
+    "@sensesRestart": {
+        "description": "Restart button"
+    },
+    "sensesVoiceoverOnLabel": "Voice guidance on",
+    "@sensesVoiceoverOnLabel": {
+        "description": "Voiceover on a11y"
+    },
+    "sensesVoiceoverOffLabel": "Voice guidance off",
+    "@sensesVoiceoverOffLabel": {
+        "description": "Voiceover off a11y"
+    },
+    "sensesCelebrationTitle": "Well grounded!",
+    "@sensesCelebrationTitle": {
+        "description": "Celebration title"
+    },
+    "sensesCelebrationBody": "You completed the 5-4-3-2-1 grounding exercise.",
+    "@sensesCelebrationBody": {
+        "description": "Celebration body"
+    },
+    "sensesCelebrationDone": "Done",
+    "@sensesCelebrationDone": {
+        "description": "Celebration done button"
+    },
+    "sensesExitDialogTitle": "Leave the session?",
+    "@sensesExitDialogTitle": {
+        "description": "Exit dialog title"
+    },
+    "sensesExitDialogBody": "Your progress for this session won't be saved.",
+    "@sensesExitDialogBody": {
+        "description": "Exit dialog body"
+    },
+    "sensesExitDialogConfirm": "Leave",
+    "@sensesExitDialogConfirm": {
+        "description": "Exit dialog confirm"
+    },
+    "sensesExitDialogCancel": "Stay",
+    "@sensesExitDialogCancel": {
+        "description": "Exit dialog cancel"
+    },
+    "sensesToolbarBack": "Back",
+    "@sensesToolbarBack": {
+        "description": "Back a11y"
+    },
+    "stretchTitle": "Stretch",
+    "stretchCountdownPrepare": "Get ready, the stretch session is about to begin.",
+    "@stretchCountdownPrepare": {
+        "description": "Pre-session 3-2-1 countdown intro line (text only, no audio)."
+    },
+    "@stretchTitle": {
+        "description": "Stretch page title"
+    },
+    "stretchPhonePrompt": "Put your phone down, follow the voice",
+    "@stretchPhonePrompt": {
+        "description": "Phone prompt"
+    },
+    "stretchSegmentAnchorLabel": "Grounding",
+    "@stretchSegmentAnchorLabel": {
+        "description": "Anchor segment label"
+    },
+    "stretchSegmentAnchorInstruction": "Sit comfortably, plant your feet, take a slow breath.",
+    "@stretchSegmentAnchorInstruction": {
+        "description": "Anchor instruction"
+    },
+    "stretchSegmentNeckShouldersLabel": "Neck & shoulders",
+    "@stretchSegmentNeckShouldersLabel": {
+        "description": "Neck segment label"
+    },
+    "stretchSegmentNeckShouldersInstruction": "Gently tilt your head toward your right shoulder. Hold for 5 seconds. Switch sides.",
+    "@stretchSegmentNeckShouldersInstruction": {
+        "description": "Neck instruction"
+    },
+    "stretchSegmentHandsLabel": "Hands",
+    "@stretchSegmentHandsLabel": {
+        "description": "Hands segment label"
+    },
+    "stretchSegmentHandsInstruction": "Open and close your hands slowly, then circle your wrists both ways.",
+    "@stretchSegmentHandsInstruction": {
+        "description": "Hands instruction"
+    },
+    "stretchSegmentRestEyesLabel": "Rest your eyes",
+    "@stretchSegmentRestEyesLabel": {
+        "description": "Rest eyes segment label"
+    },
+    "stretchSegmentRestEyesInstruction": "Look at something far away, then close your eyes and breathe.",
+    "@stretchSegmentRestEyesInstruction": {
+        "description": "Rest eyes instruction"
+    },
+    "stretchTimeRange": "{start} – {end}",
+    "@stretchTimeRange": {
+        "description": "Segment time range",
+        "placeholders": {
+            "start": {
+                "type": "String"
+            },
+            "end": {
+                "type": "String"
+            }
+        }
+    },
+    "stretchElapsed": "{time} elapsed",
+    "@stretchElapsed": {
+        "description": "Global elapsed time",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "stretchRemaining": "{time} left",
+    "@stretchRemaining": {
+        "description": "Global remaining time",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "stretchSegmentStatusDone": "Done",
+    "@stretchSegmentStatusDone": {
+        "description": "Segment status done a11y"
+    },
+    "stretchSegmentStatusActive": "In progress",
+    "@stretchSegmentStatusActive": {
+        "description": "Segment status active a11y"
+    },
+    "stretchSegmentStatusUpcoming": "Upcoming",
+    "@stretchSegmentStatusUpcoming": {
+        "description": "Segment status upcoming a11y"
+    },
+    "stretchAudioHint": "Relaxing music + voice — optional",
+    "@stretchAudioHint": {
+        "description": "Audio hint"
+    },
+    "stretchRestart": "Restart",
+    "@stretchRestart": {
+        "description": "Restart button"
+    },
+    "stretchPauseHint": "Tap the guide to pause",
+    "@stretchPauseHint": {
+        "description": "Pause hint"
+    },
+    "stretchResumeHint": "Paused — tap to resume",
+    "@stretchResumeHint": {
+        "description": "Resume hint"
+    },
+    "stretchCelebrationTitle": "Well done!",
+    "@stretchCelebrationTitle": {
+        "description": "Celebration title"
+    },
+    "stretchCelebrationBody": "You completed your stretching routine.",
+    "@stretchCelebrationBody": {
+        "description": "Celebration body"
+    },
+    "stretchCelebrationDone": "Done",
+    "@stretchCelebrationDone": {
+        "description": "Celebration done button"
+    },
+    "stretchExitDialogTitle": "Leave the session?",
+    "@stretchExitDialogTitle": {
+        "description": "Exit dialog title"
+    },
+    "stretchExitDialogBody": "Your progress for this session won't be saved.",
+    "@stretchExitDialogBody": {
+        "description": "Exit dialog body"
+    },
+    "stretchExitDialogConfirm": "Leave",
+    "@stretchExitDialogConfirm": {
+        "description": "Exit dialog confirm"
+    },
+    "stretchExitDialogCancel": "Stay",
+    "@stretchExitDialogCancel": {
+        "description": "Exit dialog cancel"
+    },
+    "stretchVoiceoverOnLabel": "Voice guidance on",
+    "@stretchVoiceoverOnLabel": {
+        "description": "Voiceover on a11y"
+    },
+    "stretchVoiceoverOffLabel": "Voice guidance off",
+    "@stretchVoiceoverOffLabel": {
+        "description": "Voiceover off a11y"
+    },
+    "stretchToolbarBack": "Back",
+    "@stretchToolbarBack": {
+        "description": "Back a11y"
+    },
+    "detoxTitle": "Detox",
+    "@detoxTitle": {
+        "description": "Detox setup title"
+    },
+    "detoxSetupHeading": "Prepare your break",
+    "@detoxSetupHeading": {
+        "description": "Setup heading"
+    },
+    "detoxSetupSubtitle": "Choose an atmosphere and a duration",
+    "@detoxSetupSubtitle": {
+        "description": "Setup subtitle"
+    },
+    "detoxSectionAmbiance": "ATMOSPHERE",
+    "@detoxSectionAmbiance": {
+        "description": "Atmosphere section label"
+    },
+    "detoxSectionDuration": "DURATION",
+    "@detoxSectionDuration": {
+        "description": "Duration section label"
+    },
+    "detoxAmbianceWaterLabel": "Water",
+    "@detoxAmbianceWaterLabel": {
+        "description": "Water ambiance label"
+    },
+    "detoxAmbianceWaterDesc": "Stream, gentle rain",
+    "@detoxAmbianceWaterDesc": {
+        "description": "Water ambiance desc"
+    },
+    "detoxAmbianceSeaLabel": "Sea",
+    "@detoxAmbianceSeaLabel": {
+        "description": "Sea ambiance label"
+    },
+    "detoxAmbianceSeaDesc": "Waves, sea breeze",
+    "@detoxAmbianceSeaDesc": {
+        "description": "Sea ambiance desc"
+    },
+    "detoxAmbianceWhiteNoiseLabel": "White noise",
+    "@detoxAmbianceWhiteNoiseLabel": {
+        "description": "White noise label"
+    },
+    "detoxAmbianceWhiteNoiseDesc": "Textured silence",
+    "@detoxAmbianceWhiteNoiseDesc": {
+        "description": "White noise desc"
+    },
+    "detoxAmbianceForestLabel": "Forest",
+    "@detoxAmbianceForestLabel": {
+        "description": "Forest ambiance label"
+    },
+    "detoxAmbianceForestDesc": "Birds, foliage",
+    "@detoxAmbianceForestDesc": {
+        "description": "Forest ambiance desc"
+    },
+    "detoxDurationMinutes": "{count} min",
+    "@detoxDurationMinutes": {
+        "description": "Duration chip label",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "detoxDurationDefaultBadge": "DEFAULT",
+    "@detoxDurationDefaultBadge": {
+        "description": "Default duration badge"
+    },
+    "detoxRecap": "{ambiance} · {duration} min",
+    "@detoxRecap": {
+        "description": "Live recap chip",
+        "placeholders": {
+            "ambiance": {
+                "type": "String"
+            },
+            "duration": {
+                "type": "int"
+            }
+        }
+    },
+    "detoxStart": "Start my break",
+    "@detoxStart": {
+        "description": "Start break button"
+    },
+    "detoxToolbarBack": "Back",
+    "@detoxToolbarBack": {
+        "description": "Back a11y"
+    },
+    "detoxPlayerTitle": "Your break",
+    "@detoxPlayerTitle": {
+        "description": "Player title"
+    },
+    "detoxPlayerAmbianceBadge": "{ambiance}",
+    "@detoxPlayerAmbianceBadge": {
+        "description": "Ambiance badge",
+        "placeholders": {
+            "ambiance": {
+                "type": "String"
+            }
+        }
+    },
+    "detoxPlayerBloomTitle": "The more you let go, the more it blooms",
+    "@detoxPlayerBloomTitle": {
+        "description": "Bloom title"
+    },
+    "detoxPlayerBloomSubtitle": "You're on a break. Well done.",
+    "@detoxPlayerBloomSubtitle": {
+        "description": "Bloom subtitle"
+    },
+    "detoxPlayerTimeRemaining": "{time} remaining",
+    "@detoxPlayerTimeRemaining": {
+        "description": "Remaining time",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "detoxPlayerTotalTime": "{time}",
+    "@detoxPlayerTotalTime": {
+        "description": "Total time",
+        "placeholders": {
+            "time": {
+                "type": "String"
+            }
+        }
+    },
+    "detoxPlayerAirplaneTip": "Don't touch your phone — airplane mode recommended",
+    "@detoxPlayerAirplaneTip": {
+        "description": "Airplane tip"
+    },
+    "detoxPlayerEnd": "End the break",
+    "@detoxPlayerEnd": {
+        "description": "End break button"
+    },
+    "detoxPlayerEndConfirmTitle": "End the break?",
+    "@detoxPlayerEndConfirmTitle": {
+        "description": "End confirm title"
+    },
+    "detoxPlayerEndConfirmBody": "Your break isn't over yet. It won't be counted.",
+    "@detoxPlayerEndConfirmBody": {
+        "description": "End confirm body"
+    },
+    "detoxPlayerEndConfirmConfirm": "End",
+    "@detoxPlayerEndConfirmConfirm": {
+        "description": "End confirm"
+    },
+    "detoxPlayerEndConfirmCancel": "Keep going",
+    "@detoxPlayerEndConfirmCancel": {
+        "description": "End cancel"
+    },
+    "detoxPlayerCelebrationTitle": "Break complete",
+    "@detoxPlayerCelebrationTitle": {
+        "description": "Celebration title"
+    },
+    "detoxPlayerCelebrationBody": "You took a real break. Nicely done.",
+    "@detoxPlayerCelebrationBody": {
+        "description": "Celebration body"
+    },
+    "detoxPlayerCelebrationDone": "Done",
+    "@detoxPlayerCelebrationDone": {
+        "description": "Celebration done"
+    },
+    "detoxPlayerToolbarBack": "Back",
+    "@detoxPlayerToolbarBack": {
+        "description": "Back a11y"
+    },
+    "detoxPlayerMediaTitle": "Detox break",
+    "@detoxPlayerMediaTitle": {
+        "description": "Lockscreen media title"
+    },
+    "notifGuideBrand": "DigiHarmony",
+    "@notifGuideBrand": {
+        "description": "Brand label"
+    }
 }

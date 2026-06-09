@@ -6,19 +6,20 @@ import android.content.Intent
 import android.os.Build
 import android.os.Process
 import android.provider.Settings
-import io.flutter.embedding.android.FlutterActivity
+import com.ryanheise.audioservice.AudioServiceActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 /**
  * Activity Android active (applicationId = com.creappi.digiharmony).
  *
- * Héberge le(s) MethodChannel maison de l'app. Un seul `configureFlutterEngine`,
- * N channels (append-only) : aujourd'hui `digiharmony/usage_access` (Mon temps
- * d'écran). Aucune permission ni dépendance supplémentaire — `PACKAGE_USAGE_STATS`
- * (déjà au manifeste) suffit, l'ouverture des réglages est un simple Intent.
+ * Étend [AudioServiceActivity] (just_audio_background) pour que la lecture
+ * audio en arrière-plan fonctionne (écran Détox-lecteur). Héberge le
+ * MethodChannel maison `digiharmony/usage_access` (Mon temps d'écran).
+ * Aucune permission ni dépendance supplémentaire — `PACKAGE_USAGE_STATS`
+ * (déjà au manifeste) suffit ; l'ouverture des réglages est un simple Intent.
  */
-class MainActivity : FlutterActivity() {
+class MainActivity : AudioServiceActivity() {
 
     private val canalAccesUsage = "digiharmony/usage_access"
 

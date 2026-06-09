@@ -1,0 +1,214 @@
+{
+  "version": 6,
+  "tools": {
+    "vscode": {
+      "toolId": "vscode",
+      "version": "4.6.1",
+      "files": [
+        {
+          "relativePath": ".vscode/keybindings.json",
+          "hash": "817a28d8b09bc64367f2226f3ba7a565"
+        }
+      ],
+      "mergeFiles": [
+        {
+          "relativePath": ".vscode/extensions.json",
+          "sectionKey": null,
+          "entries": {
+            "recommendations": "95e89184612d8a75b6e482871ba20e2d",
+            "unwantedRecommendations": "d751713988987e9331980363e24189ce"
+          }
+        },
+        {
+          "relativePath": ".vscode/settings.json",
+          "sectionKey": null,
+          "entries": {
+            "extensions.autoUpdate": "b326b5062b2f0e69046810717534cb09",
+            "breadcrumbs.enabled": "b326b5062b2f0e69046810717534cb09",
+            "explorer.compactFolders": "68934a3e9455fa72420237eb05902327",
+            "explorer.confirmDelete": "68934a3e9455fa72420237eb05902327",
+            "explorer.confirmDragAndDrop": "68934a3e9455fa72420237eb05902327",
+            "explorer.autoReveal": "b326b5062b2f0e69046810717534cb09",
+            "outline.showVariables": "68934a3e9455fa72420237eb05902327",
+            "outline.showFields": "68934a3e9455fa72420237eb05902327",
+            "outline.showFunctions": "b326b5062b2f0e69046810717534cb09",
+            "outline.collapseItems": "8921095275ac3e694cd720acac4a90a3",
+            "files.autoSave": "79f40f441db611e5e07b679a2ad043b5",
+            "files.autoSaveDelay": "3644a684f98ea8fe223c713b77189a77",
+            "files.eol": "f1dc8515ebe454755cf425c577d26328",
+            "files.insertFinalNewline": "b326b5062b2f0e69046810717534cb09",
+            "files.trimFinalNewlines": "b326b5062b2f0e69046810717534cb09",
+            "files.trimTrailingWhitespace": "b326b5062b2f0e69046810717534cb09",
+            "files.enableTrash": "b326b5062b2f0e69046810717534cb09",
+            "files.autoGuessEncoding": "b326b5062b2f0e69046810717534cb09",
+            "files.simpleDialog.enable": "b326b5062b2f0e69046810717534cb09",
+            "editor.linkedEditing": "b326b5062b2f0e69046810717534cb09",
+            "editor.renameOnType": "b326b5062b2f0e69046810717534cb09",
+            "editor.links": "b326b5062b2f0e69046810717534cb09",
+            "editor.formatOnSave": "b326b5062b2f0e69046810717534cb09",
+            "editor.formatOnPaste": "b326b5062b2f0e69046810717534cb09",
+            "editor.formatOnSaveMode": "79c26fca827acf843bc704a4204ea20f",
+            "editor.defaultFormatter": "0edb3d67d253a62ed4cd84948ba037cf",
+            "editor.fontFamily": "724d1984bf874a458959cf2c4228a225",
+            "editor.fontLigatures": "b326b5062b2f0e69046810717534cb09",
+            "editor.cursorBlinking": "b47f2c569003360a48ac113f071a4292",
+            "editor.cursorSmoothCaretAnimation": "2474562e354cdba1acd29a572274e300",
+            "editor.smoothScrolling": "b326b5062b2f0e69046810717534cb09",
+            "editor.inlayHints.enabled": "25977f760f2f5fb14a55eda1e1180eb4",
+            "editor.hover.delay": "cfa5301358b9fcbe7aa45b1ceea088c6",
+            "editor.quickSuggestions": "a073331811c7b76568b4b61c9b3cf72d",
+            "editor.suggest.localityBonus": "b326b5062b2f0e69046810717534cb09",
+            "editor.find.autoFindInSelection": "ad51b9525c8b5b93f16bcc92695a34c4",
+            "editor.stickyScroll.enabled": "b326b5062b2f0e69046810717534cb09",
+            "editor.padding.top": "d3d9446802a44259755d38e6d163e820",
+            "[json]": "e2ecdaaf66e932b647d370e76e46e2a8",
+            "[jsonc]": "e2ecdaaf66e932b647d370e76e46e2a8",
+            "json.format.enable": "b326b5062b2f0e69046810717534cb09",
+            "[html]": "b8d288938fb359ef83f6b593bf3e111f",
+            "[css]": "b8d288938fb359ef83f6b593bf3e111f",
+            "[markdown]": "bf1912e45a4e5eaaa928f5d77a07534c",
+            "[prisma]": "451d95e212058b1b898b9ec17e492e8f",
+            "[php]": "e2ecdaaf66e932b647d370e76e46e2a8",
+            "eslint.validate": "759f183bf40757cdfc3cbce1dacceb41",
+            "eslint.format.enable": "b326b5062b2f0e69046810717534cb09",
+            "editor.codeActionsOnSave": "8e93558b1850d9ac0547177bae8f5b76",
+            "editor.wordWrap": "1f94542f6e4e8d5434f32a34fcbb30d0",
+            "editor.wordWrapColumn": "f899139df5e1059396431415e770c6dd",
+            "editor.wrappingIndent": "801fd7be1fd97aad012ef63d33c757f5",
+            "editor.guides.bracketPairs": "379ac110c8d0736ad28494f52424183c",
+            "editor.guides.indentation": "b326b5062b2f0e69046810717534cb09",
+            "editor.guides.highlightActiveBracketPair": "b326b5062b2f0e69046810717534cb09",
+            "editor.minimap.enabled": "68934a3e9455fa72420237eb05902327",
+            "diffEditor.hideUnchangedRegions.enabled": "b326b5062b2f0e69046810717534cb09",
+            "editor.accessibilitySupport": "ba4464b15a19689d118723b2cc5a6e3b",
+            "git.enabled": "b326b5062b2f0e69046810717534cb09",
+            "git.autofetch": "b326b5062b2f0e69046810717534cb09",
+            "git.confirmSync": "68934a3e9455fa72420237eb05902327",
+            "git.rebaseWhenSync": "b326b5062b2f0e69046810717534cb09",
+            "git.discardUntrackedChangesToTrash": "b326b5062b2f0e69046810717534cb09",
+            "git.verboseCommit": "b326b5062b2f0e69046810717534cb09",
+            "git.blame.ignoreWhitespace": "b326b5062b2f0e69046810717534cb09",
+            "scm.diffDecorations": "cc42010ec8e7f4ed274d8ebeb2f24eb2",
+            "workbench.editor.decorations.badges": "b326b5062b2f0e69046810717534cb09",
+            "scm.defaultViewMode": "3755b2fa4dcd05d81854d388fc366d72",
+            "workbench.editor.showTabs": "a6881eece205bc83105b9a06ccf92e35",
+            "workbench.editor.wrapTabs": "b326b5062b2f0e69046810717534cb09",
+            "workbench.editor.tabSizing": "346ba5c7a6719b5297a260848860e9a8",
+            "workbench.editor.limit.enabled": "b326b5062b2f0e69046810717534cb09",
+            "workbench.editor.limit.value": "c9f0f895fb98ab9159f51fd0297e236d",
+            "workbench.editor.enablePreview": "68934a3e9455fa72420237eb05902327",
+            "workbench.editor.enablePreviewFromQuickOpen": "68934a3e9455fa72420237eb05902327",
+            "workbench.editor.pinnedTabsOnSeparateRow": "b326b5062b2f0e69046810717534cb09",
+            "workbench.list.smoothScrolling": "b326b5062b2f0e69046810717534cb09",
+            "workbench.tree.enableStickyScroll": "b326b5062b2f0e69046810717534cb09",
+            "workbench.tree.renderIndentGuides": "2589c63c17df176e198728a79c3e5212",
+            "workbench.tree.indent": "9bf31c7ff062936a96d3c8bd1f8f2ff3",
+            "workbench.startupEditor": "f6d62a8e69201d3806ac1ef24ec64c4d",
+            "workbench.editorAssociations": "86cb4f1f381a5c37a50c0896f56010dd",
+            "css.hover.documentation": "68934a3e9455fa72420237eb05902327",
+            "terminal.integrated.smoothScrolling": "b326b5062b2f0e69046810717534cb09",
+            "terminal.integrated.scrollback": "b7a782741f667201b54880c925faec4b",
+            "terminal.integrated.suggest.enabled": "b326b5062b2f0e69046810717534cb09",
+            "terminal.integrated.suggest.quickSuggestions": "88dfa1a66a9481681c00115a384e36bb",
+            "files.watcherExclude": "fc7c13f243fd8002ac5c0a3fceed7938",
+            "telemetry.telemetryLevel": "ba4464b15a19689d118723b2cc5a6e3b",
+            "markdown.extension.toc.updateOnSave": "b326b5062b2f0e69046810717534cb09",
+            "markdown.extension.toc.levels": "f9e24d628b690a318931f4899d2ba95a",
+            "specstory.cloudSync.enabled": "161cb594e73635d5fdc3ff865c19ce8f",
+            "specstory.autoSave.enabled": "b326b5062b2f0e69046810717534cb09",
+            "cSpell.language": "6a88f03c88b6738ba740fe7630db600b",
+            "cSpell.userWords": "5cf5173ae23d276c2a93843e09915539",
+            "cSpell.words": "22a8cb02d6c610c6ad5d6817bc366b8c",
+            "emmet.includeLanguages": "83754078e5ac077843e3bb473ff865ee",
+            "typescript.updateImportsOnFileMove.enabled": "2589c63c17df176e198728a79c3e5212",
+            "javascript.updateImportsOnFileMove.enabled": "2589c63c17df176e198728a79c3e5212",
+            "intelephense.files.maxSize": "8155bc545f84d9652f1012ef2bdfb6eb",
+            "intelephense.files.associations": "4358b4d571a497dfd4e58285816cd744",
+            "intelephense.environment.includePaths": "c8f80488168e00b207d865aabf8b0a3b",
+            "path-intellisense.extensionOnImport": "b326b5062b2f0e69046810717534cb09",
+            "path-intellisense.autoSlashAfterDirectory": "b326b5062b2f0e69046810717534cb09"
+          }
+        }
+      ]
+    },
+    "claude": {
+      "toolId": "claude",
+      "version": "4.6.1",
+      "files": [
+        {
+          "relativePath": ".claude/settings.json",
+          "hash": "d53367c89dfd280701999fa0794218c6"
+        }
+      ],
+      "mergeFiles": [],
+      "plugins": [
+        {
+          "name": "aidd-context",
+          "source": {
+            "kind": "local",
+            "path": "/Users/nathanchateau/Documents/GitHub/digiharmony/.aidd/cache/marketplaces/aidd-framework/github-ai-driven-dev-aidd-framework-v4.4.1/plugins/aidd-context"
+          },
+          "version": "1.0.0",
+          "strict": true,
+          "files": {},
+          "marketplace": "aidd-framework"
+        },
+        {
+          "name": "aidd-dev",
+          "source": {
+            "kind": "local",
+            "path": "/Users/nathanchateau/Documents/GitHub/digiharmony/.aidd/cache/marketplaces/aidd-framework/github-ai-driven-dev-aidd-framework-v4.4.1/plugins/aidd-dev"
+          },
+          "version": "1.0.0",
+          "strict": true,
+          "files": {},
+          "marketplace": "aidd-framework"
+        },
+        {
+          "name": "aidd-vcs",
+          "source": {
+            "kind": "local",
+            "path": "/Users/nathanchateau/Documents/GitHub/digiharmony/.aidd/cache/marketplaces/aidd-framework/github-ai-driven-dev-aidd-framework-v4.4.1/plugins/aidd-vcs"
+          },
+          "version": "1.0.0",
+          "strict": true,
+          "files": {},
+          "marketplace": "aidd-framework"
+        },
+        {
+          "name": "aidd-pm",
+          "source": {
+            "kind": "local",
+            "path": "/Users/nathanchateau/Documents/GitHub/digiharmony/.aidd/cache/marketplaces/aidd-framework/github-ai-driven-dev-aidd-framework-v4.4.1/plugins/aidd-pm"
+          },
+          "version": "1.0.0",
+          "strict": true,
+          "files": {},
+          "marketplace": "aidd-framework"
+        },
+        {
+          "name": "aidd-orchestrator",
+          "source": {
+            "kind": "local",
+            "path": "/Users/nathanchateau/Documents/GitHub/digiharmony/.aidd/cache/marketplaces/aidd-framework/github-ai-driven-dev-aidd-framework-v4.4.1/plugins/aidd-orchestrator"
+          },
+          "version": "1.0.0",
+          "strict": true,
+          "files": {},
+          "marketplace": "aidd-framework"
+        },
+        {
+          "name": "aidd-refine",
+          "source": {
+            "kind": "local",
+            "path": "/Users/nathanchateau/Documents/GitHub/digiharmony/.aidd/cache/marketplaces/aidd-framework/github-ai-driven-dev-aidd-framework-v4.4.1/plugins/aidd-refine"
+          },
+          "version": "1.0.0",
+          "strict": true,
+          "files": {},
+          "marketplace": "aidd-framework"
+        }
+      ]
+    }
+  }
+}

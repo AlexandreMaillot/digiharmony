@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Apri e chiudi le mani lentamente, <break time="500ms"/> poi ruota i polsi in entrambi i <emphasis level="reduced">sensi</emphasis>.</prosody>

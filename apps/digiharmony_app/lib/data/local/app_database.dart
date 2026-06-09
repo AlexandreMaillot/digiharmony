@@ -7,6 +7,30 @@ import 'package:path_provider/path_provider.dart';
 
 part 'app_database.g.dart';
 
+/// Agrégat des séances bien-être terminées par type d'exercice.
+///
+/// Schéma v5 : table ajoutée pour suivre le nombre de séances par exercice.
+/// 100 % locale, zéro collecte. Clé = `exercice_id`.
+@DataClassName('SeanceBienEtre')
+class SeancesBienEtre extends Table {
+  @override
+  String get tableName => 'wellbeing_stats';
+
+  /// Identifiant d'exercice (ex. 'breathing', 'senses', 'stretch', 'detox').
+  TextColumn get exerciceId => text().named('exercise_id')();
+
+  /// Nombre de séances terminées.
+  IntColumn get nombreSeances =>
+      integer().named('completed_count').withDefault(const Constant(0))();
+
+  /// Date de la dernière séance terminée (null si aucune).
+  DateTimeColumn get derniereSeanceLe =>
+      dateTime().named('last_completed_at').nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {exerciceId};
+}
+
 /// Journal d'humeur — table LECTURE et ÉCRITURE (US #6 « Noter mon humeur »).
 ///
 /// Schéma v2 : colonne `jour` normalisée (minuit local) + index unique pour
@@ -117,7 +141,9 @@ class UsagesEcranJournaliers extends Table {
 ///
 /// Persistance 100 % locale, zéro réseau. Le journal d'humeur vit
 /// **uniquement** ici (DEC-001/002) ; l'état A/B est dérivé via `watch()`.
-@DriftDatabase(tables: [EntreesHumeur, Conseils, UsagesEcranJournaliers])
+@DriftDatabase(
+  tables: [EntreesHumeur, Conseils, UsagesEcranJournaliers, SeancesBienEtre],
+)
 class AppDatabase extends _$AppDatabase {
   /// Ouvre la base de production (fichier dans le dossier documents).
   AppDatabase() : super(_openConnection());
@@ -126,7 +152,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   /// Référence Unix epoch pour la rotation déterministe des conseils.
   static final DateTime _epoch = DateTime(1970);
@@ -275,6 +301,17 @@ class AppDatabase extends _$AppDatabase {
             'WHERE NOT EXISTS '
             "(SELECT 1 FROM conseils WHERE cle_conseil = '$cle')",
           );
+        }
+      }
+      if (from < 5) {
+        // Schéma v5 : crée la table des séances bien-être (wellbeing_stats).
+        // Idempotent : vérifie sqlite_master avant createTable.
+        final tables = await customSelect(
+          "SELECT name FROM sqlite_master WHERE type='table' "
+          "AND name='wellbeing_stats'",
+        ).get();
+        if (tables.isEmpty) {
+          await m.createTable(seancesBienEtre);
         }
       }
     },
@@ -598,6 +635,35 @@ class AppDatabase extends _$AppDatabase {
         entreesHumeur,
       )..where((t) => t.jour.equals(jourCourant))).go();
     }
+  }
+
+  // ─── Séances bien-être ────────────────────────────────────────────────────
+
+  /// Incrémente de 1 le compteur de séances pour l'exercice [exerciceId].
+  ///
+  /// UPSERT sur la clé primaire `exercice_id` : crée la ligne si absente,
+  /// sinon met à jour le compteur et l'horodatage.
+  Future<void> enregistrerSeanceBienEtre(String exerciceId) async {
+    final existante =
+        await (select(seancesBienEtre)
+              ..where((t) => t.exerciceId.equals(exerciceId)))
+            .getSingleOrNull();
+    final prochain = (existante?.nombreSeances ?? 0) + 1;
+    await into(seancesBienEtre).insertOnConflictUpdate(
+      SeancesBienEtreCompanion.insert(
+        exerciceId: exerciceId,
+        nombreSeances: Value(prochain),
+        derniereSeanceLe: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  /// Flux réactif du nombre de séances terminées pour [exerciceId].
+  Stream<int> observerNombreSeances(String exerciceId) {
+    return (select(seancesBienEtre)
+          ..where((t) => t.exerciceId.equals(exerciceId)))
+        .watchSingleOrNull()
+        .map((row) => row?.nombreSeances ?? 0);
   }
 }
 

@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Identifică două mirosuri în jurul tău, <break time="500ms"/> chiar și <emphasis level="reduced">slabe</emphasis>.</prosody>

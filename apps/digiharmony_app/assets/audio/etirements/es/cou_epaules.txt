@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Inclina suavemente la cabeza hacia el hombro derecho. <break time="600ms"/> Mantén cinco segundos. <break time="600ms"/> Cambia de <emphasis level="reduced">lado</emphasis>.</prosody>

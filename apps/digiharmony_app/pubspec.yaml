@@ -12,6 +12,8 @@ dependencies:
   app_usage: ^4.1.0
   bloc: ^9.2.0
   bloc_concurrency: ^0.3.0
+  core_package:
+    path: ../../packages/core_package
   drift: ^2.33.0
   equatable: ^2.0.8
   flow_builder: ^0.1.0
@@ -55,6 +57,35 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    # Voix off par langue : un sous-dossier par code langue (8 langues).
+    # Flutter n'inclut PAS les sous-dossiers automatiquement -> chaque dossier
+    # de langue doit etre declare. Le code lit la langue courante et retombe
+    # sur 'fr' si le fichier de la langue n'existe pas.
+    - assets/audio/respiration/fr/
+    - assets/audio/respiration/en/
+    - assets/audio/respiration/el/
+    - assets/audio/respiration/es/
+    - assets/audio/respiration/it/
+    - assets/audio/respiration/ro/
+    - assets/audio/respiration/tr/
+    - assets/audio/respiration/mk/
+    - assets/audio/senses/fr/
+    - assets/audio/senses/en/
+    - assets/audio/senses/el/
+    - assets/audio/senses/es/
+    - assets/audio/senses/it/
+    - assets/audio/senses/ro/
+    - assets/audio/senses/tr/
+    - assets/audio/senses/mk/
+    - assets/audio/etirements/fr/
+    - assets/audio/etirements/en/
+    - assets/audio/etirements/el/
+    - assets/audio/etirements/es/
+    - assets/audio/etirements/it/
+    - assets/audio/etirements/ro/
+    - assets/audio/etirements/tr/
+    - assets/audio/etirements/mk/
+    - assets/audio/detox/
   fonts:
     - family: DMSans
       fonts:

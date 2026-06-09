@@ -1,0 +1,25 @@
+{
+  "respectGitignore": false,
+  "permissions": {
+    "deny": [
+      "Read(./node_modules/**)",
+      "Read(./.git/**)"
+    ]
+  },
+  "extraKnownMarketplaces": {
+    "aidd-framework": {
+      "source": {
+        "source": "github",
+        "repo": "ai-driven-dev/aidd-framework"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "aidd-context@aidd-framework": true,
+    "aidd-dev@aidd-framework": true,
+    "aidd-vcs@aidd-framework": true,
+    "aidd-pm@aidd-framework": true,
+    "aidd-orchestrator@aidd-framework": true,
+    "aidd-refine@aidd-framework": true
+  }
+}

@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Închide ochii. <break time="600ms"/> Ascultă sunetele apropiate, <break time="500ms"/> apoi pe cele <emphasis level="reduced">îndepărtate</emphasis>.</prosody>

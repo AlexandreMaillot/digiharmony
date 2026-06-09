@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Погледни нешто далечно, <break time="500ms"/> потоа затвори ги очите и <emphasis level="reduced">дише</emphasis>.</prosody>

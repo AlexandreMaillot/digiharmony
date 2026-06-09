@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Γείρε απαλά το κεφάλι προς τον δεξί ώμο. <break time="600ms"/> Κράτησε πέντε δευτερόλεπτα. <break time="600ms"/> Άλλαξε <emphasis level="reduced">πλευρά</emphasis>.</prosody>

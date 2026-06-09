@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Așază-te confortabil, <break time="500ms"/> sprijină picioarele și respiră <emphasis level="reduced">încet</emphasis>.</prosody>

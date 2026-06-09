@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Отворај и затворај ги дланките бавно, <break time="500ms"/> потоа кружи со зглобовите во двете <emphasis level="reduced">насоки</emphasis>.</prosody>

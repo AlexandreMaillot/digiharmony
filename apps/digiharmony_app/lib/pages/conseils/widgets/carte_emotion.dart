@@ -1,4 +1,4 @@
-import 'package:digiharmony_app/common/placeholder_screen.dart';
+import 'package:digiharmony_app/app/routing/app_router.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/conseils/modeles/carte_conseil.dart';
 import 'package:digiharmony_app/pages/conseils/widgets/_carte_shell.dart';
@@ -69,7 +69,7 @@ class CarteEmotionWidget extends StatelessWidget {
               if (donts.isNotEmpty) ...donts.map((d) => PuceDont(texte: d)),
             ],
           ),
-          // Zone basse : CTA respiration (STUB — DEC-J-02 / DEC-CO-09).
+          // Zone basse : CTA « Essayer la respiration » → exercice Respiration.
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -78,10 +78,7 @@ class CarteEmotionWidget extends StatelessWidget {
                 foregroundColor: AppColors.backgroundDeep,
                 minimumSize: const Size(48, 44),
               ),
-              onPressed: () => ouvrirPlaceholder(
-                context,
-                l10n.conseilsEmotionRespirationBientot,
-              ),
+              onPressed: () => AppRouter.versRespiration(context),
               child: Text(l10n.conseilsEmotionCta),
             ),
           ),

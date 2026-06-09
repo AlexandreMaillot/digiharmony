@@ -49,6 +49,7 @@ final class TempsEcranState extends Equatable {
     this.status = TempsEcranStatus.initial,
     this.resume,
     this.historique = const [],
+    this.rechargementRapport = 0,
   });
 
   /// Statut courant.
@@ -62,19 +63,31 @@ final class TempsEcranState extends Equatable {
   /// Toujours 7 entrées une fois chargé (jours manquants = Duration.zero).
   final List<EntreeHistorique> historique;
 
+  /// Compteur de rechargement du rapport iOS (PlatformView). Son incrément
+  /// force la recréation du `DeviceActivityReport`, souvent vide juste après
+  /// l'octroi de l'autorisation FamilyControls (iOS uniquement).
+  final int rechargementRapport;
+
   /// Copie avec champs modifiés.
   TempsEcranState copierAvec({
     TempsEcranStatus? status,
     ResumeTempsEcran? resume,
     List<EntreeHistorique>? historique,
+    int? rechargementRapport,
   }) {
     return TempsEcranState(
       status: status ?? this.status,
       resume: resume ?? this.resume,
       historique: historique ?? this.historique,
+      rechargementRapport: rechargementRapport ?? this.rechargementRapport,
     );
   }
 
   @override
-  List<Object?> get props => [status, resume, historique];
+  List<Object?> get props => [
+    status,
+    resume,
+    historique,
+    rechargementRapport,
+  ];
 }

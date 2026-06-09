@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Uzaktaki bir şeye bak, <break time="500ms"/> sonra gözlerini kapat ve nefes <emphasis level="reduced">al</emphasis>.</prosody>

@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Погледни околу и именувај пет работи што ги <emphasis level="reduced">гледаш</emphasis>.</prosody>

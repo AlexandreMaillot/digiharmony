@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Privește ceva îndepărtat, <break time="500ms"/> apoi închide ochii și <emphasis level="reduced">respiră</emphasis>.</prosody>

@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Deschide și închide mâinile încet, <break time="500ms"/> apoi rotește încheieturile în ambele <emphasis level="reduced">sensuri</emphasis>.</prosody>

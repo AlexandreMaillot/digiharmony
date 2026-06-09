@@ -25,6 +25,8 @@ void main() {
       },
       storageBuilder: () async => mockStorage,
       databaseBuilder: () => AppDatabase.forTesting(NativeDatabase.memory()),
+      // No-op : le canal natif just_audio_background ne répond pas en test.
+      audioInit: () async {},
     );
     await tester.pump();
 

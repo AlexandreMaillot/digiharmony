@@ -1,6 +1,7 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
+import 'package:digiharmony_app/pages/detox/view/detox_config_page.dart';
 import 'package:digiharmony_app/pages/journal/bloc/journal_bloc/journal_bloc.dart';
 import 'package:digiharmony_app/pages/journal/widgets/journal_vue_jour.dart';
 import 'package:digiharmony_app/theme/theme.dart';
@@ -8,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+import '../../../helpers/hydrated_storage.dart';
 
 class MockJournalBloc extends MockBloc<JournalEvent, JournalState>
     implements JournalBloc {}
@@ -99,21 +102,25 @@ void main() {
       );
     });
 
-    // VJ-2 : CTA exercice → SnackBar (pas de navigation, DEC-J-02).
-    testWidgets('VJ-2 : CTA exercice → SnackBar journalExerciseComingSoon', (
+    // VJ-2 : CTA exercice → exercice bulle adapté à l'humeur.
+    // 'calm' → Détox (decompresser).
+    testWidgets('VJ-2 : CTA exercice → DetoxConfigPage (humeur calm)', (
       tester,
     ) async {
+      initMockHydratedStorage();
       when(() => bloc.state).thenReturn(_stateAvecHumeur('calm'));
       when(() => bloc.stream).thenAnswer((_) => const Stream.empty());
 
       await tester.pumpVueJour(bloc);
       await tester.tap(find.text('Do the exercise'));
+      // DetoxConfigPage a des animations en boucle : pump + durée fixe.
       await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
 
-      expect(
-        find.text('This exercise is coming soon.'),
-        findsOneWidget,
-      );
+      expect(find.byType(DetoxConfigPage), findsOneWidget);
+
+      // Dispose pour éviter des timers/animations en attente.
+      await tester.pumpWidget(const SizedBox());
     });
 
     // VJ-3 : lien « Edit my mood » présent.

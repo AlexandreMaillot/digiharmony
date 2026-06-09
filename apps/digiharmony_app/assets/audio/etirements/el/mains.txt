@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Άνοιξε και κλείσε τα χέρια σου αργά, <break time="500ms"/> μετά περίστρεψε τους καρπούς και προς τις δύο <emphasis level="reduced">κατευθύνσεις</emphasis>.</prosody>

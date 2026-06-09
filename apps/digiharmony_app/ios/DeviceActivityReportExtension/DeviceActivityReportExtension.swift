@@ -18,8 +18,8 @@ import SwiftUI
 struct DigiHarmonyActivityReportExtension: DeviceActivity.DeviceActivityReportExtension {
     var body: some DeviceActivityReportScene {
         // Declares our "digiharmony.today" report scene.
-        TotalActivityReport { totalActivity in
-            TotalActivityView(totalActivity: totalActivity)
+        TotalActivityReport { report in
+            TotalActivityView(report: report)
         }
     }
 }

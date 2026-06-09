@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:digiharmony_app/app/routing/app_router.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/soutien/confiance/confiance_page.dart';
 import 'package:digiharmony_app/pages/soutien/widgets/bloc_ligne_ecoute.dart';
@@ -116,12 +117,12 @@ class SoutienView extends StatelessWidget {
                     onTap: () => _versConfiance(context),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  // CTA secondaire — Respiration (STUB V1)
+                  // CTA secondaire — Respiration → exercice Respiration.
                   BoutonActionSoutien(
                     icone: Icons.air,
                     label: l10n.soutienCtaRespiration,
                     style: StyleBoutonSoutien.secondaire,
-                    onTap: () => _stubRespiration(context),
+                    onTap: () => AppRouter.versRespiration(context),
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   // Bloc ligne d'ecoute conditionnel
@@ -167,13 +168,4 @@ class SoutienView extends StatelessWidget {
     );
   }
 
-  void _stubRespiration(BuildContext context) {
-    final l10n = context.l10n;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.placeholderComingSoon),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
 }

@@ -1,12 +1,19 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
+import 'package:digiharmony_app/pages/respiration/view/respiration_page.dart';
 import 'package:digiharmony_app/pages/soutien/views/soutien_view.dart';
 import 'package:digiharmony_app/pages/soutien/widgets/halo_soutien.dart';
 import 'package:digiharmony_app/theme/theme.dart';
+import 'package:digiharmony_app/voix_off/bloc/voix_off_bloc.dart';
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../helpers/hydrated_storage.dart';
 
 /// Pompe SoutienView avec l'i18n et MediaQuery configurable.
 extension PumpSoutienView on WidgetTester {
@@ -141,15 +148,42 @@ void main() {
     });
 
     testWidgets(
-      'SO-VIEW-5 : CTA respiration (STUB) -> SnackBar placeholderComingSoon',
+      'SO-VIEW-5 : CTA respiration -> RespirationPage',
       (tester) async {
-        await tester.pumpSoutienView();
+        initMockHydratedStorage();
+        final db = AppDatabase.forTesting(NativeDatabase.memory());
+        addTearDown(db.close);
+        // Harnais avec les providers requis par RespirationPage
+        // (DepotStatsBienEtre fourni par AppRouter.versRespiration via
+        // AppDatabase ; VoixOffBloc global).
+        await tester.pumpWidget(
+          RepositoryProvider<AppDatabase>.value(
+            value: db,
+            child: BlocProvider<VoixOffBloc>(
+              create: (_) => VoixOffBloc(),
+              child: MaterialApp(
+                theme: AppTheme.dark,
+                darkTheme: AppTheme.dark,
+                themeMode: ThemeMode.dark,
+                localizationsDelegates:
+                    AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                home: const SoutienView(),
+              ),
+            ),
+          ),
+        );
         await tester.pump();
 
         await tester.tap(find.text('Try a guided breathing'));
         await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
 
-        expect(find.text('Coming soon'), findsOneWidget);
+        expect(find.byType(RespirationPage), findsOneWidget);
+
+        // Dispose pour annuler le ticker du RespirationBloc (évite un
+        // Timer encore en attente à la fin du test).
+        await tester.pumpWidget(const SizedBox());
       },
     );
 

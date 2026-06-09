@@ -1,0 +1,1 @@
+<prosody pitch="-4%">Concentrează-te pe un gust pe care îl simți acum în <emphasis level="reduced">gură</emphasis>.</prosody>
