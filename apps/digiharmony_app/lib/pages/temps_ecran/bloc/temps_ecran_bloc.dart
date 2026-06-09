@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/pages/temps_ecran/modeles/resume_temps_ecran.dart';
 import 'package:digiharmony_app/pages/temps_ecran/services/service_temps_ecran.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'temps_ecran_event.dart';
@@ -31,10 +34,23 @@ class TempsEcranBloc extends Bloc<TempsEcranEvent, TempsEcranState> {
       transformer: restartable(),
     );
     on<TempsEcranReessaye>(_onReessaye, transformer: restartable());
+    on<TempsEcranRechargerRapport>(_onRechargerRapport);
   }
 
   final ServiceTempsEcran _service;
   final AppDatabase _database;
+  Timer? _rechargerTimer;
+
+  @override
+  void onChange(Change<TempsEcranState> change) {
+    super.onChange(change);
+    // Diagnostic : trace les transitions de statut (chargement → pret…).
+    debugPrint(
+      '[ScreenTime] statut ${change.currentState.status.name} '
+      '→ ${change.nextState.status.name} '
+      '(rapportEmbarque=${_service.rapportEmbarque})',
+    );
+  }
 
   Future<void> _onDemarre(
     TempsEcranDemarre event,
@@ -59,11 +75,50 @@ class TempsEcranBloc extends Bloc<TempsEcranEvent, TempsEcranState> {
     // premier plan (TempsEcranRevenuAuPremierPlan) — pas ici.
     // iOS : déclenche requestAuthorization (dialog système, async) puis
     // recharge directement sans attendre le retour au premier plan.
+    debugPrint('[ScreenTime] octroi: requestAuthorization…');
     await _service.ouvrirReglagesAcces();
-    if (_service.rapportEmbarque) {
+    final embarque = _service.rapportEmbarque;
+    debugPrint('[ScreenTime] octroi terminé (rapportEmbarque=$embarque)');
+    if (embarque) {
       // Re-vérifie le statut après que l'utilisateur a répondu au dialog.
       await _charger(emit);
+      debugPrint('[ScreenTime] après _charger: status=${state.status.name}');
+      if (state.status == TempsEcranStatus.pret) {
+        // Le rapport iOS (DeviceActivityReport) est souvent vide à la création
+        // immédiate après l'octroi : on force PLUSIEURS recréations de la
+        // PlatformView (le rendu système peut tarder à se propager).
+        _rechargerTimer?.cancel();
+        var tentatives = 0;
+        _rechargerTimer = Timer.periodic(
+          const Duration(milliseconds: 900),
+          (t) {
+            tentatives++;
+            debugPrint('[ScreenTime] reload tentative #$tentatives → event');
+            add(const TempsEcranRechargerRapport());
+            if (tentatives >= 3) t.cancel();
+          },
+        );
+      }
     }
+  }
+
+  void _onRechargerRapport(
+    TempsEcranRechargerRapport event,
+    Emitter<TempsEcranState> emit,
+  ) {
+    if (state.status != TempsEcranStatus.pret) {
+      debugPrint('[ScreenTime] reload ignoré (status=${state.status.name})');
+      return;
+    }
+    final n = state.rechargementRapport + 1;
+    debugPrint('[ScreenTime] reload appliqué → compteur=$n');
+    emit(state.copierAvec(rechargementRapport: n));
+  }
+
+  @override
+  Future<void> close() {
+    _rechargerTimer?.cancel();
+    return super.close();
   }
 
   /// Séquence partagée par Démarre / Réessaye / RevenuAuPremierPlan.

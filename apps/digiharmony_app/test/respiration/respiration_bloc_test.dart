@@ -59,6 +59,11 @@ void main() {
       // voiceover est initialisé active: false.
       final bloc = build()..add(const RespirationDemarree());
       await Future<void>.delayed(Duration.zero);
+      // Franchit le decompte 3-2-1 : l'audio ne démarre qu'à la fin.
+      for (var i = 0; i < 3; i++) {
+        bloc.add(const RespirationTickPreparation());
+        await Future<void>.delayed(Duration.zero);
+      }
 
       verify(
         () => depotAudio.jouerPhase(any()),

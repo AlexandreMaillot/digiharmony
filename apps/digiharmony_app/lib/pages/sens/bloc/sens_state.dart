@@ -1,7 +1,9 @@
 part of 'sens_bloc.dart';
 
 /// Statut de l'exercice « Les sens ».
-enum SensStatus { enCours, termine }
+///
+/// [preparation] : decompte 3-2-1 avant le demarrage (sans audio).
+enum SensStatus { preparation, enCours, termine }
 
 /// Etat immuable de la progression 5-4-3-2-1.
 class SensState extends Equatable {
@@ -10,8 +12,17 @@ class SensState extends Equatable {
     required this.status,
     required this.exercise,
     required this.stepIndex,
+    this.prepRestant = 0,
     this.statsPersisted = false,
   });
+
+  /// Etat de preparation : decompte (3-2-1) avant le demarrage.
+  factory SensState.preparation(ExerciceAncrage exercise) => SensState(
+    status: SensStatus.preparation,
+    exercise: exercise,
+    stepIndex: 0,
+    prepRestant: 3,
+  );
 
   /// Etat initial : etape 0, enCours.
   factory SensState.initial(ExerciceAncrage exercise) => SensState(
@@ -29,6 +40,9 @@ class SensState extends Equatable {
   /// Index 0-based de l'etape courante.
   final int stepIndex;
 
+  /// Secondes restantes du decompte de preparation (3 -> 1).
+  final int prepRestant;
+
   /// Garde-fou : agregat ecrit une seule fois.
   final bool statsPersisted;
 
@@ -45,16 +59,23 @@ class SensState extends Equatable {
   SensState copyWith({
     SensStatus? status,
     int? stepIndex,
+    int? prepRestant,
     bool? statsPersisted,
   }) {
     return SensState(
       status: status ?? this.status,
       exercise: exercise,
       stepIndex: stepIndex ?? this.stepIndex,
+      prepRestant: prepRestant ?? this.prepRestant,
       statsPersisted: statsPersisted ?? this.statsPersisted,
     );
   }
 
   @override
-  List<Object?> get props => <Object?>[status, stepIndex, statsPersisted];
+  List<Object?> get props => <Object?>[
+    status,
+    stepIndex,
+    prepRestant,
+    statsPersisted,
+  ];
 }

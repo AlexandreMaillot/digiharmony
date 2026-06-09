@@ -26,12 +26,13 @@ class RespirationBloc extends Bloc<RespirationEvent, RespirationState> {
        _enregistrerSeance = enregistrerSeance,
        _gererAudio = gererAudio,
        _lireVoixOff = lireVoixOff,
-       super(RespirationState.initial(session)) {
+       super(RespirationState.preparation(session)) {
     unawaited(_gererAudio.definirVolume(actif: _lireVoixOff.appeler()));
     _voixOffSub = _lireVoixOff.flux().listen(
       (actif) => unawaited(_gererAudio.definirVolume(actif: actif)),
     );
     on<RespirationDemarree>(_onStarted);
+    on<RespirationTickPreparation>(_onPrepTicked);
     on<RespirationTick>(_onTicked);
     on<RespirationPauseBasculee>(_onPauseToggled);
     on<RespirationMiseEnPause>(_onPaused);
@@ -43,7 +44,9 @@ class RespirationBloc extends Bloc<RespirationEvent, RespirationState> {
   final GererAudioRespirationUseCase _gererAudio;
   final LirePreferenceVoixOffUseCase _lireVoixOff;
 
+  static const Duration _prepTick = Duration(seconds: 1);
   Timer? _timer;
+  Timer? _prepTimer;
   Duration? _remaining;
   StreamSubscription<bool>? _voixOffSub;
 
@@ -53,7 +56,33 @@ class RespirationBloc extends Bloc<RespirationEvent, RespirationState> {
     _timer = Timer(duration, () => add(const RespirationTick()));
   }
 
+  /// Lance le decompte de preparation (3-2-1) — aucun audio a ce stade.
+  void _demarrerPreparation(Emitter<RespirationState> emit) {
+    _timer?.cancel();
+    _prepTimer?.cancel();
+    emit(RespirationState.preparation(_session));
+    _prepTimer = Timer.periodic(
+      _prepTick,
+      (_) => add(const RespirationTickPreparation()),
+    );
+  }
+
   void _onStarted(RespirationDemarree event, Emitter<RespirationState> emit) {
+    _demarrerPreparation(emit);
+  }
+
+  void _onPrepTicked(
+    RespirationTickPreparation event,
+    Emitter<RespirationState> emit,
+  ) {
+    if (state.status != RespirationStatus.preparation) return;
+    final reste = state.prepRestant - 1;
+    if (reste > 0) {
+      emit(state.copyWith(prepRestant: reste));
+      return;
+    }
+    // Decompte termine : demarrage de la seance (audio + timer de phase).
+    _prepTimer?.cancel();
     emit(RespirationState.initial(_session));
     _jouerPhase(PhaseRespiration.inhale);
     _scheduleTimer(_session.inhale);
@@ -144,6 +173,7 @@ class RespirationBloc extends Bloc<RespirationEvent, RespirationState> {
     Emitter<RespirationState> emit,
   ) {
     _timer?.cancel();
+    _prepTimer?.cancel();
     if (state.status == RespirationStatus.enCours) {
       emit(state.copyWith(status: RespirationStatus.enPause));
     }
@@ -154,14 +184,14 @@ class RespirationBloc extends Bloc<RespirationEvent, RespirationState> {
     RespirationRedemarree event,
     Emitter<RespirationState> emit,
   ) {
-    emit(RespirationState.initial(_session));
-    _jouerPhase(PhaseRespiration.inhale);
-    _scheduleTimer(_session.inhale);
+    // Recommencer repasse par le decompte 3-2-1.
+    _demarrerPreparation(emit);
   }
 
   @override
   Future<void> close() async {
     _timer?.cancel();
+    _prepTimer?.cancel();
     await _voixOffSub?.cancel();
     unawaited(_gererAudio.liberer());
     return super.close();

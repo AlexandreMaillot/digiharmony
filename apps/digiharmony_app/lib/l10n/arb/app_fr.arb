@@ -367,6 +367,7 @@
         "description": "Back button a11y label"
     },
     "breathingTitle": "Respiration",
+    "breathingCountdownPrepare": "Prépare-toi, l'exercice de respiration va commencer.",
     "@breathingTitle": {
         "description": "Breathing page title"
     },
@@ -541,6 +542,7 @@
         "description": "Audio hint"
     },
     "sensesNext": "Suivant",
+    "sensesCountdownPrepare": "Prépare-toi, l'exercice des sens va commencer.",
     "@sensesNext": {
         "description": "Next button"
     },
@@ -593,6 +595,7 @@
         "description": "Back a11y"
     },
     "stretchTitle": "Étirement",
+    "stretchCountdownPrepare": "Prépare-toi, la séance d'étirement va commencer.",
     "@stretchTitle": {
         "description": "Stretch page title"
     },

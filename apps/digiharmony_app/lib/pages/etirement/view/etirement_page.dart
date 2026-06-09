@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:core_package/core_package.dart';
 import 'package:digiharmony_app/bien_etre_partage/bouton_recommencer.dart';
 import 'package:digiharmony_app/bien_etre_partage/dialogue_quitter_seance.dart';
+import 'package:digiharmony_app/bien_etre_partage/ecran_preparation.dart';
 import 'package:digiharmony_app/bien_etre_partage/indication_audio.dart';
 import 'package:digiharmony_app/bien_etre_partage/mise_en_page_celebration.dart';
 import 'package:digiharmony_app/bien_etre_partage/quitter_seance.dart';
@@ -111,6 +112,10 @@ class EtirementView extends StatelessWidget {
                 }
               },
               builder: (context, state) => switch (state.status) {
+                EtirementStatus.preparation => EcranPreparation(
+                  phrase: l10n.stretchCountdownPrepare,
+                  compteur: state.prepRestant,
+                ),
                 EtirementStatus.enCours ||
                 EtirementStatus.enPause => _LayoutEnCours(state: state),
                 EtirementStatus.termine => _LayoutCelebration(state: state),
@@ -259,14 +264,7 @@ class _GuideEtirement extends StatelessWidget {
           SizedBox(
             width: 160,
             height: 160,
-            child: CircularProgressIndicator(
-              value: progress,
-              strokeWidth: 6,
-              backgroundColor: AppColors.surface,
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                AppColors.successVert,
-              ),
-            ),
+            child: _AnneauProgression(progress: progress),
           ),
           Icon(
             enPause ? Icons.pause : Icons.self_improvement,
@@ -274,6 +272,59 @@ class _GuideEtirement extends StatelessWidget {
             color: AppColors.text,
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Anneau de progression animé : interpole en douceur entre deux ticks du
+/// bloc (le ticker émet par paliers de 200 ms, d'où des sauts sans animation).
+///
+/// `StatefulWidget` dédié (la page reste Stateless). Au changement de segment
+/// (progression qui décroît), il se replace instantanément (pas de
+/// rembobinage). Respecte `reduceMotion`.
+class _AnneauProgression extends StatefulWidget {
+  const _AnneauProgression({required this.progress});
+
+  final double progress;
+
+  @override
+  State<_AnneauProgression> createState() => _AnneauProgressionState();
+}
+
+class _AnneauProgressionState extends State<_AnneauProgression> {
+  double _precedent = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _precedent = widget.progress;
+  }
+
+  @override
+  void didUpdateWidget(_AnneauProgression oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _precedent = oldWidget.progress;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Décroissance = nouveau segment : snap (pas d'animation arrière).
+    final reset = widget.progress < _precedent;
+    final reduceMotion = MediaQuery.of(context).disableAnimations;
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: _precedent, end: widget.progress),
+      // Légèrement > au tick (200 ms) pour un remplissage continu.
+      duration: (reset || reduceMotion)
+          ? Duration.zero
+          : const Duration(milliseconds: 220),
+      builder: (context, valeur, _) => CircularProgressIndicator(
+        value: valeur,
+        strokeWidth: 6,
+        backgroundColor: AppColors.surface,
+        valueColor: const AlwaysStoppedAnimation<Color>(
+          AppColors.successVert,
+        ),
       ),
     );
   }
@@ -311,16 +362,11 @@ class _ListeSegments extends StatelessWidget {
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4),
-                    child: LinearProgressIndicator(
-                      value: v.progress,
-                      minHeight: 4,
-                      backgroundColor:
-                          AppColors.surface.withValues(alpha: 0.5),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        v.status == EtirementStatutSegment.fait
-                            ? AppColors.primary
-                            : AppColors.successVert,
-                      ),
+                    child: _BarreProgression(
+                      progress: v.progress,
+                      couleur: v.status == EtirementStatutSegment.fait
+                          ? AppColors.primary
+                          : AppColors.successVert,
                     ),
                   ),
                 ),
@@ -341,6 +387,53 @@ class _ListeSegments extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// Barre de progression animée d'un segment (même logique que
+/// [_AnneauProgression] : interpolation fluide entre ticks 200 ms, snap au
+/// reset, respect de `reduceMotion`). [couleur] varie selon le statut.
+class _BarreProgression extends StatefulWidget {
+  const _BarreProgression({required this.progress, required this.couleur});
+
+  final double progress;
+  final Color couleur;
+
+  @override
+  State<_BarreProgression> createState() => _BarreProgressionState();
+}
+
+class _BarreProgressionState extends State<_BarreProgression> {
+  double _precedent = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _precedent = widget.progress;
+  }
+
+  @override
+  void didUpdateWidget(_BarreProgression oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _precedent = oldWidget.progress;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final reset = widget.progress < _precedent;
+    final reduceMotion = MediaQuery.of(context).disableAnimations;
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: _precedent, end: widget.progress),
+      duration: (reset || reduceMotion)
+          ? Duration.zero
+          : const Duration(milliseconds: 220),
+      builder: (context, valeur, _) => LinearProgressIndicator(
+        value: valeur,
+        minHeight: 4,
+        backgroundColor: AppColors.surface.withValues(alpha: 0.5),
+        valueColor: AlwaysStoppedAnimation<Color>(widget.couleur),
+      ),
     );
   }
 }

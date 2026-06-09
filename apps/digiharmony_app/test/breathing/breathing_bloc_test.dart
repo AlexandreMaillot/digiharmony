@@ -69,10 +69,19 @@ void main() {
     }
   }
 
+  // L'etat initial est `preparation` (decompte 3-2-1) : on le franchit.
+  Future<void> franchirPrep(RespirationBloc bloc) async {
+    for (var i = 0; i < 3; i++) {
+      bloc.add(const RespirationTickPreparation());
+      await Future<void>.delayed(Duration.zero);
+    }
+  }
+
   test('completes after 5 cycles and records the session exactly once',
       () async {
     final bloc = build()..add(const RespirationDemarree());
     await Future<void>.delayed(Duration.zero);
+    await franchirPrep(bloc);
 
     await runToCompletion(bloc);
 
@@ -84,6 +93,7 @@ void main() {
   test('quitting before the end does not record', () async {
     final bloc = build()..add(const RespirationDemarree());
     await Future<void>.delayed(Duration.zero);
+    await franchirPrep(bloc);
 
     bloc
       ..add(const RespirationTick())
@@ -99,13 +109,15 @@ void main() {
       () async {
     final bloc = build()..add(const RespirationDemarree());
     await Future<void>.delayed(Duration.zero);
+    await franchirPrep(bloc);
     await runToCompletion(bloc);
     expect(bloc.state.status, RespirationStatus.terminee);
 
     bloc.add(const RespirationRedemarree());
     await Future<void>.delayed(Duration.zero);
 
-    expect(bloc.state.status, RespirationStatus.enCours);
+    // Recommencer repasse par le decompte : statut = preparation.
+    expect(bloc.state.status, RespirationStatus.preparation);
     expect(bloc.state.cycleIndex, 0);
     expect(bloc.state.phase, PhaseRespiration.inhale);
     expect(bloc.state.statsPersisted, isFalse);

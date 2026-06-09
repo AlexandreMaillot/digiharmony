@@ -21,12 +21,13 @@ class SensBloc extends Bloc<SensEvent, SensState> {
   }) : _enregistrerSeance = enregistrerSeance,
        _gererAudio = gererAudio,
        _lireVoixOff = lireVoixOff,
-       super(SensState.initial(exercise)) {
+       super(SensState.preparation(exercise)) {
     unawaited(_gererAudio.definirVolume(actif: _lireVoixOff.appeler()));
     _voixOffSub = _lireVoixOff.flux().listen(
       (actif) => unawaited(_gererAudio.definirVolume(actif: actif)),
     );
     on<SensDemarree>(_onStarted);
+    on<SensTickPreparation>(_onPrepTicked);
     on<SensSuivantPresse>(_onNext);
     on<SensPrecedentPresse>(_onPrevious);
     on<SensRedemarree>(_onRestarted);
@@ -37,12 +38,37 @@ class SensBloc extends Bloc<SensEvent, SensState> {
   final LirePreferenceVoixOffUseCase _lireVoixOff;
   StreamSubscription<bool>? _voixOffSub;
 
+  static const Duration _prepTick = Duration(seconds: 1);
+  Timer? _prepTimer;
+
   void _jouerEtape(SensAncrage sens) {
     unawaited(_gererAudio.jouerEtape(sens));
   }
 
+  /// Lance le decompte de preparation (3-2-1) — aucun audio a ce stade.
+  void _demarrerPreparation(Emitter<SensState> emit) {
+    _prepTimer?.cancel();
+    emit(SensState.preparation(state.exercise));
+    _prepTimer = Timer.periodic(
+      _prepTick,
+      (_) => add(const SensTickPreparation()),
+    );
+  }
+
   void _onStarted(SensDemarree event, Emitter<SensState> emit) {
-    // Arrivee sur l'ecran : joue l'audio de la premiere etape affichee.
+    _demarrerPreparation(emit);
+  }
+
+  void _onPrepTicked(SensTickPreparation event, Emitter<SensState> emit) {
+    if (state.status != SensStatus.preparation) return;
+    final reste = state.prepRestant - 1;
+    if (reste > 0) {
+      emit(state.copyWith(prepRestant: reste));
+      return;
+    }
+    // Decompte termine : demarrage de l'exercice + audio 1re etape.
+    _prepTimer?.cancel();
+    emit(SensState.initial(state.exercise));
     _jouerEtape(state.exercise.steps.first.sense);
   }
 
@@ -77,12 +103,13 @@ class SensBloc extends Bloc<SensEvent, SensState> {
   }
 
   void _onRestarted(SensRedemarree event, Emitter<SensState> emit) {
-    emit(SensState.initial(state.exercise));
-    _jouerEtape(state.exercise.steps.first.sense);
+    // Recommencer repasse par le decompte 3-2-1.
+    _demarrerPreparation(emit);
   }
 
   @override
   Future<void> close() async {
+    _prepTimer?.cancel();
     await _voixOffSub?.cancel();
     unawaited(_gererAudio.liberer());
     return super.close();

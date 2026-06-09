@@ -86,7 +86,8 @@ void main() {
     bloc.add(const SensRedemarree());
     await Future<void>.delayed(Duration.zero);
     expect(bloc.state.stepIndex, 0);
-    expect(bloc.state.status, SensStatus.enCours);
+    // Recommencer repasse par le decompte : statut = preparation.
+    expect(bloc.state.status, SensStatus.preparation);
     expect(bloc.state.statsPersisted, isFalse);
     await bloc.close();
   });
@@ -98,6 +99,11 @@ void main() {
       // voiceover est déjà initialisé avec active: false dans setUp.
       final bloc = build()..add(const SensDemarree());
       await Future<void>.delayed(Duration.zero);
+      // Franchit le decompte 3-2-1 : l'audio ne démarre qu'à la fin.
+      for (var i = 0; i < 3; i++) {
+        bloc.add(const SensTickPreparation());
+        await Future<void>.delayed(Duration.zero);
+      }
 
       verify(
         () => depotAudio.jouerEtape(any()),

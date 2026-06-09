@@ -6,6 +6,7 @@ import 'dart:math' as math;
 
 import 'package:core_package/core_package.dart';
 import 'package:digiharmony_app/bien_etre_partage/dialogue_quitter_seance.dart';
+import 'package:digiharmony_app/bien_etre_partage/ecran_preparation.dart';
 import 'package:digiharmony_app/bien_etre_partage/indication_audio.dart';
 import 'package:digiharmony_app/bien_etre_partage/mise_en_page_celebration.dart';
 import 'package:digiharmony_app/bien_etre_partage/quitter_seance.dart';
@@ -111,6 +112,11 @@ class SensView extends StatelessWidget {
                 }
               },
               builder: (context, state) => switch (state.status) {
+                SensStatus.preparation => EcranPreparation(
+                  phrase: context.l10n.sensesCountdownPrepare,
+                  compteur: state.prepRestant,
+                  couleur: AppColors.sensesAccentOr,
+                ),
                 SensStatus.enCours => _LayoutEnCours(state: state),
                 SensStatus.termine => _LayoutCelebration(state: state),
               },

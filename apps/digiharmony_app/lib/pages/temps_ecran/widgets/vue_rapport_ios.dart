@@ -34,12 +34,16 @@ class VueRapportIos extends StatelessWidget {
     // UiKitView enregistre la PlatformView côté iOS.
     // Elle est conditionnellement insérée dans l'arbre uniquement en
     // chemin iOS + état `pret` + `rapportEmbarque == true` (DEC-TE-12).
-    return const UiKitView(
+    return UiKitView(
       viewType: kDeviceActivityReportViewType,
       // Le rapport système porte sa propre a11y (non contrôlable — DEC-TE-16).
       // Le wrapper Flutter (écran d'autorisation, footer) respecte tap >= 48dp.
       layoutDirection: TextDirection.ltr,
-      creationParamsCodec: StandardMessageCodec(),
+      creationParamsCodec: const StandardMessageCodec(),
+      // Diagnostic : confirme que la PlatformView native est bien instanciée.
+      onPlatformViewCreated: (id) => debugPrint(
+        '[ScreenTime] DeviceActivityReport PlatformView créée (id=$id)',
+      ),
     );
   }
 }

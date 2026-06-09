@@ -61,8 +61,18 @@ void main() {
     }
   }
 
+  // L'etat initial est `preparation` (decompte 3-2-1). On le franchit en
+  // injectant 3 ticks de preparation pour atteindre `enCours`.
+  Future<void> feedPrep(EtirementBloc bloc) async {
+    for (var i = 0; i < 3; i++) {
+      bloc.add(const EtirementTickPreparation());
+      await Future<void>.delayed(Duration.zero);
+    }
+  }
+
   test('advances segments and completes, records once', () async {
     final bloc = build();
+    await feedPrep(bloc); // franchit le decompte 3-2-1
     // Force initial state without arming a real timer.
     await feedTicks(bloc, 320); // > 300 ticks (60s / 200ms)
     expect(bloc.state.status, EtirementStatus.termine);
@@ -73,6 +83,7 @@ void main() {
   test('global elapsed advances with ticks; segment index increases',
       () async {
     final bloc = build();
+    await feedPrep(bloc); // franchit le decompte 3-2-1
     // First segment is 10s = 50 ticks; after ~60 ticks we should be on seg 1.
     await feedTicks(bloc, 60);
     expect(bloc.state.segmentIndex, greaterThanOrEqualTo(1));
@@ -82,6 +93,7 @@ void main() {
 
   test('pause stops the ticker and keeps elapsed; restart resets', () async {
     final bloc = build();
+    await feedPrep(bloc); // franchit le decompte 3-2-1
     await feedTicks(bloc, 10);
     bloc.add(const EtirementPauseBasculee());
     await Future<void>.delayed(Duration.zero);

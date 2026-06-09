@@ -8,10 +8,16 @@ sealed class SensEvent extends Equatable {
   List<Object?> get props => <Object?>[];
 }
 
-/// Arrivee sur l'ecran : joue l'audio de la premiere etape.
+/// Arrivee sur l'ecran : lance le decompte de preparation.
 class SensDemarree extends SensEvent {
   /// {@macro sens_demarree}
   const SensDemarree();
+}
+
+/// Tick (1 s) du decompte de preparation (3 -> 2 -> 1 -> demarrage).
+class SensTickPreparation extends SensEvent {
+  /// {@macro sens_tick_preparation}
+  const SensTickPreparation();
 }
 
 /// Bouton « Suivant ».

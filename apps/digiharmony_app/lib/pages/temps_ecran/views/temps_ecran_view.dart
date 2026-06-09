@@ -2,6 +2,7 @@ import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/temps_ecran/bloc/temps_ecran_bloc.dart';
 import 'package:digiharmony_app/pages/temps_ecran/services/service_temps_ecran.dart';
+import 'package:digiharmony_app/pages/temps_ecran/widgets/section_actions_temps_ecran.dart';
 import 'package:digiharmony_app/pages/temps_ecran/widgets/vue_autorisation_ios.dart';
 import 'package:digiharmony_app/pages/temps_ecran/widgets/vue_etat_message.dart';
 import 'package:digiharmony_app/pages/temps_ecran/widgets/vue_permission.dart';
@@ -130,18 +131,50 @@ class _Contenu extends StatelessWidget {
             // iOS : PlatformView DeviceActivityReport (rapport système).
             // Android : jauge + historique custom.
             if (service.rapportEmbarque) {
-              return Column(
-                children: [
-                  const Expanded(child: VueRapportIos()),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    l10n.tempsEcranIosDonneesSysteme,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textMuted,
+              debugPrint(
+                '[ScreenTime] build rapport iOS '
+                '(key=${state.rechargementRapport})',
+              );
+              // Haut = DONNÉES (rendu par l'extension Swift, hauteur fixe) ;
+              // bas = ACTIONS Flutter (vie privée + boutons natifs), comme
+              // Android. L'app ne lit jamais les chiffres (DEC-TE-13).
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Intro (Flutter).
+                    Text(
+                      l10n.tempsEcranIntro,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.textMuted,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: AppSpacing.lg),
+                    // Bloc données (jauge + semaine) dessiné par l'extension,
+                    // fond transparent : le fond (halo) de la page transparaît.
+                    // Hauteur fixe pour laisser la place aux actions dessous.
+                    // La clé (rechargementRapport) force la recréation de la
+                    // PlatformView après un octroi d'autorisation (rapport vide
+                    // à la création immédiate sinon).
+                    SizedBox(
+                      height: 340,
+                      child: VueRapportIos(
+                        key: ValueKey(state.rechargementRapport),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    // Confidentialité (message iOS : l'app ne voit pas les
+                    // chiffres, rendus côté système).
+                    CarteConfidentialiteTempsEcran(
+                      message: l10n.tempsEcranIosDonneesSysteme,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    // Actions Flutter (Détox / couper notifs) — partagées Android.
+                    const SectionActionsTempsEcran(),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+                ),
               );
             }
             return VueResume(

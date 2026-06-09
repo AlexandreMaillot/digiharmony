@@ -1,7 +1,9 @@
 part of 'etirement_bloc.dart';
 
 /// Statut de la routine d'etirement.
-enum EtirementStatus { enCours, enPause, termine }
+///
+/// [preparation] : decompte 3-2-1 avant le demarrage (sans audio).
+enum EtirementStatus { preparation, enCours, enPause, termine }
 
 /// Statut d'un segment dans la liste.
 enum EtirementStatutSegment { fait, actif, aVenir }
@@ -21,10 +23,21 @@ class EtirementState extends Equatable {
     required this.segmentIndex,
     required this.segmentElapsed,
     required this.routine,
+    this.prepRestant = 0,
     this.statsPersisted = false,
   });
 
-  /// Etat initial : segment 0, enCours.
+  /// Etat de preparation : decompte (3-2-1) avant le demarrage de la routine.
+  factory EtirementState.preparation(RoutineEtirement routine) =>
+      EtirementState(
+        status: EtirementStatus.preparation,
+        segmentIndex: 0,
+        segmentElapsed: Duration.zero,
+        routine: routine,
+        prepRestant: 3,
+      );
+
+  /// Etat initial de la routine : segment 0, enCours.
   factory EtirementState.initial(RoutineEtirement routine) => EtirementState(
     status: EtirementStatus.enCours,
     segmentIndex: 0,
@@ -43,6 +56,9 @@ class EtirementState extends Equatable {
 
   /// Routine (donnee figee).
   final RoutineEtirement routine;
+
+  /// Secondes restantes du decompte de preparation (3 -> 1, 0 = routine).
+  final int prepRestant;
 
   /// Garde-fou : agregat ecrit une seule fois.
   final bool statsPersisted;
@@ -105,6 +121,7 @@ class EtirementState extends Equatable {
     EtirementStatus? status,
     int? segmentIndex,
     Duration? segmentElapsed,
+    int? prepRestant,
     bool? statsPersisted,
   }) {
     return EtirementState(
@@ -112,6 +129,7 @@ class EtirementState extends Equatable {
       segmentIndex: segmentIndex ?? this.segmentIndex,
       segmentElapsed: segmentElapsed ?? this.segmentElapsed,
       routine: routine,
+      prepRestant: prepRestant ?? this.prepRestant,
       statsPersisted: statsPersisted ?? this.statsPersisted,
     );
   }
@@ -121,6 +139,7 @@ class EtirementState extends Equatable {
     status,
     segmentIndex,
     segmentElapsed,
+    prepRestant,
     statsPersisted,
   ];
 }

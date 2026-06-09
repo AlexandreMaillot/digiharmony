@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:digiharmony_app/pages/detox/widgets/detox_fleur_painter.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +31,13 @@ class FleurDetoxAnimee extends StatefulWidget {
 }
 
 class _FleurDetoxAnimeeState extends State<FleurDetoxAnimee>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _controller;
+
+  /// Animation décorative en boucle : rotation lente + pulsation douce de la
+  /// fleur (purement esthétique, coupée si reduceMotion).
+  late final AnimationController _decorController;
+
   late Animation<double> _progressAnim;
   late Animation<double> _bloomAnim;
 
@@ -44,6 +50,11 @@ class _FleurDetoxAnimeeState extends State<FleurDetoxAnimee>
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
+    _decorController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 14),
+    );
+    unawaited(_decorController.repeat());
     _progressAnim = Tween<double>(
       begin: widget.progress,
       end: widget.progress,
@@ -52,6 +63,17 @@ class _FleurDetoxAnimeeState extends State<FleurDetoxAnimee>
       begin: widget.bloomProgress,
       end: widget.bloomProgress,
     ).animate(_controller);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Coupe/relance l'animation décorative selon la préférence d'accessibilité.
+    if (_reduceMotion) {
+      _decorController.stop();
+    } else if (!_decorController.isAnimating) {
+      unawaited(_decorController.repeat());
+    }
   }
 
   @override
@@ -86,6 +108,7 @@ class _FleurDetoxAnimeeState extends State<FleurDetoxAnimee>
 
   @override
   void dispose() {
+    _decorController.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -93,17 +116,54 @@ class _FleurDetoxAnimeeState extends State<FleurDetoxAnimee>
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) => SizedBox(
-        width: 280,
-        height: 280,
-        child: CustomPaint(
-          painter: DetoxFleurPainter(
-            progress: _progressAnim.value,
-            bloomProgress: _bloomAnim.value,
+      animation: Listenable.merge([_controller, _decorController]),
+      builder: (context, _) {
+        // Couche PÉTALES : tourne + pulse (décoratif).
+        Widget petales = SizedBox(
+          width: 280,
+          height: 280,
+          child: CustomPaint(
+            painter: DetoxFleurPainter(
+              progress: 0,
+              bloomProgress: _bloomAnim.value,
+              peindreArc: false,
+            ),
           ),
-        ),
-      ),
+        );
+        if (!_reduceMotion) {
+          final t = _decorController.value; // 0 -> 1 en boucle
+          // Rotation lente sur elle-même (un tour toutes les 14 s).
+          final angle = t * 2 * math.pi;
+          // Pulsation douce : ~±5 % toutes les ~2,8 s (5 cycles par tour).
+          final echelle = 1 + 0.05 * math.sin(t * 2 * math.pi * 5);
+          petales = Transform.rotate(
+            angle: angle,
+            child: Transform.scale(scale: echelle, child: petales),
+          );
+        }
+        // Couche ARC de progression : FIXE (ne tourne pas, ne pulse pas).
+        return SizedBox(
+          width: 280,
+          height: 280,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              petales,
+              SizedBox(
+                width: 280,
+                height: 280,
+                child: CustomPaint(
+                  painter: DetoxFleurPainter(
+                    progress: _progressAnim.value,
+                    bloomProgress: 0,
+                    peindrePetales: false,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

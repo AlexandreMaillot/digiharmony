@@ -22,12 +22,13 @@ class EtirementBloc extends Bloc<EtirementEvent, EtirementState> {
        _enregistrerSeance = enregistrerSeance,
        _gererAudio = gererAudio,
        _lireVoixOff = lireVoixOff,
-       super(EtirementState.initial(routine)) {
+       super(EtirementState.preparation(routine)) {
     unawaited(_gererAudio.definirVolume(actif: _lireVoixOff.appeler()));
     _voixOffSub = _lireVoixOff.flux().listen(
       (actif) => unawaited(_gererAudio.definirVolume(actif: actif)),
     );
     on<EtirementDemarre>(_onStarted);
+    on<EtirementTickPreparation>(_onPrepTicked);
     on<EtirementTick>(_onTicked);
     on<EtirementPauseBasculee>(_onPauseToggled);
     on<EtirementMisEnPause>(_onPaused);
@@ -40,7 +41,9 @@ class EtirementBloc extends Bloc<EtirementEvent, EtirementState> {
   final LirePreferenceVoixOffUseCase _lireVoixOff;
 
   static const Duration _tick = Duration(milliseconds: 200);
+  static const Duration _prepTick = Duration(seconds: 1);
   Timer? _timer;
+  Timer? _prepTimer;
   StreamSubscription<bool>? _voixOffSub;
 
   void _arm() {
@@ -52,7 +55,33 @@ class EtirementBloc extends Bloc<EtirementEvent, EtirementState> {
     unawaited(_gererAudio.jouerSegment(id));
   }
 
+  /// Lance le decompte de preparation (3-2-1) — aucun audio a ce stade.
+  void _demarrerPreparation(Emitter<EtirementState> emit) {
+    _timer?.cancel();
+    _prepTimer?.cancel();
+    emit(EtirementState.preparation(_routine));
+    _prepTimer = Timer.periodic(
+      _prepTick,
+      (_) => add(const EtirementTickPreparation()),
+    );
+  }
+
   void _onStarted(EtirementDemarre event, Emitter<EtirementState> emit) {
+    _demarrerPreparation(emit);
+  }
+
+  void _onPrepTicked(
+    EtirementTickPreparation event,
+    Emitter<EtirementState> emit,
+  ) {
+    if (state.status != EtirementStatus.preparation) return;
+    final reste = state.prepRestant - 1;
+    if (reste > 0) {
+      emit(state.copyWith(prepRestant: reste));
+      return;
+    }
+    // Decompte termine : demarrage de la routine (audio + ticker).
+    _prepTimer?.cancel();
     emit(EtirementState.initial(_routine));
     _jouerSegment(_routine.segments.first.id);
     _arm();
@@ -116,6 +145,7 @@ class EtirementBloc extends Bloc<EtirementEvent, EtirementState> {
 
   void _onPaused(EtirementMisEnPause event, Emitter<EtirementState> emit) {
     _timer?.cancel();
+    _prepTimer?.cancel();
     if (state.status == EtirementStatus.enCours) {
       emit(state.copyWith(status: EtirementStatus.enPause));
     }
@@ -123,14 +153,14 @@ class EtirementBloc extends Bloc<EtirementEvent, EtirementState> {
   }
 
   void _onRestarted(EtirementRedemarree event, Emitter<EtirementState> emit) {
-    emit(EtirementState.initial(_routine));
-    _jouerSegment(_routine.segments.first.id);
-    _arm();
+    // Recommencer repasse par le decompte 3-2-1.
+    _demarrerPreparation(emit);
   }
 
   @override
   Future<void> close() async {
     _timer?.cancel();
+    _prepTimer?.cancel();
     await _voixOffSub?.cancel();
     unawaited(_gererAudio.liberer());
     return super.close();

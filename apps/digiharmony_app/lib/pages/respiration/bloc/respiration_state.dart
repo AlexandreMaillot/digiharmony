@@ -1,7 +1,9 @@
 part of 'respiration_bloc.dart';
 
 /// Statut de la seance de respiration.
-enum RespirationStatus { enCours, enPause, terminee }
+///
+/// [preparation] : decompte 3-2-1 avant le demarrage (sans audio).
+enum RespirationStatus { preparation, enCours, enPause, terminee }
 
 /// Etat immuable de la machine de respiration.
 class RespirationState extends Equatable {
@@ -11,8 +13,19 @@ class RespirationState extends Equatable {
     required this.phase,
     required this.cycleIndex,
     required this.phaseDurationSeconds,
+    this.prepRestant = 0,
     this.statsPersisted = false,
   });
+
+  /// Etat de preparation : decompte (3-2-1) avant le demarrage.
+  factory RespirationState.preparation(SeanceRespiration session) =>
+      RespirationState(
+        status: RespirationStatus.preparation,
+        phase: PhaseRespiration.inhale,
+        cycleIndex: 0,
+        phaseDurationSeconds: session.inhale.inSeconds,
+        prepRestant: 3,
+      );
 
   /// Etat initial : cycle 0, phase inhale, enCours.
   factory RespirationState.initial(SeanceRespiration session) =>
@@ -35,6 +48,9 @@ class RespirationState extends Equatable {
   /// Duree (s) de la phase courante.
   final int phaseDurationSeconds;
 
+  /// Secondes restantes du decompte de preparation (3 -> 1).
+  final int prepRestant;
+
   /// Garde-fou : agregat ecrit une seule fois.
   final bool statsPersisted;
 
@@ -47,6 +63,7 @@ class RespirationState extends Equatable {
     PhaseRespiration? phase,
     int? cycleIndex,
     int? phaseDurationSeconds,
+    int? prepRestant,
     bool? statsPersisted,
   }) {
     return RespirationState(
@@ -54,6 +71,7 @@ class RespirationState extends Equatable {
       phase: phase ?? this.phase,
       cycleIndex: cycleIndex ?? this.cycleIndex,
       phaseDurationSeconds: phaseDurationSeconds ?? this.phaseDurationSeconds,
+      prepRestant: prepRestant ?? this.prepRestant,
       statsPersisted: statsPersisted ?? this.statsPersisted,
     );
   }
@@ -64,6 +82,7 @@ class RespirationState extends Equatable {
     phase,
     cycleIndex,
     phaseDurationSeconds,
+    prepRestant,
     statsPersisted,
   ];
 }

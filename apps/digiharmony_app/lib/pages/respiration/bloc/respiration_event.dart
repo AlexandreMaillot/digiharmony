@@ -8,10 +8,16 @@ sealed class RespirationEvent extends Equatable {
   List<Object?> get props => <Object?>[];
 }
 
-/// Demarrage (auto a l'ouverture).
+/// Demarrage (auto a l'ouverture) : lance le decompte de preparation.
 class RespirationDemarree extends RespirationEvent {
   /// {@macro respiration_demarree}
   const RespirationDemarree();
+}
+
+/// Tick (1 s) du decompte de preparation (3 -> 2 -> 1 -> demarrage).
+class RespirationTickPreparation extends RespirationEvent {
+  /// {@macro respiration_tick_preparation}
+  const RespirationTickPreparation();
 }
 
 /// Fin de la phase courante (emis par le ticker interne).

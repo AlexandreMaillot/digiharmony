@@ -14,10 +14,16 @@ class EtirementDemarre extends EtirementEvent {
   const EtirementDemarre();
 }
 
-/// Tick du ticker.
+/// Tick du ticker (200 ms) de la routine.
 class EtirementTick extends EtirementEvent {
   /// {@macro etirement_tick}
   const EtirementTick();
+}
+
+/// Tick (1 s) du decompte de preparation (3 -> 2 -> 1 -> demarrage).
+class EtirementTickPreparation extends EtirementEvent {
+  /// {@macro etirement_tick_preparation}
+  const EtirementTickPreparation();
 }
 
 /// Bascule pause/reprise (tap sur le guide).

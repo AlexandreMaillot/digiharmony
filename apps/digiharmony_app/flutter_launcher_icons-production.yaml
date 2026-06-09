@@ -1,12 +1,16 @@
-# Icone d'app — flavor PRODUCTION uniquement (Android adaptatif).
+# Icone d'app — flavor PRODUCTION (Android adaptatif + iOS AppIcon).
 # Genere via : dart run flutter_launcher_icons -f flutter_launcher_icons-production.yaml
-# Sort dans android/app/src/production/res/ (override production) ; dev/staging/main
-# inchanges. iOS NON regenere ici (l'AppIcon.appiconset existant convient — pas de
-# bordure blanche sur iOS). Le visuel plein cadre remplit le cercle adaptatif ;
-# fond navy #16213C (AppColors.backgroundDeep) derriere (cache car visuel opaque).
+# Android : sort dans android/app/src/production/res/ (override production).
+# iOS : regenere ios/Runner/Assets.xcassets/AppIcon.appiconset (jeu de prod).
+#   `remove_alpha_ios` aplatit la transparence (iOS interdit l'alpha) ;
+#   `background_color_ios` = navy #16213C derriere les zones transparentes
+#   (evite une bordure noire/blanche). Le visuel plein cadre remplit le cercle
+#   adaptatif Android ; meme fond navy derriere.
 flutter_launcher_icons:
   android: "ic_launcher"
-  ios: false
+  ios: true
+  remove_alpha_ios: true
+  background_color_ios: "#16213C"
   image_path: "tool/icon/app_icon_1024.png"
   adaptive_icon_background: "#16213C"
   adaptive_icon_foreground: "tool/icon/app_icon_1024.png"

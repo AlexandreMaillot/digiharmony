@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:digiharmony_app/app/routing/app_router.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/temps_ecran/bloc/temps_ecran_bloc.dart';
 import 'package:digiharmony_app/pages/temps_ecran/modeles/formatage_duree.dart';
 import 'package:digiharmony_app/pages/temps_ecran/modeles/resume_temps_ecran.dart';
+import 'package:digiharmony_app/pages/temps_ecran/widgets/section_actions_temps_ecran.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -94,36 +94,14 @@ class VueResume extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.lg),
 
-          // Carte confidentialité.
-          _CarteConfidentialite(),
+          // Carte confidentialité (données locales jamais envoyées).
+          CarteConfidentialiteTempsEcran(
+            message: l10n.tempsEcranDonneesLocales,
+          ),
           const SizedBox(height: AppSpacing.lg),
 
-          // Section « Et maintenant ? ».
-          Text(
-            l10n.tempsEcranEtMaintenant,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: AppColors.textMuted,
-              letterSpacing: 1.2,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-
-          // Carte « Faire une pause » → configuration Détox.
-          _CarteAction(
-            icone: Icons.spa_outlined,
-            titre: l10n.tempsEcranFairePause,
-            sousTitre: l10n.tempsEcranFairePauseSousTitre,
-            onTap: () => AppRouter.versDetox(context),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-
-          // Carte « Couper mes notifications » → tuto notifs.
-          _CarteAction(
-            icone: Icons.notifications_off_outlined,
-            titre: l10n.tempsEcranCouperNotifs,
-            sousTitre: l10n.tempsEcranCouperNotifsSousTitre,
-            onTap: () => AppRouter.versTutoNotifs(context),
-          ),
+          // Section « Et maintenant ? » + cartes d'action (widget partagé iOS).
+          const SectionActionsTempsEcran(),
           const SizedBox(height: AppSpacing.md),
         ],
       ),
@@ -395,131 +373,6 @@ class _ColonneJour extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Carte confidentialité
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _CarteConfidentialite extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: AppRadii.cardRadius,
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.25),
-        ),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.shield_outlined,
-            color: AppColors.primary,
-            size: 24,
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Text(
-              l10n.tempsEcranDonneesLocales,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: AppColors.textMuted,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Carte action
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _CarteAction extends StatelessWidget {
-  const _CarteAction({
-    required this.icone,
-    required this.titre,
-    required this.sousTitre,
-    required this.onTap,
-  });
-
-  final IconData icone;
-  final String titre;
-  final String sousTitre;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Material(
-      color: AppColors.surface,
-      borderRadius: AppRadii.cardRadius,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: AppRadii.cardRadius,
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.md,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: AppRadii.cardRadius,
-            border: Border.all(
-              color: AppColors.surface.withValues(alpha: 0),
-            ),
-          ),
-          child: Row(
-            children: [
-              // Pastille icône cyan.
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icone, color: AppColors.primary, size: 22),
-              ),
-              const SizedBox(width: AppSpacing.md),
-              // Textes.
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      titre,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      sousTitre,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppColors.textMuted,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(
-                Icons.chevron_right,
-                color: AppColors.textMuted,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

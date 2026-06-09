@@ -24,3 +24,7 @@ It is possible to switch between speakers within the text. Just use the followin
 [speaker:Brian] How are you doing?
 [speaker:Emma] I am fine. May i invite you to a cup of tea?
 Please note: Remove any diacritical signs from the speakers names when using this, Léa = Lea, Penélope = Penelope
+
+
+
+Fais la pareil pour la page "les sens" et la page "respiration"

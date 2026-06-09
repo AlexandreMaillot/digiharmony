@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:core_package/core_package.dart';
 import 'package:digiharmony_app/bien_etre_partage/bouton_recommencer.dart';
 import 'package:digiharmony_app/bien_etre_partage/dialogue_quitter_seance.dart';
+import 'package:digiharmony_app/bien_etre_partage/ecran_preparation.dart';
 import 'package:digiharmony_app/bien_etre_partage/indication_audio.dart';
 import 'package:digiharmony_app/bien_etre_partage/mise_en_page_celebration.dart';
 import 'package:digiharmony_app/bien_etre_partage/quitter_seance.dart';
@@ -121,6 +122,11 @@ class RespirationView extends StatelessWidget {
                 }
               },
               builder: (context, state) => switch (state.status) {
+                RespirationStatus.preparation => EcranPreparation(
+                  phrase: context.l10n.breathingCountdownPrepare,
+                  compteur: state.prepRestant,
+                  couleur: AppColors.primary,
+                ),
                 RespirationStatus.enCours ||
                 RespirationStatus.enPause => _LayoutEnCours(state: state),
                 RespirationStatus.terminee =>
