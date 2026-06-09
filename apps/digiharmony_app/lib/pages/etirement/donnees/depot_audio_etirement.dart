@@ -30,7 +30,7 @@ class DepotAudioEtirementImpl implements DepotAudioEtirement {
   /// {@macro depot_audio_etirement_impl}
   DepotAudioEtirementImpl({
     ControleurAudioEtirement? controleur,
-    String langue = 'fr',
+    String langue = 'en',
   }) : _controleur = controleur ?? ControleurAudioEtirement(langue: langue);
 
   final ControleurAudioEtirement _controleur;

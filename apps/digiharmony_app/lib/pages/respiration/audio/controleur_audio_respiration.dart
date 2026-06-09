@@ -8,7 +8,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 /// jamais la seance (fallback gracieux).
 class ControleurAudioRespiration {
   /// [langue] : code langue (ex. 'fr', 'en') -> sous-dossier audio.
-  /// Repli automatique sur 'fr' si le fichier de la langue est absent.
+  /// Repli automatique sur 'en' si le fichier de la langue est absent.
   ControleurAudioRespiration({this.langue = _langueRepli});
 
   /// Code langue courant.
@@ -17,7 +17,7 @@ class ControleurAudioRespiration {
   final AudioPlayer _player = AudioPlayer();
 
   static const String _dossier = 'assets/audio/respiration';
-  static const String _langueRepli = 'fr';
+  static const String _langueRepli = 'en';
 
   static const Map<PhaseRespiration, String> _fichiers =
       <PhaseRespiration, String>{
@@ -27,7 +27,7 @@ class ControleurAudioRespiration {
   };
 
   /// Joue l'audio de guidage de la phase dans la langue courante
-  /// (repli sur 'fr' si le fichier de la langue n'existe pas).
+  /// (repli sur 'en' si le fichier de la langue n'existe pas).
   Future<void> playPhase(PhaseRespiration phase) async {
     final fichier = _fichiers[phase];
     if (fichier == null) return;

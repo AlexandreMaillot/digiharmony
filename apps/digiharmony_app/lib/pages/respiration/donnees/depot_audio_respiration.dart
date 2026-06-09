@@ -30,7 +30,7 @@ class DepotAudioRespirationImpl implements DepotAudioRespiration {
   /// {@macro depot_audio_respiration_impl}
   DepotAudioRespirationImpl({
     ControleurAudioRespiration? controleur,
-    String langue = 'fr',
+    String langue = 'en',
   }) : _controleur = controleur ?? ControleurAudioRespiration(langue: langue);
 
   final ControleurAudioRespiration _controleur;

@@ -7,7 +7,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 /// Chargement en try/catch silencieux (fallback gracieux si asset absent).
 class ControleurAudioSens {
   /// [langue] : code langue (ex. 'fr', 'en') -> sous-dossier audio.
-  /// Repli automatique sur 'fr' si le fichier de la langue est absent.
+  /// Repli automatique sur 'en' si le fichier de la langue est absent.
   ControleurAudioSens({this.langue = _langueRepli});
 
   /// Code langue courant.
@@ -16,7 +16,7 @@ class ControleurAudioSens {
   final AudioPlayer _player = AudioPlayer();
 
   static const String _dossier = 'assets/audio/senses';
-  static const String _langueRepli = 'fr';
+  static const String _langueRepli = 'en';
 
   static const Map<SensAncrage, String> _fichiers = <SensAncrage, String>{
     SensAncrage.see: 'voir.mp3',
@@ -27,7 +27,7 @@ class ControleurAudioSens {
   };
 
   /// Joue l'audio de guidage du sens dans la langue courante
-  /// (repli sur 'fr' si le fichier de la langue n'existe pas).
+  /// (repli sur 'en' si le fichier de la langue n'existe pas).
   Future<void> playStep(SensAncrage sense) async {
     final fichier = _fichiers[sense];
     if (fichier == null) return;

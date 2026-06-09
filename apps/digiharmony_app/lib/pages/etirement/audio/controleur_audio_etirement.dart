@@ -7,7 +7,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 /// Chargement en try/catch silencieux (fallback gracieux si asset absent).
 class ControleurAudioEtirement {
   /// [langue] : code langue (ex. 'fr', 'en') -> sous-dossier audio.
-  /// Repli automatique sur 'fr' si le fichier de la langue est absent.
+  /// Repli automatique sur 'en' si le fichier de la langue est absent.
   ControleurAudioEtirement({this.langue = _langueRepli});
 
   /// Code langue courant.
@@ -16,7 +16,7 @@ class ControleurAudioEtirement {
   final AudioPlayer _player = AudioPlayer();
 
   static const String _dossier = 'assets/audio/etirements';
-  static const String _langueRepli = 'fr';
+  static const String _langueRepli = 'en';
 
   static const Map<IdSegmentEtirement, String> _fichiers =
       <IdSegmentEtirement, String>{
@@ -27,7 +27,7 @@ class ControleurAudioEtirement {
       };
 
   /// Joue l'audio de guidage du segment dans la langue courante
-  /// (repli sur 'fr' si le fichier de la langue n'existe pas).
+  /// (repli sur 'en' si le fichier de la langue n'existe pas).
   Future<void> playSegment(IdSegmentEtirement id) async {
     final fichier = _fichiers[id];
     if (fichier == null) return;
