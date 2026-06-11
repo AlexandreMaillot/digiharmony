@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:digiharmony_app/data/local/app_database.dart';
+import 'package:digiharmony_app/services/rappel/service_rappel_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -52,6 +53,7 @@ Future<void> bootstrap(
   Future<Storage> Function()? storageBuilder,
   AppDatabase Function()? databaseBuilder,
   Future<void> Function()? audioInit,
+  Future<void> Function()? notifInit,
 }) async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -73,7 +75,11 @@ Future<void> bootstrap(
   // (le canal natif ne répond pas en environnement de test → no-op).
   await (audioInit ?? _defaultAudioInit)();
 
-  // 3) Base Drift unique (ouverture paresseuse ; warm-up mesuré par le Splash).
+  // 3) Init notifications locales (rappel quotidien — 100 % local).
+  // Échec non bloquant. Injectable pour les tests (no-op si non fourni).
+  await (notifInit ?? _defaultNotifInit)();
+
+  // 4) Base Drift unique (ouverture paresseuse ; warm-up mesuré par le Splash).
   final database = (databaseBuilder ?? AppDatabase.new)();
 
   runApp(await builder(database));
@@ -90,6 +96,22 @@ Future<void> _defaultAudioInit() async {
   } on Object catch (error, stackTrace) {
     log(
       'JustAudioBackground.init failed',
+      error: error,
+      stackTrace: stackTrace,
+    );
+  }
+}
+
+/// Initialise le service de notifications locales (rappel quotidien d'humeur).
+///
+/// Échec non bloquant. Remplacé par un no-op dans les tests via le paramètre
+/// `notifInit` de [bootstrap].
+Future<void> _defaultNotifInit() async {
+  try {
+    await ServiceRappelNotifications().initialiser();
+  } on Object catch (error, stackTrace) {
+    log(
+      'ServiceRappelNotifications.initialiser failed',
       error: error,
       stackTrace: stackTrace,
     );

@@ -208,6 +208,26 @@
     "@journalTitle": {
         "description": "JournalPage — Toolbar title"
     },
+    "navHome": "Home",
+    "@navHome": {
+        "description": "Bottom navigation bar — Home tab label"
+    },
+    "navJournal": "Journal",
+    "@navJournal": {
+        "description": "Bottom navigation bar — Journal tab label"
+    },
+    "navTips": "Tips",
+    "@navTips": {
+        "description": "Bottom navigation bar — Tips tab label"
+    },
+    "navBubbles": "Bubbles",
+    "@navBubbles": {
+        "description": "Bottom navigation bar — Bubbles tab label"
+    },
+    "navSettings": "Settings",
+    "@navSettings": {
+        "description": "Bottom navigation bar — Settings tab label"
+    },
     "journalSegmentDay": "Day",
     "@journalSegmentDay": {
         "description": "JournalPage — SegmentedControl segment label for day view"
@@ -1820,5 +1840,73 @@
     "notifGuideBrand": "DigiHarmony",
     "@notifGuideBrand": {
         "description": "Brand label"
+    },
+    "rappelSectionTitle": "Daily reminder",
+    "@rappelSectionTitle": {
+        "description": "Section title for Reminder in Settings"
+    },
+    "rappelToggleLabel": "Enable daily reminder",
+    "@rappelToggleLabel": {
+        "description": "Toggle label for enabling the reminder"
+    },
+    "rappelHeureLabel": "Reminder time",
+    "@rappelHeureLabel": {
+        "description": "Label for the time selection row"
+    },
+    "rappelHeurePickerTitle": "Choose time",
+    "@rappelHeurePickerTitle": {
+        "description": "Native time picker dialog title"
+    },
+    "rappelPermissionRefuseeMessage": "Notifications are turned off on this device. You can re-enable them in your system settings.",
+    "@rappelPermissionRefuseeMessage": {
+        "description": "Caring message if permission is denied or revoked"
+    },
+    "rappelOuvrirReglagesOsCta": "Open settings",
+    "@rappelOuvrirReglagesOsCta": {
+        "description": "CTA to open OS settings when permission is revoked"
+    },
+    "rappelNotificationTitre": "How are you feeling today?",
+    "@rappelNotificationTitre": {
+        "description": "Title of the local reminder notification"
+    },
+    "rappelNotificationCorps": "Take a moment to log your mood.",
+    "@rappelNotificationCorps": {
+        "description": "Body of the local reminder notification"
+    },
+    "primingTitle": "A little reminder for you",
+    "@primingTitle": {
+        "description": "Priming page title before native permission"
+    },
+    "primingBody": "DigiHarmony can send you a daily notification to remind you to log your mood — helpful for tracking your well-being over time.",
+    "@primingBody": {
+        "description": "Priming page explanatory body"
+    },
+    "primingPrivacyNote": "100% local & private — no data is ever sent.",
+    "@primingPrivacyNote": {
+        "description": "Privacy note on the priming page"
+    },
+    "primingActiverCta": "Enable reminder",
+    "@primingActiverCta": {
+        "description": "Primary CTA on the priming page (triggers native permission)"
+    },
+    "primingPlusTardCta": "Maybe later",
+    "@primingPlusTardCta": {
+        "description": "Secondary CTA on the priming page (close without enabling)"
+    },
+    "rappelInvitationTitle": "Daily reminder",
+    "@rappelInvitationTitle": {
+        "description": "Title of the one-shot invitation bottom sheet"
+    },
+    "rappelInvitationBody": "Would you like a daily reminder to log your mood?",
+    "@rappelInvitationBody": {
+        "description": "Body of the one-shot invitation bottom sheet"
+    },
+    "rappelInvitationActiverCta": "Yes, enable reminder",
+    "@rappelInvitationActiverCta": {
+        "description": "Primary CTA on the invitation sheet (opens priming page)"
+    },
+    "rappelInvitationPlusTardCta": "No thanks",
+    "@rappelInvitationPlusTardCta": {
+        "description": "Secondary CTA on the invitation sheet (close without enabling)"
     }
 }

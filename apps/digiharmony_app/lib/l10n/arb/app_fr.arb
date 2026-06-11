@@ -49,6 +49,11 @@
     "saisieHumeurAnnuler": "Annuler",
     "saisieHumeurDonneesLocales": "Tes données restent sur ton appareil",
     "journalTitle": "Mon journal",
+    "navHome": "Accueil",
+    "navJournal": "Journal",
+    "navTips": "Conseils",
+    "navBubbles": "Bulles",
+    "navSettings": "Réglages",
     "journalSegmentDay": "Jour",
     "journalSegmentWeek": "Semaine",
     "journalSegmentMonth": "Mois",
@@ -908,5 +913,73 @@
     "notifGuideBrand": "DigiHarmony",
     "@notifGuideBrand": {
         "description": "Brand label"
+    },
+    "rappelSectionTitle": "Rappel quotidien",
+    "@rappelSectionTitle": {
+        "description": "Titre de la section Rappel dans Paramètres"
+    },
+    "rappelToggleLabel": "Activer le rappel quotidien",
+    "@rappelToggleLabel": {
+        "description": "Label du toggle d'activation du rappel"
+    },
+    "rappelHeureLabel": "Heure du rappel",
+    "@rappelHeureLabel": {
+        "description": "Label de la ligne de sélection de l'heure"
+    },
+    "rappelHeurePickerTitle": "Choisir l'heure",
+    "@rappelHeurePickerTitle": {
+        "description": "Titre du time picker natif"
+    },
+    "rappelPermissionRefuseeMessage": "Les notifications sont désactivées sur cet appareil. Tu peux les réactiver dans les réglages système.",
+    "@rappelPermissionRefuseeMessage": {
+        "description": "Message bienveillant si la permission est refusée ou révoquée"
+    },
+    "rappelOuvrirReglagesOsCta": "Ouvrir les réglages",
+    "@rappelOuvrirReglagesOsCta": {
+        "description": "CTA pour ouvrir les réglages OS (permission révoquée)"
+    },
+    "rappelNotificationTitre": "Comment tu te sens aujourd'hui ?",
+    "@rappelNotificationTitre": {
+        "description": "Titre de la notification locale de rappel d'humeur"
+    },
+    "rappelNotificationCorps": "Prends un instant pour noter ton humeur.",
+    "@rappelNotificationCorps": {
+        "description": "Corps de la notification locale de rappel d'humeur"
+    },
+    "primingTitle": "Un petit rappel pour toi",
+    "@primingTitle": {
+        "description": "Titre de la page priming pré-permission"
+    },
+    "primingBody": "DigiHarmony peut t'envoyer une notification chaque jour pour te rappeler de noter ton humeur. Utile pour suivre ton bien-être dans la durée.",
+    "@primingBody": {
+        "description": "Corps explicatif de la page priming"
+    },
+    "primingPrivacyNote": "100 % local et privé — aucune donnée n'est envoyée.",
+    "@primingPrivacyNote": {
+        "description": "Note de confidentialité sur la page priming"
+    },
+    "primingActiverCta": "Activer le rappel",
+    "@primingActiverCta": {
+        "description": "Bouton principal de la page priming (déclenche la permission native)"
+    },
+    "primingPlusTardCta": "Plus tard",
+    "@primingPlusTardCta": {
+        "description": "Bouton secondaire de la page priming (ferme sans activer)"
+    },
+    "rappelInvitationTitle": "Rappel quotidien",
+    "@rappelInvitationTitle": {
+        "description": "Titre de la bottom sheet d'invitation one-shot"
+    },
+    "rappelInvitationBody": "Tu veux qu'on te rappelle chaque jour de noter ton humeur ?",
+    "@rappelInvitationBody": {
+        "description": "Corps de la bottom sheet d'invitation one-shot"
+    },
+    "rappelInvitationActiverCta": "Oui, activer le rappel",
+    "@rappelInvitationActiverCta": {
+        "description": "CTA principal de la bottom sheet (ouvre la page priming)"
+    },
+    "rappelInvitationPlusTardCta": "Non merci",
+    "@rappelInvitationPlusTardCta": {
+        "description": "CTA secondaire de la bottom sheet (ferme sans activer)"
     }
 }

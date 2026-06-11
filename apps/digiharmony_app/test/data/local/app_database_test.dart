@@ -267,4 +267,63 @@ void main() {
       expect(entries.first.codeEmotion, 'dynamic');
     });
   });
+
+  group('humeurDuJourEstNotee', () {
+    Future<void> insertAvecJour(
+      String code,
+      int valence,
+      DateTime at,
+    ) {
+      final jour = DateTime(at.year, at.month, at.day);
+      return db
+          .into(db.entreesHumeur)
+          .insert(
+            EntreesHumeurCompanion.insert(
+              codeEmotion: code,
+              valence: valence,
+              creeLe: at,
+              jour: jour,
+            ),
+          );
+    }
+
+    // DJNOTEE-1 : jour avec entrée → true.
+    test('DJNOTEE-1 : jour avec entrée → true', () async {
+      final jour = DateTime(2026, 6, 10, 14, 30);
+      await insertAvecJour('happy', 1, jour);
+      expect(
+        await db.humeurDuJourEstNotee(jour: DateTime(2026, 6, 10)),
+        isTrue,
+      );
+    });
+
+    // DJNOTEE-2 : jour sans entrée → false.
+    test('DJNOTEE-2 : jour sans entrée → false', () async {
+      expect(
+        await db.humeurDuJourEstNotee(jour: DateTime(2026, 6, 11)),
+        isFalse,
+      );
+    });
+
+    // DJNOTEE-3 : entrée exactement à minuit → incluse (borne basse incluse).
+    test('DJNOTEE-3 : entrée à minuit incluse (borne basse)', () async {
+      final minuit = DateTime(2026, 6, 12);
+      await insertAvecJour('calm', 0, minuit);
+      expect(
+        await db.humeurDuJourEstNotee(jour: DateTime(2026, 6, 12)),
+        isTrue,
+      );
+    });
+
+    // DJNOTEE-4 : entrée à minuit+1j → exclue (borne haute exclue).
+    test('DJNOTEE-4 : entrée à minuit+1j exclue (borne haute)', () async {
+      final minuitPlusUn = DateTime(2026, 6, 13); // minuit du jour suivant
+      await insertAvecJour('sad', -1, minuitPlusUn);
+      // La requête pour le 12 ne doit pas trouver l'entrée du 13 à minuit.
+      expect(
+        await db.humeurDuJourEstNotee(jour: DateTime(2026, 6, 12)),
+        isFalse,
+      );
+    });
+  });
 }

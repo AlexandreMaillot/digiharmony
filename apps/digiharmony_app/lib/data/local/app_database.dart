@@ -399,6 +399,28 @@ class AppDatabase extends _$AppDatabase {
         .watchSingleOrNull();
   }
 
+  /// Renvoie `true` si une humeur a déjà été notée pour [jour]
+  /// (défaut : aujourd'hui).
+  ///
+  /// Lecture ponctuelle (non réactive). Bornes `[minuit, minuit+1j)` identiques
+  /// à [observerDerniereHumeurDuJour]. Borne haute **exclue**
+  /// (`isSmallerThanValue`), sans post-filtrage, LIMIT 1.
+  /// Aucun bump de schéma (DEC-R-02, DEC-001/002).
+  Future<bool> humeurDuJourEstNotee({DateTime? jour}) async {
+    final ref = jour ?? DateTime.now();
+    final start = DateTime(ref.year, ref.month, ref.day);
+    final end = start.add(const Duration(days: 1));
+    final count = await (select(entreesHumeur)
+          ..where(
+            (t) =>
+                t.creeLe.isBiggerOrEqualValue(start) &
+                t.creeLe.isSmallerThanValue(end),
+          )
+          ..limit(1))
+        .get();
+    return count.isNotEmpty;
+  }
+
   /// Entrées d'humeur de la semaine contenant [jourReference], réactif.
   ///
   /// Bornes `[lundi 00:00, lundi+7j)` en heure locale, tri `creeLe ASC`.

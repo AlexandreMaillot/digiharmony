@@ -3,6 +3,7 @@ import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/parametres/widgets/section_confidentialite.dart';
 import 'package:digiharmony_app/pages/parametres/widgets/section_langue.dart';
 import 'package:digiharmony_app/pages/parametres/widgets/section_projet.dart';
+import 'package:digiharmony_app/pages/parametres/widgets/section_rappel.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -28,13 +29,20 @@ class ParametresView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.chevron_left, color: AppColors.text),
-          iconSize: 32,
-          padding: const EdgeInsets.all(AppSpacing.sm),
-          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        automaticallyImplyLeading: false,
+        // Onglet de la bottom bar : pas de retour (DEC-NAV-2026). Espaceur
+        // symétrique conservé pour centrer le titre. Le chevron ne réapparaît
+        // qu'en navigation empilée (prévisualisation/tests).
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.chevron_left, color: AppColors.text),
+                iconSize: 32,
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                constraints:
+                    const BoxConstraints(minWidth: 48, minHeight: 48),
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : const SizedBox(width: 48),
         title: Text(
           l10n.parametresTitre,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -66,6 +74,8 @@ class ParametresView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SectionLangue(),
+                  SizedBox(height: AppSpacing.xl),
+                  SectionRappel(),
                   SizedBox(height: AppSpacing.xl),
                   SectionConfidentialite(),
                   SizedBox(height: AppSpacing.xl),

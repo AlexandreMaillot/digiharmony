@@ -1,11 +1,15 @@
 import 'dart:async';
 
+import 'package:digiharmony_app/app/view/app.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
+import 'package:digiharmony_app/pages/rappel_priming/widgets/rappel_invitation_sheet.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/bloc/saisie_humeur_bloc.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/widgets/carte_feedback_selection.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/widgets/picker_emotions.dart';
+import 'package:digiharmony_app/rappel/rappel_bloc.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -29,8 +33,10 @@ class SaisieHumeurView extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(Icons.chevron_left),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            // Écran de tâche poussé sur la bottom bar : on ferme (X),
+            // on ne « revient » pas (DEC-NAV-2026).
+            icon: const Icon(Icons.close),
+            tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: Image.asset(
@@ -104,8 +110,41 @@ class SaisieHumeurView extends StatelessWidget {
   void _onStateChange(BuildContext context, SaisieHumeurState state) {
     if (state is EnregistrementReussi) {
       unawaited(HapticFeedback.mediumImpact());
+      // Invitation one-shot au rappel (DEC-R-03) : affiche la sheet si le flag
+      // n'a pas encore été posé. Le RappelBloc est app-level (fourni via App).
+      // Lecture optionnelle : si absent (test sans RappelBloc), on ignore.
+      RappelBloc? rappelBlocNullable;
+      try {
+        rappelBlocNullable = context.read<RappelBloc>();
+      } on Object {
+        rappelBlocNullable = null;
+      }
+      final rappelBloc = rappelBlocNullable;
+      final montrerInvitation =
+          rappelBloc != null && !rappelBloc.state.invitationDejaProposee;
+
+      // Replanification après saisie (DEC-R-04) — humeurDuJourEstNotee sera
+      // true désormais, la prochaine notif est donc replanifiée pour demain.
+      rappelBloc?.add(const RappelReplanificationDemandee());
+
       // Retour à l'Accueil : la carte humeur s'y met à jour via Drift watch().
       Navigator.of(context).pop();
+
+      if (montrerInvitation) {
+        // La sheet dispatche elle-même [RappelInvitationProposee] avant de
+        // s'afficher (one-shot garanti par [RappelInvitationSheet.afficher]).
+        // La sheet est affichée sur l'écran parent (AccueilView) via le
+        // navigateur global (appNavigatorKey) — au post-frame pour laisser la
+        // transition de route se terminer proprement (DEC-R-03).
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          final nav = appNavigatorKey.currentState;
+          if (nav != null) {
+            unawaited(
+              RappelInvitationSheet.afficher(nav.context),
+            );
+          }
+        });
+      }
     } else if (state is EnregistrementEchoue) {
       // Message i18n bienveillant (public mineur) plutôt que l'exception brute.
       // `state.message` reste disponible pour usage interne/diagnostic.

@@ -5,6 +5,8 @@ import 'package:digiharmony_app/locale/locale_bloc.dart';
 import 'package:digiharmony_app/pages/parametres/modeles/langue_supportee.dart';
 import 'package:digiharmony_app/pages/parametres/views/parametres_page.dart';
 import 'package:digiharmony_app/pages/parametres/views/parametres_view.dart';
+import 'package:digiharmony_app/rappel/rappel_bloc.dart';
+import 'package:digiharmony_app/services/rappel/service_rappel.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,33 +19,51 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 
 import '../../../helpers/hydrated_storage.dart';
 
+class _MockServiceRappel extends Mock implements ServiceRappel {}
+
+class _MockRappelBloc extends Mock implements RappelBloc {}
+
 // Mock de la plateforme url_launcher — utilise MockPlatformInterfaceMixin
 // pour contourner la vérification d'interface (DEC-PARAM-05 — AC6/AC7/AC8).
 class _MockUrlLauncher extends Mock
     with MockPlatformInterfaceMixin
     implements UrlLauncherPlatform {}
 
-// Pompe ParametresView avec i18n + LocaleBloc + MediaQuery configurable.
+// Pompe ParametresView avec i18n + LocaleBloc + RappelBloc + MediaQuery.
 extension _PumpParametresView on WidgetTester {
   Future<void> pumpParametresView({
     LocaleBloc? localeBloc,
+    _MockRappelBloc? rappelBloc,
+    _MockServiceRappel? serviceRappel,
     bool disableAnimations = true,
     Locale locale = const Locale('en'),
   }) {
-    final bloc = localeBloc ?? LocaleBloc();
+    final lBloc = localeBloc ?? LocaleBloc();
+    final rBloc = rappelBloc ?? _MockRappelBloc();
+    if (rappelBloc == null) {
+      when(() => rBloc.state).thenReturn(const RappelState());
+      when(() => rBloc.stream).thenAnswer((_) => const Stream.empty());
+    }
+    final sRappel = serviceRappel ?? _MockServiceRappel();
     return pumpWidget(
-      BlocProvider<LocaleBloc>.value(
-        value: bloc,
-        child: MediaQuery(
-          data: MediaQueryData(disableAnimations: disableAnimations),
-          child: MaterialApp(
-            theme: AppTheme.dark,
-            darkTheme: AppTheme.dark,
-            themeMode: ThemeMode.dark,
-            locale: locale,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const ParametresView(),
+      RepositoryProvider<ServiceRappel>.value(
+        value: sRappel,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<LocaleBloc>.value(value: lBloc),
+            BlocProvider<RappelBloc>.value(value: rBloc),
+          ],
+          child: MediaQuery(
+            data: MediaQueryData(disableAnimations: disableAnimations),
+            child: MaterialApp(
+              theme: AppTheme.dark,
+              darkTheme: AppTheme.dark,
+              themeMode: ThemeMode.dark,
+              locale: locale,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: const ParametresView(),
+            ),
           ),
         ),
       ),
@@ -84,14 +104,15 @@ void main() {
 
   group('ParametresView', () {
     testWidgets(
-      'PM-VIEW-1 : AC1 — rend toolbar (chevron, titre, espaceur), '
+      'PM-VIEW-1 : AC1 — rend toolbar (titre, espaceur, sans retour), '
       '3 sections, version',
       (tester) async {
         await tester.pumpParametresView();
         await tester.pump();
 
-        // Chevron retour
-        expect(find.byIcon(Icons.chevron_left), findsOneWidget);
+        // Onglet de la bottom bar : pas de retour (DEC-NAV-2026). Pumpé en
+        // racine (canPop == false) → aucun chevron.
+        expect(find.byIcon(Icons.chevron_left), findsNothing);
         // Titre toolbar
         expect(find.text('Settings'), findsOneWidget);
         // Pas de burger (aucun Icons.menu)
@@ -307,18 +328,28 @@ void main() {
       'PM-RT-1 : AC10 — versParametres pousse ParametresPage',
       (tester) async {
         initMockHydratedStorage();
+        final rBloc = _MockRappelBloc();
+        when(() => rBloc.state).thenReturn(const RappelState());
+        when(() => rBloc.stream).thenAnswer((_) => const Stream.empty());
+        final sRappel = _MockServiceRappel();
 
         await tester.pumpWidget(
-          BlocProvider<LocaleBloc>(
-            create: (_) => LocaleBloc(),
-            child: MaterialApp(
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              home: Builder(
-                builder: (context) => Scaffold(
-                  body: ElevatedButton(
-                    onPressed: () => AppRouter.versParametres(context),
-                    child: const Text('open'),
+          RepositoryProvider<ServiceRappel>.value(
+            value: sRappel,
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider<LocaleBloc>(create: (_) => LocaleBloc()),
+                BlocProvider<RappelBloc>.value(value: rBloc),
+              ],
+              child: MaterialApp(
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                home: Builder(
+                  builder: (context) => Scaffold(
+                    body: ElevatedButton(
+                      onPressed: () => AppRouter.versParametres(context),
+                      child: const Text('open'),
+                    ),
                   ),
                 ),
               ),

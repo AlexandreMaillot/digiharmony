@@ -12,6 +12,8 @@ import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
 import 'package:digiharmony_app/pages/parametres/views/parametres_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_view.dart';
 import 'package:digiharmony_app/pages/temps_ecran/views/temps_ecran_view.dart';
+import 'package:digiharmony_app/rappel/rappel_bloc.dart';
+import 'package:digiharmony_app/services/rappel/service_rappel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,20 +27,37 @@ class MockAccueilBloc extends MockBloc<AccueilEvent, AccueilState>
 
 class _MockAppDatabase extends Mock implements AppDatabase {}
 
+class _MockRappelBloc extends Mock implements RappelBloc {}
+
+class _MockServiceRappel extends Mock implements ServiceRappel {}
+
 /// Pompe l'AccueilView avec animations désactivées.
 extension PumpNav on WidgetTester {
-  Future<void> pumpNavTest(AccueilBloc bloc, {required AppDatabase db}) {
+  Future<void> pumpNavTest(
+    AccueilBloc bloc, {
+    required AppDatabase db,
+    RappelBloc? rappelBloc,
+    ServiceRappel? serviceRappel,
+  }) {
     return pumpWidget(
       MediaQuery(
         data: const MediaQueryData(disableAnimations: true),
-        child: BlocProvider<LocaleBloc>(
-          create: (_) => LocaleBloc(),
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: RepositoryProvider<AppDatabase>.value(
-              value: db,
-              child: BlocProvider<AccueilBloc>.value(
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<LocaleBloc>(create: (_) => LocaleBloc()),
+            if (rappelBloc != null)
+              BlocProvider<RappelBloc>.value(value: rappelBloc),
+          ],
+          child: MultiRepositoryProvider(
+            providers: [
+              RepositoryProvider<AppDatabase>.value(value: db),
+              if (serviceRappel != null)
+                RepositoryProvider<ServiceRappel>.value(value: serviceRappel),
+            ],
+            child: MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: BlocProvider<AccueilBloc>.value(
                 value: bloc,
                 child: const AccueilView(),
               ),
@@ -53,6 +72,8 @@ extension PumpNav on WidgetTester {
 void main() {
   late MockAccueilBloc bloc;
   late _MockAppDatabase mockDb;
+  late _MockRappelBloc mockRappelBloc;
+  late _MockServiceRappel mockServiceRappel;
   final hapticLog = <MethodCall>[];
 
   setUpAll(() {
@@ -63,6 +84,11 @@ void main() {
     initMockHydratedStorage();
     bloc = MockAccueilBloc();
     mockDb = _MockAppDatabase();
+    mockRappelBloc = _MockRappelBloc();
+    mockServiceRappel = _MockServiceRappel();
+    when(() => mockRappelBloc.state).thenReturn(const RappelState());
+    when(() => mockRappelBloc.stream)
+        .thenAnswer((_) => const Stream.empty());
     when(
       () => mockDb.conseilDuJour(any()),
     ).thenAnswer(
@@ -137,7 +163,12 @@ void main() {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc, db: mockDb);
+        await tester.pumpNavTest(
+          bloc,
+          db: mockDb,
+          rappelBloc: mockRappelBloc,
+          serviceRappel: mockServiceRappel,
+        );
         await tester.tap(find.byIcon(Icons.settings));
         // Utilise pump + durée fixe (la ParametresPage a des FutureBuilder).
         await tester.pump();
@@ -153,7 +184,12 @@ void main() {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc, db: mockDb);
+        await tester.pumpNavTest(
+          bloc,
+          db: mockDb,
+          rappelBloc: mockRappelBloc,
+          serviceRappel: mockServiceRappel,
+        );
         await tester.tap(find.text('Log my mood'));
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
@@ -168,7 +204,12 @@ void main() {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc, db: mockDb);
+        await tester.pumpNavTest(
+          bloc,
+          db: mockDb,
+          rappelBloc: mockRappelBloc,
+          serviceRappel: mockServiceRappel,
+        );
         await tester.tap(find.text('See my journal'));
         // Utilise pump + durée fixe (JournalPage démarre un stream infini).
         await tester.pump();
@@ -185,7 +226,12 @@ void main() {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc, db: mockDb);
+        await tester.pumpNavTest(
+          bloc,
+          db: mockDb,
+          rappelBloc: mockRappelBloc,
+          serviceRappel: mockServiceRappel,
+        );
         await tester.tap(find.text('Choose your bubble'));
         // BullesPage a des animations en boucle (float/shimmer) : pas de
         // pumpAndSettle ; pump + durée fixe suffit pour la transition.
@@ -203,7 +249,12 @@ void main() {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc, db: mockDb);
+        await tester.pumpNavTest(
+          bloc,
+          db: mockDb,
+          rappelBloc: mockRappelBloc,
+          serviceRappel: mockServiceRappel,
+        );
         await tester.tap(find.text('Tip of the day'));
         // ConseilsBloc charge de façon asynchrone : pump + délai.
         await tester.pump();
@@ -220,7 +271,12 @@ void main() {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc, db: mockDb);
+        await tester.pumpNavTest(
+          bloc,
+          db: mockDb,
+          rappelBloc: mockRappelBloc,
+          serviceRappel: mockServiceRappel,
+        );
         // Scroll pour rendre le widget visible.
         await tester.scrollUntilVisible(
           find.text('Take a break'),
@@ -243,7 +299,12 @@ void main() {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc, db: mockDb);
+        await tester.pumpNavTest(
+          bloc,
+          db: mockDb,
+          rappelBloc: mockRappelBloc,
+          serviceRappel: mockServiceRappel,
+        );
         await tester.scrollUntilVisible(
           find.text('My screen time'),
           100,
@@ -265,7 +326,12 @@ void main() {
         when(() => bloc.state).thenReturn(
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
-        await tester.pumpNavTest(bloc, db: mockDb);
+        await tester.pumpNavTest(
+          bloc,
+          db: mockDb,
+          rappelBloc: mockRappelBloc,
+          serviceRappel: mockServiceRappel,
+        );
         expect(find.text('Reduce my notifications'), findsNothing);
       },
     );

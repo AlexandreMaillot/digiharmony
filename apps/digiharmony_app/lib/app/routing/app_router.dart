@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/data/local/depot_stats_bien_etre.dart';
 import 'package:digiharmony_app/pages/accueil/views/accueil_page.dart';
@@ -9,6 +10,7 @@ import 'package:digiharmony_app/pages/detox/view/detox_config_page.dart';
 import 'package:digiharmony_app/pages/etirement/view/etirement_page.dart';
 import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
 import 'package:digiharmony_app/pages/parametres/views/parametres_page.dart';
+import 'package:digiharmony_app/pages/rappel_priming/views/rappel_priming_page.dart';
 import 'package:digiharmony_app/pages/respiration/view/respiration_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_page.dart';
 import 'package:digiharmony_app/pages/sens/view/sens_page.dart';
@@ -17,6 +19,8 @@ import 'package:digiharmony_app/pages/temps_ecran/services/service_temps_ecran.d
 import 'package:digiharmony_app/pages/temps_ecran/services/service_temps_ecran_ios.dart';
 import 'package:digiharmony_app/pages/temps_ecran/views/temps_ecran_page.dart';
 import 'package:digiharmony_app/pages/tuto_notifs/views/tuto_notifs_page.dart';
+import 'package:digiharmony_app/rappel/rappel_bloc.dart';
+import 'package:digiharmony_app/services/rappel/service_rappel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -207,6 +211,31 @@ abstract final class AppRouter {
         builder: (_) => RepositoryProvider<DepotStatsBienEtre>.value(
           value: depot,
           child: const EtirementPage(),
+        ),
+      ),
+    );
+  }
+
+  /// Ouvre la page priming pré-permission du rappel quotidien (DEC-R-05).
+  ///
+  /// Affichée AVANT toute demande de permission native. `push`.
+  /// Le [RappelBloc] et le [ServiceRappel] sont transmis depuis le
+  /// contexte de l'appelant pour traverser la frontière de route
+  /// (DEC-FND-07 — même pattern que versSaisieHumeur / versJournal).
+  /// Pas de GoRouter.
+  static Future<void> versRappelPriming(BuildContext context) {
+    final rappelBloc = context.read<RappelBloc>();
+    final serviceRappel = context.read<ServiceRappel>();
+    return Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider<ServiceRappel>.value(value: serviceRappel),
+          ],
+          child: BlocProvider<RappelBloc>.value(
+            value: rappelBloc,
+            child: const RappelPrimingPage(),
+          ),
         ),
       ),
     );
