@@ -13,6 +13,7 @@ import 'package:timezone/timezone.dart' as tz;
 /// 100 % locale — aucune donnée émise (DEC-R-01, CLAUDE.md).
 class ServiceRappelNotifications implements ServiceRappel {
   static const int _idNotif = 1001;
+  static const int _idNotifTest = 1002;
   static const String _canalId = 'rappel_humeur';
   static const String _canalNom = 'Rappel humeur';
   static const String _payloadRoute = 'saisie_humeur';
@@ -30,16 +31,12 @@ class ServiceRappelNotifications implements ServiceRappel {
   Future<void> initialiser() async {
     try {
       tz.initializeTimeZones();
-      // Tente de récupérer le fuseau horaire local (best-effort, repli UTC).
-      try {
-        final localName = tz.local.name;
-        if (localName.isNotEmpty) {
-          tz.setLocalLocation(tz.getLocation(localName));
-        }
-      } on Object {
-        // Repli UTC sans crasher (DEC-R-04 : replanification couvre les cas
-        // limites, un écart de quelques minutes sur le fuseau est acceptable).
-      }
+      // NB : on ne résout PAS le fuseau IANA de l'appareil ici (cela
+      // nécessiterait un package dédié). `tz.local` reste donc sur UTC.
+      // Ce n'est pas un problème : `calculerProchaineCible` raisonne en heure
+      // locale via `DateTime` (qui connaît le fuseau de l'OS) puis convertit
+      // l'instant absolu avec `TZDateTime.from` — la notif part au bon moment
+      // réel quelle que soit la valeur de `tz.local`.
 
       const androidSettings = AndroidInitializationSettings(
         '@mipmap/ic_launcher',
@@ -183,6 +180,39 @@ class ServiceRappelNotifications implements ServiceRappel {
   }
 
   @override
+  Future<void> afficherNotificationTest({
+    required String titre,
+    required String corps,
+  }) async {
+    try {
+      const androidDetails = AndroidNotificationDetails(
+        _canalId,
+        _canalNom,
+        channelDescription: 'Rappel quotidien pour noter ton humeur',
+      );
+      const details = NotificationDetails(
+        android: androidDetails,
+        iOS: DarwinNotificationDetails(),
+        macOS: DarwinNotificationDetails(),
+      );
+      // id distinct du rappel planifié pour ne pas l'écraser.
+      await _plugin.show(
+        _idNotifTest,
+        titre,
+        corps,
+        details,
+        payload: _payloadRoute,
+      );
+    } on Object catch (error, stackTrace) {
+      log(
+        'ServiceRappelNotifications.afficherNotificationTest failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  @override
   Future<void> annulerTout() async {
     try {
       await _plugin.cancel(_idNotif);
@@ -205,21 +235,23 @@ class ServiceRappelNotifications implements ServiceRappel {
   tz.TZDateTime calculerProchaineCible({
     required TimeOfDay heure,
     required bool dejaNoteAujourdhui,
-    tz.TZDateTime? now,
+    DateTime? now,
   }) {
-    final maintenant = now ?? tz.TZDateTime.now(tz.local);
-    final cibleAujourdhui = tz.TZDateTime(
-      tz.local,
+    // On raisonne en heure LOCALE de l'appareil via DateTime (qui connaît le
+    // fuseau de l'OS), puis on convertit en instant absolu. Évite de dépendre
+    // de tz.local (qui reste sur UTC) : TZDateTime.from préserve l'instant.
+    final maintenant = now ?? DateTime.now();
+    var cible = DateTime(
       maintenant.year,
       maintenant.month,
       maintenant.day,
       heure.hour,
       heure.minute,
     );
-    if (dejaNoteAujourdhui || cibleAujourdhui.isBefore(maintenant)) {
-      return cibleAujourdhui.add(const Duration(days: 1));
+    if (dejaNoteAujourdhui || cible.isBefore(maintenant)) {
+      cible = cible.add(const Duration(days: 1));
     }
-    return cibleAujourdhui;
+    return tz.TZDateTime.from(cible, tz.local);
   }
 }
 

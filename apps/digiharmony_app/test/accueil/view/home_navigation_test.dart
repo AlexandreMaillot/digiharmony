@@ -9,7 +9,6 @@ import 'package:digiharmony_app/pages/bulles/view/bulles_page.dart';
 import 'package:digiharmony_app/pages/conseils/views/conseils_page.dart';
 import 'package:digiharmony_app/pages/detox/view/detox_config_page.dart';
 import 'package:digiharmony_app/pages/journal/views/journal_page.dart';
-import 'package:digiharmony_app/pages/parametres/views/parametres_page.dart';
 import 'package:digiharmony_app/pages/saisie_humeur/views/saisie_humeur_view.dart';
 import 'package:digiharmony_app/pages/temps_ecran/views/temps_ecran_view.dart';
 import 'package:digiharmony_app/rappel/rappel_bloc.dart';
@@ -156,27 +155,6 @@ void main() {
   }
 
   group('Navigation placeholders + haptique (AC5)', () {
-    // HN-1 : bouton Réglages → ParametresPage (recâblé DEC-PARAM-08).
-    testWidgets(
-      'HN-1 : Réglages → ParametresPage',
-      (tester) async {
-        when(() => bloc.state).thenReturn(
-          const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
-        );
-        await tester.pumpNavTest(
-          bloc,
-          db: mockDb,
-          rappelBloc: mockRappelBloc,
-          serviceRappel: mockServiceRappel,
-        );
-        await tester.tap(find.byIcon(Icons.settings));
-        // Utilise pump + durée fixe (la ParametresPage a des FutureBuilder).
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 300));
-        expect(find.byType(ParametresPage), findsOneWidget);
-      },
-    );
-
     // HN-2 : CTA « Log my mood » (État A) → SaisieHumeurView.
     testWidgets(
       'HN-2 : Log my mood → SaisieHumeurView',

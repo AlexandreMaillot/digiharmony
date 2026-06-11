@@ -7,7 +7,10 @@ scope: all
 
 # Deployment
 
-App Flutter uniquement. Pas d'API, pas de backend, pas de Firebase/Cloud Run, zéro collecte.
+App Flutter uniquement. Pas d'API, pas de backend, **aucun SDK Firebase embarqué**, zéro
+collecte. Firebase est utilisé **hors app** uniquement : projet `dev-digiharmony` pour le
+**Hosting** (pages légales) et **App Distribution** (diffusion testeurs) — aucun `firebase_*`,
+aucun `google-services.json`, aucune `firebase_options.dart` dans le code.
 
 ## Build & Release
 
@@ -60,11 +63,21 @@ App Flutter uniquement. Pas d'API, pas de backend, pas de Firebase/Cloud Run, z�
 ## Distribution
 
 - APK direct ou piste interne Play Console.
-- Firebase App Distribution : **optionnel**, hors app, aucun SDK Firebase embarqué (commande commentée dans `deploy.sh`).
+- **Firebase App Distribution** (projet `dev-digiharmony`, hors app, aucun SDK) : `deploy.sh`
+  **diffuse par défaut** (`DISTRIBUTE=0` pour builder seul ; `GROUPS=<alias>` pour cibler).
+  - App Android : `com.creappi.digiharmony` (flavor production), App ID
+    `1:614105312744:android:897629d5752390e47e485d`.
+  - App iOS : `com.creappi.digiharmony`, App ID `1:614105312744:ios:7eee4e69653e42087e485d`
+    (non diffusable en l'état — voir « iOS »).
+  - Groupes testeurs : `testeurs`, `dev`. Diffuser `.stg`/`.dev` exige une app Firebase dédiée
+    par package + `FIREBASE_ANDROID_APP_ID` surchargé.
 
 ## Pages légales
 
-- GitHub Pages / `digiharmony.org`, politique « zéro donnée ».
+- **Firebase Hosting** (`dev-digiharmony`) : `https://dev-digiharmony.web.app/{privacy_policy,
+  terms_of_service,legal_notice}.html`. Sources dans `legal_pages/`, config `firebase.json` +
+  `.firebaserc` à la racine, URLs câblées dans `lib/config/legal_urls.dart`. Déploiement :
+  `firebase deploy --only hosting`. Politique « zéro donnée ».
 - Exigée par Play Console même sans collecte.
 
 ## iOS
@@ -74,6 +87,12 @@ App Flutter uniquement. Pas d'API, pas de backend, pas de Firebase/Cloud Run, z�
 - Configuré : Screen Time (DEC-006, capability Family Controls Development), icône/splash/nom production
   (voir « Identité d'app »). **Distribution App Store** : nécessite l'entitlement
   `com.apple.developer.family-controls` approuvé par Apple + provisioning (hors code).
+- **App Distribution iOS bloqué** : `Runner` ET l'extension `DeviceActivityReportExtension` déclarent
+  `com.apple.developer.family-controls` ; tout IPA de distribution (app-store/ad-hoc) échoue tant que
+  l'entitlement Family Controls **distribution** n'est pas approuvé par Apple
+  (`developer.apple.com/contact/request/family-controls-distribution`). Contournement test :
+  `flutter build ipa --export-method development` (UDID enregistrés) puis upload manuel. `deploy.sh`
+  ne build que l'APK Android.
 
 # Infrastructure
 
@@ -81,7 +100,7 @@ App Flutter uniquement. Pas d'API, pas de backend, pas de Firebase/Cloud Run, z�
 
 ```plaintext
 apps/digiharmony_app/
-├── deploy.sh                          # build APK release par flavor
+├── deploy.sh                          # build APK release + App Distribution (DISTRIBUTE=0 pour build seul)
 ├── lib/main_<flavor>.dart             # entrypoints development/staging/production
 └── android/
     ├── key.properties                 # HORS VCS — config signature

@@ -56,3 +56,12 @@ final class RappelInvitationProposee extends RappelEvent {
   /// Crée l'événement.
   const RappelInvitationProposee();
 }
+
+/// DEBUG : déclenche une notification de test immédiate.
+///
+/// Outil de diagnostic uniquement (vérifie le tuyau OS), sans incidence sur
+/// l'état ni la planification.
+final class RappelTestDemande extends RappelEvent {
+  /// Crée l'événement.
+  const RappelTestDemande();
+}

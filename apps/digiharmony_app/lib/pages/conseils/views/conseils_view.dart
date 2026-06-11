@@ -170,16 +170,20 @@ class _Toolbar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Chevron retour (48×48 tap — a11y)
+          // Chevron retour (48×48 tap — a11y). Onglet de la bottom bar : pas
+          // de retour (DEC-NAV-2026) ; le chevron ne s'affiche qu'en
+          // navigation empilée (prévisualisation/tests).
           SizedBox(
             width: 48,
             height: 48,
-            child: IconButton(
-              icon: const Icon(Icons.chevron_left),
-              color: AppColors.text,
-              tooltip: l10n.conseilsRetourTooltip,
-              onPressed: () => Navigator.of(context).pop(),
-            ),
+            child: Navigator.of(context).canPop()
+                ? IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    color: AppColors.text,
+                    tooltip: l10n.conseilsRetourTooltip,
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                : null,
           ),
           // Titre centré
           Expanded(

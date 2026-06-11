@@ -118,8 +118,6 @@ void main() {
         await tester.pumpAccueil(bloc);
         // Le wordmark est en uppercase via .toUpperCase().
         expect(find.text('DIGIHARMONY'), findsOneWidget);
-        // Bouton réglages présent.
-        expect(find.byIcon(Icons.settings), findsOneWidget);
       },
     );
 
@@ -131,7 +129,9 @@ void main() {
           const AccueilPret(conseil: ConseilDuJourVue(cle: 'tipDay01')),
         );
         await tester.pumpAccueil(bloc);
-        expect(find.text('Hello 👋'), findsOneWidget);
+        // Le greeting scinde le texte et l'emoji 👋 (agrandi/animé).
+        expect(find.text('Hello'), findsOneWidget);
+        expect(find.text('👋'), findsOneWidget);
         expect(find.text('How are you feeling today?'), findsWidgets);
       },
     );

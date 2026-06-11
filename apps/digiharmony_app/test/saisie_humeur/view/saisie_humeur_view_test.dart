@@ -53,12 +53,14 @@ void main() {
   });
 
   group('SaisieHumeurView — rendu initial', () {
-    // SHV-1 : toolbar présente (chevron) ; pas de burger menu.
+    // SHV-1 : toolbar présente (croix Fermer) ; pas de burger menu.
+    // Écran de tâche poussé sur la bottom bar : on ferme (X), pas de retour
+    // (DEC-NAV-2026).
     testWidgets(
-      'SHV-1 : toolbar affiche chevron, pas de menu burger',
+      'SHV-1 : toolbar affiche la croix Fermer, pas de menu burger',
       (tester) async {
         await tester.pumpSaisie(bloc);
-        expect(find.byIcon(Icons.chevron_left), findsOneWidget);
+        expect(find.byIcon(Icons.close), findsOneWidget);
         expect(find.byIcon(Icons.menu), findsNothing);
       },
     );

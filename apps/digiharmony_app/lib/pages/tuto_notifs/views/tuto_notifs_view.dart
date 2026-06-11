@@ -102,8 +102,9 @@ class TutoNotifsView extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left),
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          // Écran poussé sur la bottom bar : on ferme (X) — DEC-NAV-2026.
+          icon: const Icon(Icons.close),
+          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
           onPressed: () => Navigator.of(context).pop(),
         ),

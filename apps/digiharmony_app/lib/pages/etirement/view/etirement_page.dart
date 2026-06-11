@@ -93,6 +93,7 @@ class EtirementView extends StatelessWidget {
         appBar: BarreOutils(
           title: l10n.stretchTitle,
           backLabel: l10n.stretchToolbarBack,
+          fermer: true,
           onBack: () => _onRetourPresse(context),
           trailing: BoutonVoixOff(
             onLabel: l10n.stretchVoiceoverOnLabel,

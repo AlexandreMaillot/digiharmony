@@ -11,6 +11,7 @@ class TuileOutil extends StatelessWidget {
     required this.icone,
     required this.onTap,
     this.description,
+    this.accent = AppColors.primary,
     super.key,
   });
 
@@ -27,10 +28,31 @@ class TuileOutil extends StatelessWidget {
   /// Description optionnelle (ex. texte du conseil du jour).
   final String? description;
 
+  /// Couleur d'accent de la tuile (dégradé, icône, libellé, bordure).
+  final Color accent;
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Card(
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: AppRadii.cardRadius,
+        child: Ink(
+        decoration: BoxDecoration(
+          borderRadius: AppRadii.cardRadius,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color.alphaBlend(
+                accent.withValues(alpha: 0.42),
+                AppColors.surfaceBright,
+              ),
+              AppColors.surfaceBright,
+            ],
+          ),
+          border: Border.all(color: accent.withValues(alpha: 0.55)),
+        ),
         child: InkWell(
           onTap: onTap,
           borderRadius: AppRadii.cardRadius,
@@ -39,27 +61,37 @@ class TuileOutil extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(icone, color: AppColors.primary, size: 28),
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  label,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontSize: 14,
-                  ),
-                ),
-                if (description != null) ...[
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    description!,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppColors.textMuted,
-                      fontSize: 12,
+                  // Chip d'icône colorée.
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.sm),
+                    decoration: BoxDecoration(
+                      color: accent.withValues(alpha: 0.28),
+                      borderRadius: AppRadii.buttonRadius,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                    child: Icon(icone, color: accent, size: 24),
                   ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    label,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontSize: 14,
+                      color: accent,
+                    ),
+                  ),
+                  if (description != null) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      description!,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.textMuted,
+                        fontSize: 12,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

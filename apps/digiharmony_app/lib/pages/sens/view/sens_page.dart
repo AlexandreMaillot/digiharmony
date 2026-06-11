@@ -93,6 +93,7 @@ class SensView extends StatelessWidget {
         appBar: BarreOutils(
           title: l10n.sensesTitle,
           backLabel: l10n.sensesToolbarBack,
+          fermer: true,
           onBack: () => _onBackPressed(context),
           trailing: BoutonVoixOff(
             onLabel: l10n.sensesVoiceoverOnLabel,

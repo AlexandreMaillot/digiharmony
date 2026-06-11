@@ -102,6 +102,7 @@ class RespirationView extends StatelessWidget {
         appBar: BarreOutils(
           title: l10n.breathingTitle,
           backLabel: l10n.breathingToolbarBack,
+          fermer: true,
           onBack: () => _onBackPressed(context),
           trailing: BoutonVoixOff(
             onLabel: l10n.breathingVoiceoverOnLabel,

@@ -55,6 +55,7 @@ class DetoxConfigView extends StatelessWidget {
       appBar: BarreOutils(
         title: l10n.detoxTitle,
         backLabel: l10n.detoxToolbarBack,
+        fermer: true,
         onBack: () => Navigator.of(context).maybePop(),
       ),
       body: FondApplication(

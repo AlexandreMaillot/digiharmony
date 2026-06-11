@@ -14,6 +14,7 @@ class PiluleAction extends StatelessWidget {
     required this.label,
     required this.icone,
     required this.onTap,
+    this.accent = AppColors.primary,
     super.key,
   });
 
@@ -26,34 +27,56 @@ class PiluleAction extends StatelessWidget {
   /// Callback au tap — le haptique est géré par l'appelant.
   final VoidCallback onTap;
 
+  /// Couleur d'accent de la pilule (dégradé, icône, libellé, bordure).
+  final Color accent;
+
   @override
   Widget build(BuildContext context) {
     final disableAnimations = MediaQuery.of(context).disableAnimations;
+    const rayon = BorderRadius.all(Radius.circular(AppSpacing.xl));
 
     final pilule = Material(
-      color: AppColors.surface,
-      borderRadius: const BorderRadius.all(Radius.circular(AppSpacing.xl)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSpacing.xl)),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.md,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icone, color: AppColors.primary, size: 20),
-              const SizedBox(width: AppSpacing.sm),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
+      color: Colors.transparent,
+      borderRadius: rayon,
+      child: Ink(
+        decoration: BoxDecoration(
+          borderRadius: rayon,
+          gradient: LinearGradient(
+            colors: [
+              Color.alphaBlend(
+                accent.withValues(alpha: 0.50),
+                AppColors.surfaceBright,
+              ),
+              Color.alphaBlend(
+                accent.withValues(alpha: 0.28),
+                AppColors.surfaceBright,
               ),
             ],
+          ),
+          border: Border.all(color: accent.withValues(alpha: 0.60)),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: rayon,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.md,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icone, color: accent, size: 20),
+                const SizedBox(width: AppSpacing.sm),
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: accent,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

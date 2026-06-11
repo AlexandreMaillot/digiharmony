@@ -25,7 +25,7 @@ flowchart TD
 
     Lib --> Entries["main.dart · main_{development,staging,production}.dart"]
     Lib --> Boot["bootstrap.dart"]
-    Lib --> AppDir["app/ (app.dart · view · routing/app_router.dart)"]
+    Lib --> AppDir["app/ (app.dart · view · routing/app_router.dart · shell/main_shell.dart)"]
     Lib --> Pages["pages/ (features, racine FR)"]
     Lib --> Data["data/local/app_database.dart (Drift)"]
     Lib --> Theme["theme/theme.dart · locale/ · common/"]
@@ -56,12 +56,18 @@ flowchart TD
     Pkgs --> Core["core_package/ (lib/src · test · .github)"]
 
     Docs --> Mem["memory/ (project-overview · codebase-map · internal · external)"]
-    Docs --> Dec["internal/decisions/ (ADR · 0001..0007)"]
+    Docs --> Dec["internal/decisions/ (ADR · 0001..0008)"]
     Docs --> Rules["rules/ (melos7-pub-workspace · android-gradle-minify-off · permissions-zero-collecte)"]
 ```
 
 ## Notes
 
+- **Navigation (`app/shell/main_shell.dart`, DEC-008)** : `MainShell` = bottom bar 5 onglets
+  (Accueil·Journal·Conseils·Bulles·Paramètres) dans un `IndexedStack` **paresseux** (onglet
+  chargé à la 1re visite). `DemarrageView` fait `pushReplacement(MainShell)`. Raccourcis internes
+  → bascule d'onglet via `ShellScope` (repli `Navigator.push` hors shell). Sections-onglets sans
+  retour (`canPop()` false) ; écrans de tâche poussés plein écran avec **bouton Fermer (X)**
+  (`BarreOutils.fermer` / `Icons.close`). Toujours sans GoRouter (Navigator impératif).
 - **Drift (`data/local/app_database.dart`)** : compteurs/agrégats **dérivés** en lecture seule
   (`observerEntreesDeLaSemaine/DuMois` réactifs `watch()` ; `compterSaisiesNegativesConsecutives()`
   ponctuel) — jamais dupliqués dans HydratedBloc (DEC-001/002). Connexion ouverte avec

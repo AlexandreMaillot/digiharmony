@@ -80,3 +80,16 @@ flowchart LR
     Bloc --> Hydrated[(HydratedBloc)]
     Drift -. watch .-> Bloc
 ```
+
+## Navigation
+
+- **Bottom bar via `MainShell`** (`app/shell/main_shell.dart`, DEC-008) : 5 onglets
+  (Accueil·Journal·Conseils·Bulles·Paramètres) dans un `IndexedStack` **paresseux** (un
+  onglet n'instancie son Bloc/lecture Drift qu'à la 1re visite). `DemarrageView` fait
+  `pushReplacement(MainShell)`.
+- **Navigation impérative, sans GoRouter** (DEC-FND-07 maintenu) : `AppRouter` (`Navigator.push`)
+  pour les écrans de tâche, `ShellScope` (InheritedWidget, `maybeOf` nullable) pour basculer
+  d'onglet depuis les raccourcis internes (repli `Navigator.push` hors shell).
+- **Plus de retour entre sections** : les onglets masquent leur chevron (`Navigator.canPop()`
+  false). Les écrans de tâche sont **poussés plein écran** (bottom bar masquée) avec un
+  **bouton Fermer (X)** (`BarreOutils.fermer` / `Icons.close`).

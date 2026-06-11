@@ -20,6 +20,12 @@ abstract final class AppColors {
   /// Surface : cartes, blocs, conseil du jour.
   static const Color surface = Color(0xFF283A5E);
 
+  /// Surface claire : variante lumineuse des cartes (Accueil « joyeux »).
+  ///
+  /// Plus lumineuse que [surface] pour faire ressortir les cartes du fond et
+  /// donner un rendu plus clair / chaleureux, sans quitter le navy.
+  static const Color surfaceBright = Color(0xFF35517D);
+
   /// Primaire cyan : titres, accents, actions, icônes actives.
   static const Color primary = Color(0xFF3FB8E6);
 

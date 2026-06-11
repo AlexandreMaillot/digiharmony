@@ -102,6 +102,7 @@ class DetoxLecteurView extends StatelessWidget {
         appBar: BarreOutils(
           title: l10n.detoxPlayerTitle,
           backLabel: l10n.detoxPlayerToolbarBack,
+          fermer: true,
           onBack: () => _onSortieRequise(context),
           trailing: _BadgeAmbiance(ambianceId: ambianceId),
         ),

@@ -55,8 +55,10 @@ class _TempsEcranViewState extends State<TempsEcranView>
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left),
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          // Écran de tâche poussé sur la bottom bar : on ferme (X),
+          // on ne « revient » pas (DEC-NAV-2026).
+          icon: const Icon(Icons.close),
+          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
           onPressed: () => Navigator.of(context).pop(),
         ),

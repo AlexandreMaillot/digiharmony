@@ -48,7 +48,8 @@ void main() {
       'I18-1 : locale fr → heroLogMoodCta + homeGreeting en français',
       (tester) async {
         await pumpI18n(tester, bloc, const Locale('fr'));
-        expect(find.text('Bonjour 👋'), findsOneWidget);
+        expect(find.text('Bonjour'), findsOneWidget);
+        expect(find.text('👋'), findsOneWidget);
         expect(find.text('Noter mon humeur'), findsOneWidget);
       },
     );
@@ -58,7 +59,8 @@ void main() {
       'I18-2 : locale en → heroLogMoodCta + homeGreeting en anglais',
       (tester) async {
         await pumpI18n(tester, bloc, const Locale('en'));
-        expect(find.text('Hello 👋'), findsOneWidget);
+        expect(find.text('Hello'), findsOneWidget);
+        expect(find.text('👋'), findsOneWidget);
         expect(find.text('Log my mood'), findsOneWidget);
       },
     );

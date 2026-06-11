@@ -15,6 +15,7 @@ class BarreOutils extends StatelessWidget implements PreferredSizeWidget {
     this.trailing,
     this.showMenu = false,
     this.backLabel,
+    this.fermer = false,
     super.key,
   });
 
@@ -36,6 +37,13 @@ class BarreOutils extends StatelessWidget implements PreferredSizeWidget {
   /// Label d'accessibilite du bouton retour.
   final String? backLabel;
 
+  /// Affiche une croix « fermer » (X) au lieu du chevron retour.
+  ///
+  /// Pour les ecrans de tache pousses plein ecran sur la bottom bar
+  /// (exercices, saisie) : on ferme l'ecran, on ne « revient » pas
+  /// (DEC-NAV-2026).
+  final bool fermer;
+
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
@@ -44,7 +52,7 @@ class BarreOutils extends StatelessWidget implements PreferredSizeWidget {
     final leading = onBack == null
         ? const SizedBox(width: 48)
         : IconButton(
-            icon: const Icon(Icons.chevron_left),
+            icon: Icon(fermer ? Icons.close : Icons.chevron_left),
             color: AppColors.text,
             tooltip: backLabel,
             onPressed: onBack,

@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:digiharmony_app/app/shell/main_shell.dart';
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/data/local/app_database.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
-import 'package:digiharmony_app/pages/accueil/views/accueil_page.dart';
 import 'package:digiharmony_app/pages/demarrage/bloc/demarrage_bloc.dart';
 import 'package:digiharmony_app/pages/demarrage/widgets/anneaux_ondes.dart';
 import 'package:digiharmony_app/pages/demarrage/widgets/barre_signature.dart';
@@ -138,8 +138,8 @@ class _DemarrageViewState extends State<DemarrageView> {
     //
     // `pushReplacement` retourne une Future qui ne se résout que quand la
     // route poussée est elle-même poppée (ce qui n'arrive jamais pour
-    // AccueilPage). On ne l'attend PAS : on lance et on continue.
-    unawaited(navigator.pushReplacement(AccueilPage.route()));
+    // MainShell). On ne l'attend PAS : on lance et on continue.
+    unawaited(navigator.pushReplacement(MainShell.route()));
 
     if (doitDeclencher) {
       // Marquage à l'affichage (DEC-SO-004).

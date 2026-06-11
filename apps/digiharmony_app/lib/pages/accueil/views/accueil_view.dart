@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:digiharmony_app/app/routing/app_router.dart';
+import 'package:digiharmony_app/app/shell/main_shell.dart';
 import 'package:digiharmony_app/common/widgets/halo_respirant.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/pages/accueil/bloc/accueil_bloc.dart';
@@ -9,6 +12,7 @@ import 'package:digiharmony_app/pages/accueil/widgets/tuile_outil.dart';
 import 'package:digiharmony_app/theme/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Corps de l'écran Accueil — consomme [AccueilBloc].
@@ -96,14 +100,23 @@ class AccueilView extends StatelessWidget {
                             TuileOutil(
                               label: l10n.homeToolBubble,
                               icone: Icons.auto_awesome,
-                              onTap: () => AppRouter.versBulles(context),
+                              onTap: () => _ouvrirSection(
+                                context,
+                                OngletPrincipal.bulles,
+                                AppRouter.versBulles,
+                              ),
                             ),
                             const SizedBox(width: AppSpacing.md),
                             TuileOutil(
                               label: l10n.homeToolDailyTip,
                               icone: Icons.lightbulb_outline,
                               description: tipTexte,
-                              onTap: () => AppRouter.versConseils(context),
+                              accent: AppColors.accentGold,
+                              onTap: () => _ouvrirSection(
+                                context,
+                                OngletPrincipal.conseils,
+                                AppRouter.versConseils,
+                              ),
                             ),
                           ],
                         ),
@@ -116,6 +129,7 @@ class AccueilView extends StatelessWidget {
                     child: PiluleAction(
                       label: l10n.homePauseCta,
                       icone: Icons.eco,
+                      accent: AppColors.successVert,
                       onTap: () => AppRouter.versDetox(context),
                     ),
                   ),
@@ -185,6 +199,24 @@ class AccueilView extends StatelessWidget {
   }
 }
 
+/// Ouvre une section qui est aussi un onglet de la bottom bar.
+///
+/// Sous [MainShell] : bascule l'onglet (pas d'empilement, pas de retour —
+/// DEC-NAV-2026). Hors shell (prévisualisation `main_development`, tests) :
+/// retombe sur l'ancienne navigation empilée via [repli].
+void _ouvrirSection(
+  BuildContext context,
+  OngletPrincipal onglet,
+  Future<void> Function(BuildContext) repli,
+) {
+  final shell = ShellScope.maybeOf(context);
+  if (shell != null) {
+    shell.allerVers(onglet);
+  } else {
+    unawaited(repli(context));
+  }
+}
+
 /// Header : logo + wordmark + bouton réglages (DEC-003 : pas de toolbar haute).
 class _Header extends StatelessWidget {
   const _Header({required this.l10n});
@@ -195,29 +227,9 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Logo carré 40×40 avec coins arrondis (~10).
-        ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          child: Image.asset(
-            'assets/images/logo_digiharmony_square.png',
-            width: 40,
-            height: 40,
-            errorBuilder: (context, error, stackTrace) => Container(
-              width: 40,
-              height: 40,
-              decoration: const BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-              ),
-              child: const Icon(
-                Icons.favorite,
-                color: AppColors.primary,
-                size: 20,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: AppSpacing.sm),
+        // Logo avec anneau dégradé animé (tournant).
+        const _LogoAnime(),
+        const SizedBox(width: AppSpacing.md),
         // Wordmark — non traduit (AC8 / DEC-HOME-01).
         Text(
           l10n.homeBrandName.toUpperCase(),
@@ -225,14 +237,84 @@ class _Header extends StatelessWidget {
             letterSpacing: 1.2,
           ),
         ),
-        const Spacer(),
-        // Bouton réglages → PlaceholderScreen.
-        IconButton(
-          icon: const Icon(Icons.settings, color: AppColors.textMuted),
-          tooltip: l10n.reglagesTooltip,
-          onPressed: () => AppRouter.versParametres(context),
-        ),
       ],
+    );
+  }
+}
+
+/// Logo dans un anneau dégradé « signature » qui tourne en continu.
+///
+/// a11y : si `MediaQuery.disableAnimations` est vrai, l'anneau est statique
+/// (DEC-HOME-07 — reduced-motion).
+class _LogoAnime extends StatelessWidget {
+  const _LogoAnime();
+
+  @override
+  Widget build(BuildContext context) {
+    final reduce = MediaQuery.of(context).disableAnimations;
+    const taille = 54.0;
+
+    Widget anneau = Container(
+      width: taille,
+      height: taille,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: SweepGradient(
+          colors: [
+            AppColors.primary,
+            AppColors.successVert,
+            AppColors.accentGold,
+            AppColors.primary,
+          ],
+        ),
+      ),
+    );
+    if (!reduce) {
+      anneau = anneau
+          .animate(onPlay: (c) => c.repeat())
+          .rotate(duration: const Duration(seconds: 6));
+    }
+
+    return SizedBox(
+      width: taille,
+      height: taille,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          anneau,
+          // Trou central : punch couleur de fond pour ne garder qu'un anneau.
+          Container(
+            width: taille - 7,
+            height: taille - 7,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.background,
+            ),
+          ),
+          // Logo rond.
+          ClipOval(
+            child: Image.asset(
+              'assets/images/logo_digiharmony_square.png',
+              width: taille - 13,
+              height: taille - 13,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                width: taille - 13,
+                height: taille - 13,
+                decoration: const BoxDecoration(
+                  color: AppColors.surface,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.favorite,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -245,12 +327,34 @@ class _Greeting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final reduce = MediaQuery.of(context).disableAnimations;
+    // On isole l'emoji 👋 pour l'agrandir et l'animer séparément du texte.
+    final salut = l10n.homeGreeting.replaceAll('👋', '').trim();
+
+    Widget main = const Text('👋', style: TextStyle(fontSize: 34));
+    if (!reduce) {
+      main = main.animate(onPlay: (c) => c.repeat(reverse: true)).rotate(
+            begin: -0.04,
+            end: 0.06,
+            duration: const Duration(milliseconds: 600),
+          );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.homeGreeting,
-          style: Theme.of(context).textTheme.headlineMedium,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Flexible(
+              child: Text(
+                salut,
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            main,
+          ],
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(

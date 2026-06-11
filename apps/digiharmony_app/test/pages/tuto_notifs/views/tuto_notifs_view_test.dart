@@ -58,10 +58,12 @@ void main() {
     );
   });
 
-  testWidgets('AC11 : chevron retour ≥ 48×48', (tester) async {
+  // Écran poussé sur la bottom bar : bouton Fermer (X) au lieu du chevron
+  // retour (DEC-NAV-2026). Cible tactile ≥ 48×48.
+  testWidgets('AC11 : bouton Fermer ≥ 48×48', (tester) async {
     await tester.pumpTuto();
     await tester.pump();
-    final taille = tester.getSize(find.byTooltip('Back'));
+    final taille = tester.getSize(find.byTooltip('Close'));
     expect(taille.width, greaterThanOrEqualTo(48));
     expect(taille.height, greaterThanOrEqualTo(48));
   });

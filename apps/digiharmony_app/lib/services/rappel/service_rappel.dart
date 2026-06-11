@@ -46,4 +46,14 @@ abstract interface class ServiceRappel {
 
   /// Annule toutes les notifications en attente.
   Future<void> annulerTout();
+
+  /// DEBUG : affiche immédiatement une notification de test.
+  ///
+  /// Bypass total de la planification — sert uniquement à vérifier que le
+  /// tuyau OS fonctionne (permission, canal, affichage, tap→saisie),
+  /// indépendamment de la logique « heure / déjà noté ». Non destiné à la prod.
+  Future<void> afficherNotificationTest({
+    required String titre,
+    required String corps,
+  });
 }

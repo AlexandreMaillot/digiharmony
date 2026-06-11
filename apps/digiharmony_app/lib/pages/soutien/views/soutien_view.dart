@@ -34,7 +34,8 @@ class SoutienView extends StatelessWidget {
           button: true,
           child: IconButton(
             onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.chevron_left, color: AppColors.text),
+            // Écran poussé sur la bottom bar : on ferme (X) — DEC-NAV-2026.
+            icon: const Icon(Icons.close, color: AppColors.text),
             iconSize: 32,
             padding: const EdgeInsets.all(AppSpacing.sm),
             constraints: const BoxConstraints(

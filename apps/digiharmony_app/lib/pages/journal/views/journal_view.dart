@@ -26,11 +26,16 @@ class JournalView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.journalTitle),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () => Navigator.maybePop(context),
-        ),
+        automaticallyImplyLeading: false,
+        // Onglet de la bottom bar : pas de retour (DEC-NAV-2026). Le chevron
+        // ne réapparaît qu'en navigation empilée (prévisualisation/tests).
+        leading: Navigator.of(context).canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                onPressed: () => Navigator.maybePop(context),
+              )
+            : null,
         bottom: const PreferredSize(
           preferredSize: Size.fromHeight(56),
           child: Padding(

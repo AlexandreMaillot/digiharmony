@@ -81,8 +81,9 @@ void main() {
       'RM-4 : contenu lisible même avec disableAnimations',
       (tester) async {
         await pumpReducedMotion(tester, bloc, disableAnimations: true);
-        // Greeting visible.
-        expect(find.text('Hello 👋'), findsOneWidget);
+        // Greeting visible (texte + emoji 👋 scindés).
+        expect(find.text('Hello'), findsOneWidget);
+        expect(find.text('👋'), findsOneWidget);
         // Tuiles visibles.
         expect(find.text('Choose your bubble'), findsOneWidget);
       },

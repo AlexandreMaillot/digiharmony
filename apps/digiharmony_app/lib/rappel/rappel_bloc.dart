@@ -56,6 +56,7 @@ class RappelBloc extends HydratedBloc<RappelEvent, RappelState> {
       _onInvitationProposee,
       transformer: sequential(),
     );
+    on<RappelTestDemande>(_onTestDemande, transformer: sequential());
   }
 
   final ServiceRappel _service;
@@ -162,6 +163,21 @@ class RappelBloc extends HydratedBloc<RappelEvent, RappelState> {
   ) {
     if (!state.invitationDejaProposee) {
       emit(state.copyWith(invitationDejaProposee: true));
+    }
+  }
+
+  /// DEBUG : envoie une notification immédiate pour vérifier le tuyau OS.
+  Future<void> _onTestDemande(
+    RappelTestDemande event,
+    Emitter<RappelState> emit,
+  ) async {
+    try {
+      await _service.afficherNotificationTest(
+        titre: _fournisseurTitre(),
+        corps: _fournisseurCorps(),
+      );
+    } on Object catch (error, stackTrace) {
+      log('RappelBloc._onTestDemande', error: error, stackTrace: stackTrace);
     }
   }
 
