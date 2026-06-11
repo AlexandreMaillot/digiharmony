@@ -4,6 +4,10 @@
          Permission protegee -> octroyee via l'ecran systeme ACTION_USAGE_ACCESS_SETTINGS. -->
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
+    <!-- flutter_local_notifications : rappel quotidien humeur (100 % local,
+         zéro réseau). Requise sur Android 13+ (API 33+) pour afficher des
+         notifications. Jamais de VIBRATE ni RECEIVE_BOOT_COMPLETED (DEC-R-04). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- just_audio_background : lecture continue de l'ambiance Detox (asset
          local, AUCUN reseau). Service media en avant-plan. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
