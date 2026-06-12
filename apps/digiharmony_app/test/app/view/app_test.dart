@@ -126,5 +126,39 @@ void main() {
       expect(app.supportedLocales.length, 8);
       await tester.pump(const Duration(seconds: 3));
     });
+
+    testWidgets(
+      'APP-7 : suit la langue du téléphone si supportée, sinon repli anglais',
+      (tester) async {
+        await tester.pumpWidget(App(database: database));
+        await tester.pump();
+        final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+        final resolve = app.localeListResolutionCallback;
+        expect(resolve, isNotNull);
+
+        // Langue du téléphone supportée -> on la suit.
+        expect(
+          resolve!([const Locale('es')], app.supportedLocales),
+          const Locale('es'),
+        );
+        // Langue du téléphone non supportée -> repli ANGLAIS (pas 'el', 1er
+        // de la liste en ordre alphabétique).
+        expect(
+          resolve([const Locale('de')], app.supportedLocales),
+          const Locale('en'),
+        );
+        // Préférences multiples : 1re supportée gagne.
+        expect(
+          resolve(
+            [const Locale('de'), const Locale('fr')],
+            app.supportedLocales,
+          ),
+          const Locale('fr'),
+        );
+        // Aucune préférence (null) -> repli anglais.
+        expect(resolve(null, app.supportedLocales), const Locale('en'));
+        await tester.pump(const Duration(seconds: 3));
+      },
+    );
   });
 }
