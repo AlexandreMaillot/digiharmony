@@ -8,6 +8,12 @@
          zéro réseau). Requise sur Android 13+ (API 33+) pour afficher des
          notifications. Jamais de VIBRATE ni RECEIVE_BOOT_COMPLETED (DEC-R-04). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Alarmes exactes : rappel quotidien pile à l'heure choisie (DEC-010,
+         permission fonctionnelle zéro collecte). Sur Android 12+, l'utilisateur
+         doit activer « Alarmes et rappels » dans les réglages système (demandé
+         à l'activation du rappel). Repli automatique en mode inexact si non
+         accordée. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <!-- just_audio_background : lecture continue de l'ambiance Detox (asset
          local, AUCUN reseau). Service media en avant-plan. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -62,6 +68,17 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
+        <!-- flutter_local_notifications : receiver QUI POSTE la notification
+             planifiée quand l'alarme exacte se déclenche (rappel quotidien
+             d'humeur). OBLIGATOIRE — le plugin ne le déclare pas lui-même ;
+             sans lui, l'alarme tire mais aucune notif n'est postée.
+             exported=false : déclenché uniquement par le PendingIntent interne.
+             PAS de ScheduledNotificationBootReceiver (RECEIVE_BOOT_COMPLETED
+             interdit, DEC-R-04) : le rappel est replanifié au lancement de
+             l'app, pas besoin de survivre au reboot. -->
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
+            android:exported="false" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

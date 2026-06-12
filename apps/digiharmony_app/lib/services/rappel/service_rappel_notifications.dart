@@ -13,10 +13,43 @@ import 'package:timezone/timezone.dart' as tz;
 /// 100 % locale — aucune donnée émise (DEC-R-01, CLAUDE.md).
 class ServiceRappelNotifications implements ServiceRappel {
   static const int _idNotif = 1001;
-  static const int _idNotifTest = 1002;
-  static const String _canalId = 'rappel_humeur';
+  // Nouvel id de canal (v2) : Android VERROUILLE l'importance d'un canal après
+  // sa création. L'ancien canal `rappel_humeur` était resté en importance
+  // DEFAULT (pas de bannière heads-up). Un nouvel id force la création d'un
+  // canal HIGH affichant une vraie bannière à l'écran.
+  static const String _canalId = 'rappel_humeur_v2';
   static const String _canalNom = 'Rappel humeur';
   static const String _payloadRoute = 'saisie_humeur';
+
+  /// Détails Android partagés par toutes les notifications du rappel.
+  ///
+  /// `importance: high` + `priority: high` → bannière heads-up visible.
+  /// `enableVibration: false` : conforme à la règle « pas de VIBRATE »
+  /// (CLAUDE.md ; vibration uniquement via `HapticFeedback`).
+  static const AndroidNotificationDetails _androidDetails =
+      AndroidNotificationDetails(
+    _canalId,
+    _canalNom,
+    channelDescription: 'Rappel quotidien pour noter ton humeur',
+    importance: Importance.high,
+    priority: Priority.high,
+    enableVibration: false,
+  );
+
+  /// Détails multiplateforme partagés (Android + iOS/macOS).
+  static const NotificationDetails _details = NotificationDetails(
+    android: _androidDetails,
+    iOS: DarwinNotificationDetails(
+      presentAlert: true,
+      presentBanner: true,
+      presentSound: true,
+    ),
+    macOS: DarwinNotificationDetails(
+      presentAlert: true,
+      presentBanner: true,
+      presentSound: true,
+    ),
+  );
 
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
@@ -75,12 +108,28 @@ class ServiceRappelNotifications implements ServiceRappel {
           AndroidFlutterLocalNotificationsPlugin>();
       if (android != null) {
         final granted = await android.requestNotificationsPermission();
+        // Demande aussi l'autorisation « Alarmes et rappels » (Android 12+)
+        // pour des notifications à l'heure exacte. Best-effort : on n'échoue
+        // pas si refusée (repli inexact à la planification).
+        try {
+          final dejaExact =
+              await android.canScheduleExactNotifications() ?? false;
+          if (!dejaExact) {
+            await android.requestExactAlarmsPermission();
+          }
+        } on Object {
+          // Ignore : la planification retombera en mode inexact.
+        }
         return granted ?? false;
       }
       final ios = _plugin.resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin>();
       if (ios != null) {
-        final granted = await ios.requestPermissions(alert: true, badge: true);
+        final granted = await ios.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
         return granted ?? false;
       }
       return false;
@@ -145,27 +194,14 @@ class ServiceRappelNotifications implements ServiceRappel {
         heure: heure,
         dejaNoteAujourdhui: dejaNoteAujourdhui,
       );
-      const androidDetails = AndroidNotificationDetails(
-        _canalId,
-        _canalNom,
-        channelDescription: 'Rappel quotidien pour noter ton humeur',
-      );
-      const details = NotificationDetails(
-        android: androidDetails,
-        iOS: DarwinNotificationDetails(),
-        macOS: DarwinNotificationDetails(),
-      );
       await _plugin.zonedSchedule(
         _idNotif,
         titre,
         corps,
         cible,
-        details,
+        _details,
         payload: _payloadRoute,
-        // BLOCKER-2 : inexactAllowWhileIdle ne requiert aucune permission
-        // SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM (interdites par DEC-R-01).
-        // La précision à la minute est suffisante pour un rappel quotidien.
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        androidScheduleMode: await _modeAndroid(),
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
       );
@@ -179,36 +215,23 @@ class ServiceRappelNotifications implements ServiceRappel {
     }
   }
 
-  @override
-  Future<void> afficherNotificationTest({
-    required String titre,
-    required String corps,
-  }) async {
+  /// Mode de planification Android : `exactAllowWhileIdle` si l'autorisation
+  /// « Alarmes et rappels » (SCHEDULE_EXACT_ALARM) est accordée — notification
+  /// pile à l'heure ; sinon repli `inexactAllowWhileIdle` (aucune permission,
+  /// mais Android peut retarder). Mode ignoré sur iOS.
+  Future<AndroidScheduleMode> _modeAndroid() async {
     try {
-      const androidDetails = AndroidNotificationDetails(
-        _canalId,
-        _canalNom,
-        channelDescription: 'Rappel quotidien pour noter ton humeur',
-      );
-      const details = NotificationDetails(
-        android: androidDetails,
-        iOS: DarwinNotificationDetails(),
-        macOS: DarwinNotificationDetails(),
-      );
-      // id distinct du rappel planifié pour ne pas l'écraser.
-      await _plugin.show(
-        _idNotifTest,
-        titre,
-        corps,
-        details,
-        payload: _payloadRoute,
-      );
-    } on Object catch (error, stackTrace) {
-      log(
-        'ServiceRappelNotifications.afficherNotificationTest failed',
-        error: error,
-        stackTrace: stackTrace,
-      );
+      final android = _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+      if (android == null) {
+        return AndroidScheduleMode.exactAllowWhileIdle;
+      }
+      final canExact = await android.canScheduleExactNotifications() ?? false;
+      return canExact
+          ? AndroidScheduleMode.exactAllowWhileIdle
+          : AndroidScheduleMode.inexactAllowWhileIdle;
+    } on Object {
+      return AndroidScheduleMode.inexactAllowWhileIdle;
     }
   }
 

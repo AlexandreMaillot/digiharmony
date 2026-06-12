@@ -123,6 +123,23 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      // Repli langue : suit la langue du téléphone si supportée, sinon ANGLAIS.
+      // Sans ce callback, Flutter retombe sur le 1er `supportedLocales` (ordre
+      // alphabétique = 'el' grec), pas l'anglais. `preferredLocales` vaut
+      // `[locale]` quand un choix explicite est posé, sinon les langues
+      // système.
+      localeListResolutionCallback: (preferredLocales, supportedLocales) {
+        if (preferredLocales != null) {
+          for (final preferee in preferredLocales) {
+            for (final supportee in supportedLocales) {
+              if (supportee.languageCode == preferee.languageCode) {
+                return supportee;
+              }
+            }
+          }
+        }
+        return const Locale('en');
+      },
       // _RappelTextesSync est un wrapper transparent qui met à jour les textes
       // localisés de notification dans le RappelBloc dès que les
       // AppLocalizations sont disponibles (y compris à chaque changement de

@@ -39,7 +39,7 @@ flowchart LR
 - État léger persistant : `HydratedBloc` (langue via `LocaleBloc`, flags onboarding/tuto) — jamais le journal.
 - Persistance : `Drift` (SQLite type-safe) pour journal d'humeur, conseils, agrégats ; réactif via `watch()` ; codegen `build_runner` ; `sqlite3_flutter_libs`.
 - 2 fichiers locaux distincts (Drift + HydratedBloc), tous deux sur l'appareil → zéro-collecte.
-- i18n : `gen-l10n` / ARB, 8 langues, bascule immédiate sans redémarrage via `LocaleBloc` au-dessus de `MaterialApp`.
+- i18n : `gen-l10n` / ARB, 8 langues, bascule immédiate sans redémarrage via `LocaleBloc` au-dessus de `MaterialApp`. Sans choix explicite : suit la langue du téléphone si supportée, sinon repli **anglais** via `localeListResolutionCallback` (DEC-009).
 - Vibration : `HapticFeedback` natif (0 dépendance, 0 permission).
 - Audio Detox : `just_audio` + `just_audio_background`.
 - Temps d'écran : `app_usage` (Android best-effort via `ACTION_USAGE_ACCESS_SETTINGS` ; iOS = repli).

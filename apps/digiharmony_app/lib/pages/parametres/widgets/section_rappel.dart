@@ -4,7 +4,6 @@ import 'package:digiharmony_app/app/routing/app_router.dart';
 import 'package:digiharmony_app/l10n/l10n.dart';
 import 'package:digiharmony_app/rappel/rappel_bloc.dart';
 import 'package:digiharmony_app/theme/theme.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,11 +52,6 @@ class SectionRappel extends StatelessWidget {
             if (state.permissionRefusee) ...[
               const SizedBox(height: AppSpacing.sm),
               _MessagePermissionRefusee(),
-            ],
-            // DEBUG : bouton de test (retiré en release).
-            if (kDebugMode) ...[
-              const SizedBox(height: AppSpacing.sm),
-              const _BoutonTestDebug(),
             ],
           ],
         );
@@ -238,37 +232,6 @@ class _MessagePermissionRefusee extends StatelessWidget {
       SnackBar(
         content: Text(context.l10n.rappelPermissionRefuseeMessage),
       ),
-    );
-  }
-}
-
-/// DEBUG : bouton de diagnostic envoyant une notification immédiate.
-///
-/// Présent uniquement en mode debug (`kDebugMode`). Permet de vérifier que la
-/// livraison OS fonctionne, indépendamment de la planification / du skip
-/// « déjà noté ». À retirer une fois le diagnostic terminé.
-class _BoutonTestDebug extends StatelessWidget {
-  const _BoutonTestDebug();
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton.icon(
-      onPressed: () {
-        unawaited(HapticFeedback.selectionClick());
-        context.read<RappelBloc>().add(const RappelTestDemande());
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Notification test envoyée (debug)'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      },
-      icon: const Icon(Icons.notifications_active_outlined, size: 18),
-      style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.primary,
-        minimumSize: const Size(0, 48),
-      ),
-      label: const Text('Tester la notification maintenant (debug)'),
     );
   }
 }
