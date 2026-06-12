@@ -25,10 +25,11 @@ flag Dart `kScreenTimeIosActif` ; façade `ServiceTempsEcranIos`. Android **inch
 ## Faits structurants (vérifiés)
 
 - **Capability « Family Controls (Development) » = SANS approbation Apple** (dev/test sur device
-  enregistré). La **Distribution** (App Store/TestFlight) exige la demande de l'entitlement
-  `com.apple.developer.family-controls` (form `developer.apple.com/contact/request/family-controls-distribution`,
-  validation Apple au cas par cas). ⚠️ Corrige une hypothèse initiale fausse (« rien ne build sans
-  approbation »).
+  enregistré). La **Distribution** (App Store/TestFlight) exige l'entitlement
+  `com.apple.developer.family-controls` (form `developer.apple.com/contact/request/family-controls-distribution`).
+  ✅ **Entitlement distribution APPROUVÉ par Apple** : diffusion **TestFlight vérifiée OK le
+  2026-06-12** (build 1.1.0 (2)). Le blocage distribution est **levé**. Procédure CLI : voir
+  `memory/deployment.md` → « TestFlight (iOS) ».
 - **Les chiffres ne sont JAMAIS lisibles par l'app** : le `DeviceActivityReport` est rendu dans une
   extension sandboxée → **pas d'historique Drift iOS, pas de top-apps custom iOS** (UX iOS ≠ maquette
   Android jauge/semaine).
@@ -48,8 +49,8 @@ flag Dart `kScreenTimeIosActif` ; façade `ServiceTempsEcranIos`. Android **inch
 ## Consequences
 
 - ✅ `flutter build ios` compile ; la plomberie est prête (`5948017`).
-- ⚠️ **Runtime** : nécessite l'entitlement ; la capability **Development suffit pour tester** sur
-  device, **Distribution** requiert l'approbation Apple (bloquant App Store, hors code).
+- ✅ **Distribution débloquée** : entitlement Family Controls distribution approuvé → TestFlight OK
+  (2026-06-12). La capability Development suffit pour tester sur device.
 - ⚠️ **UX iOS** = rapport Apple embarqué (pas la jauge/graphe Android).
 - ⚠️ Bundle ids extension **staging/production** encore non préfixés → à corriger au provisioning.
 - 🔗 Plan détaillé : `aidd_docs/plans/temps-ecran-ios-screentime.plan.md` ; scaffold + README dans
