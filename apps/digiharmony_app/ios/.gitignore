@@ -32,3 +32,12 @@ Runner/GeneratedPluginRegistrant.*
 !default.mode2v3
 !default.pbxuser
 !default.perspectivev3
+
+# Artefacts de signature / credentials — NE JAMAIS committer (secrets)
+*.p12
+*.cer
+*.certSigningRequest
+*.mobileprovision
+AuthKey_*.p8
+# fastlane local (Fastfile contient des identifiants ASC en dur)
+fastlane/

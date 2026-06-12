@@ -68,9 +68,9 @@ aucun `google-services.json`, aucune `firebase_options.dart` dans le code.
   - App Android : `com.creappi.digiharmony` (flavor production), App ID
     `1:614105312744:android:897629d5752390e47e485d`.
   - App iOS : `com.creappi.digiharmony`, App ID `1:614105312744:ios:7eee4e69653e42087e485d`
-    (non diffusable en l'état — voir « iOS »).
-  - Groupes testeurs : `testeurs`, `dev`. Diffuser `.stg`/`.dev` exige une app Firebase dédiée
-    par package + `FIREBASE_ANDROID_APP_ID` surchargé.
+    (iOS = TestFlight, pas App Distribution — voir « iOS »).
+  - Groupes testeurs : `testeurs`, `dev`, `client`. Diffuser `.stg`/`.dev` exige une app Firebase
+    dédiée par package + `FIREBASE_ANDROID_APP_ID` surchargé.
 
 ## Pages légales
 
@@ -84,15 +84,30 @@ aucun `google-services.json`, aucune `firebase_options.dart` dans le code.
 
 - Bundle IDs par flavor : `com.creappi.digiharmony` (prod) / `.stg` / `.dev` ; configs Xcode
   `Debug/Release/Profile-{production,staging,development}`, AppIcon `AppIcon`/`AppIcon-stg`/`AppIcon-dev`.
-- Configuré : Screen Time (DEC-006, capability Family Controls Development), icône/splash/nom production
-  (voir « Identité d'app »). **Distribution App Store** : nécessite l'entitlement
-  `com.apple.developer.family-controls` approuvé par Apple + provisioning (hors code).
-- **App Distribution iOS bloqué** : `Runner` ET l'extension `DeviceActivityReportExtension` déclarent
-  `com.apple.developer.family-controls` ; tout IPA de distribution (app-store/ad-hoc) échoue tant que
-  l'entitlement Family Controls **distribution** n'est pas approuvé par Apple
-  (`developer.apple.com/contact/request/family-controls-distribution`). Contournement test :
-  `flutter build ipa --export-method development` (UDID enregistrés) puis upload manuel. `deploy.sh`
-  ne build que l'APK Android.
+- Configuré : Screen Time (DEC-006, capability Family Controls), icône/splash/nom production
+  (voir « Identité d'app »). Entitlement `com.apple.developer.family-controls` **distribution
+  approuvé par Apple** → diffusion TestFlight **opérationnelle** (DEC-006, vérifié 2026-06-12).
+
+### TestFlight (iOS) — procédure CLI
+
+`deploy.sh` ne build que l'APK Android ; iOS = TestFlight, fait à la main / via la clé ASC.
+
+1. **Clé App Store Connect API** (Team Key) : issuer `26aaca42-0bb5-445c-a421-681c049086de`,
+   team `XU6QP9KZYD`, `.p8` **HORS VCS** dans `~/.private_keys/` (jamais committée ; les vieilles
+   clés révoquées ne figurent plus dans *Users & Access → Integrations → Team Keys*).
+2. **Archive** : `flutter build ios --config-only --release --flavor production --target lib/main_production.dart`
+   puis archive Xcode (scheme `production`, config `Release-production`).
+3. **Signing distribution** (absent localement par défaut, seuls des certs *Development*) : créer le
+   cert **Apple Distribution** + profils **App Store** pour `com.creappi.digiharmony` **ET**
+   `…DeviceActivityReportExtension` (family-controls) via la clé API
+   (`-allowProvisioningUpdates -authenticationKey*`).
+4. **Export IPA** : `xcodebuild -exportArchive … -exportOptionsPlist` (method `app-store`,
+   `signingStyle automatic`). ⚠️ Un **prompt keychain `codesign`** apparaît sur l'écran de la machine
+   → cliquer **« Toujours autoriser »** sinon l'export reste bloqué (session non-interactive = hang).
+5. **Upload** : `xcrun altool --upload-app --type ios -f Digiharmony.ipa --apiKey <KeyID> --apiIssuer <issuer>`.
+6. **Conformité export** : `usesNonExemptEncryption=false` (app locale, pas de crypto non-standard).
+7. **Groupes `dev`/`client` = INTERNES** : pas d'assignation build-par-build (l'API la refuse) ;
+   les testeurs internes accèdent **automatiquement** à tout build passé en `VALID` / `IN_BETA_TESTING`.
 
 # Infrastructure
 
